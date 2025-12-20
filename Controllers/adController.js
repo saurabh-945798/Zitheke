@@ -26,102 +26,88 @@ import User from "../models/User.js";
 ================================ */
 export const createAd = async (req, res) => {
   try {
-    const {
-      ownerUid,
-      ownerName,
-      ownerEmail,
-      ownerPhone,
-      title,
-      description,
-      category,
-      subcategory,
-      price,
-      negotiable,
-      condition,
-      city,
-      location,
-      deliveryAvailable,
-      bedrooms,
-      bathrooms,
-      area,
-      mileage,
-      year,
-      brand,
-      warranty,
-      size,
-      color,
-      salary,
-      quantity,
-      ageGroup,
-      fileType,
-      accessType,
-    } = req.body;
+    // 1️⃣ Clone body (DO NOT destructure)
+    const body = { ...req.body };
 
-    // ✅ Required fields check
-    if (!ownerUid || !title || !description || !category) {
-      return res.status(400).json({ message: "Missing required fields" });
+    console.log("REQ BODY 🔥", body);
+
+    // 2️⃣ Required fields check
+    if (!body.ownerUid || !body.title || !body.description || !body.category) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
     }
 
-    // ✅ Fetch owner details if not passed
-    let finalName = ownerName;
-    let finalEmail = ownerEmail;
-    let finalPhone = ownerPhone;
+    // 3️⃣ Remove empty values (SAFE CLEANUP)
+    Object.keys(body).forEach((key) => {
+      if (
+        body[key] === "" ||
+        body[key] === null ||
+        body[key] === undefined
+      ) {
+        delete body[key];
+      }
+    });
 
-    if (!ownerName || !ownerEmail || !ownerPhone) {
-      const user = await User.findOne({ uid: ownerUid });
+    // 4️⃣ Fetch owner details if missing
+    if (!body.ownerName || !body.ownerEmail || !body.ownerPhone) {
+      const user = await User.findOne({ uid: body.ownerUid });
       if (user) {
-        finalName = finalName || user.name;
-        finalEmail = finalEmail || user.email;
-        finalPhone = finalPhone || user.phone;
+        body.ownerName = body.ownerName || user.name;
+        body.ownerEmail = body.ownerEmail || user.email;
+        body.ownerPhone = body.ownerPhone || user.phone;
       }
     }
 
-    // ✅ Handle Cloudinary uploads
-    const imagePaths = req.files ? req.files.map((f) => f.path || f.secure_url) : [];
+    // 5️⃣ Boolean normalization
+    body.negotiable =
+      body.negotiable === "true" || body.negotiable === true;
 
-    // ✅ Create ad in "Pending" state
+    body.deliveryAvailable =
+      body.deliveryAvailable === "true" ||
+      body.deliveryAvailable === true;
+
+    // 6️⃣ Images from Cloudinary / Multer
+    const imagePaths = req.files
+      ? req.files.map((f) => f.path || f.secure_url)
+      : [];
+
+    // 7️⃣ Create Ad
     const newAd = await Ad.create({
-      ownerUid,
-      ownerName: finalName || "Unknown Seller",
-      ownerEmail: finalEmail || "",
-      ownerPhone: finalPhone || "",
-      title,
-      description,
-      category,
-      subcategory,
-      price,
-      negotiable: negotiable === "true" || negotiable === true,
-      condition,
-      city,
-      location,
-      deliveryAvailable: deliveryAvailable === "true" || deliveryAvailable === true,
+      ...body,
       images: imagePaths,
-      bedrooms,
-      bathrooms,
-      area,
-      mileage,
-      year,
-      brand,
-      warranty,
-      size,
-      color,
-      salary,
-      quantity,
-      ageGroup,
-      fileType,
-      accessType,
-      status: "Pending", // 🟡 user ads will not go live until admin approves
-      reportReason: "",  // clean by default
+      status: "Pending",
+      reportReason: "",
     });
 
-    res.status(201).json({
+    // 8️⃣ Update user city / location (safe)
+    const updateFields = {};
+
+    if (body.city && body.city.trim() !== "") {
+      updateFields.city = body.city.trim();
+    }
+
+    if (body.location && body.location.trim() !== "") {
+      updateFields.location = body.location.trim();
+    }
+
+    if (Object.keys(updateFields).length > 0) {
+      await User.updateOne(
+        { uid: body.ownerUid },
+        { $set: updateFields }
+      );
+    }
+
+    // 9️⃣ Final response
+    return res.status(201).json({
       success: true,
-      message: "✅ Ad submitted successfully and is pending admin approval.",
+      message: "Ad submitted successfully and is pending admin approval.",
       ad: newAd,
     });
   } catch (error) {
-    console.error("❌ Error creating ad:", error);
-    res.status(500).json({
+    console.error("❌ CREATE AD ERROR:", error);
+    return res.status(500).json({
       success: false,
       message: "Server error while creating ad",
       error: error.message,

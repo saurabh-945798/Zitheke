@@ -4,124 +4,267 @@ import mongoose from "mongoose";
 const adSchema = new mongoose.Schema(
   {
     /* ===========================
-       🧑 Ownership & Identity
+       👤 OWNERSHIP & IDENTITY
     =========================== */
-    ownerUid: { type: String, required: true }, // Firebase UID or internal user ID
-    ownerName: { type: String },
-    ownerEmail: { type: String },
-    ownerPhone: { type: String },
+    ownerUid: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    ownerName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    ownerEmail: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    ownerPhone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
 
     /* ===========================
-       📦 Core Ad Info
+       📦 CORE AD INFO
     =========================== */
-    title: { type: String, required: true, trim: true },
-    description: { type: String, required: true, trim: true },
-    category: { type: String, required: true },
-    subcategory: { type: String },
-    condition: { type: String, enum: ["New", "Used"], default: "Used" },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 5,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 10,
+    },
+    category: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    subcategory: {
+      type: String,
+      default: "",
+      trim: true,
+    },
 
     /* ===========================
-       💰 Pricing
+       🧱 CONDITION
+       (Not applicable for Jobs / Services / Pets)
     =========================== */
-    price: { type: Number },
-    negotiable: { type: Boolean, default: false },
-    currency: { type: String, default: "MK" },
+    condition: {
+      type: String,
+      enum: ["New", "Used", "Not Applicable"],
+      default: "Not Applicable",
+    },
 
     /* ===========================
-       🖼️ Media
+       💰 PRICING
     =========================== */
-    images: [{ type: String }], // Cloudinary URLs
-    videoUrl: { type: String, default: "" },
+    price: {
+      type: Number,
+      default: null,
+      min: 0,
+      index: true,
+    },
+    negotiable: {
+      type: Boolean,
+      default: false,
+    },
+    currency: {
+      type: String,
+      default: "MK",
+    },
+
+    dimensions: { type: String, default: "" },
+    material: { type: String, default: "" },
+
 
     /* ===========================
-       📍 Location
+       🖼️ MEDIA
     =========================== */
-    city: { type: String, trim: true },
-    location: { type: String, trim: true },
-    deliveryAvailable: { type: Boolean, default: false },
+    images: {
+      type: [String],
+      default: [],
+    },
+    videoUrl: {
+      type: String,
+      default: "",
+    },
 
     /* ===========================
-       🚗 Vehicle Fields
+       📍 LOCATION
     =========================== */
-    year: { type: String, default: "" },
-    mileage: { type: String, default: "" },
+    city: {
+      type: String,
+      trim: true,
+      default: "",
+      index: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+      default: "",
+    },
 
     /* ===========================
-       🏠 Real Estate Fields
-    =========================== */
+   🌍 GEO LOCATION (FOR NEARBY / TRENDING)
+=========================== */
+geo: {
+   type: {
+     type: String,
+     enum: ["Point"],
+     default: undefined
+   },
+   coordinates: {
+     type: [Number], // [lng, lat]
+     default: undefined
+   }
+ },
+ 
+ 
+    deliveryAvailable: {
+      type: Boolean,
+      default: false,
+    },
+
+    /* =================================================
+       🏠 REAL ESTATE
+    ================================================= */
     bedrooms: { type: String, default: "" },
     bathrooms: { type: String, default: "" },
     area: { type: String, default: "" },
+    furnishing: { type: String, default: "" },
 
-    /* ===========================
-       ⚡ Electronics Fields
-    =========================== */
+    /* =================================================
+       🚗 VEHICLES
+    ================================================= */
     brand: { type: String, default: "" },
-    warranty: { type: String, default: "" },
+    year: { type: String, default: "" },
+    mileage: { type: String, default: "" },
+    fuelType: { type: String, default: "" },
 
-    /* ===========================
-       👕 Fashion Fields
-    =========================== */
+    /* =================================================
+       ⚡ ELECTRONICS / MOBILES
+    ================================================= */
+    model: { type: String, default: "" },
+    warranty: { type: String, default: "" },
+    conditionNote: { type: String, default: "" },
+
+    /* =================================================
+       👕 FASHION
+    ================================================= */
     size: { type: String, default: "" },
     color: { type: String, default: "" },
 
-    /* ===========================
-       💼 Job & Service Fields
-    =========================== */
-    salary: { type: String, default: "" },
+    /* =================================================
+       💼 JOBS
+    ================================================= */
+    salary: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
+    jobType: { type: String, default: "" },        // Full-time / Part-time
+    experience: { type: String, default: "" },     // 0-1, 2-3 yrs
+    company: { type: String, default: "" },
 
-    /* ===========================
-       🌾 Agriculture / Business Fields
-    =========================== */
+    /* =================================================
+       🐶 PETS
+    ================================================= */
+    petType: { type: String, default: "" },
+    breed: { type: String, default: "" },
+    age: { type: String, default: "" },
+    vaccinated: { type: String, default: "" },     // Yes / No
+
+    /* =================================================
+       🛠 SERVICES
+    ================================================= */
+    serviceType: { type: String, default: "" },
+    availability: { type: String, default: "" },   // Full day / Weekends
+    serviceArea: { type: String, default: "" },
+
+    /* =================================================
+       📦 AGRICULTURE / BUSINESS
+    ================================================= */
     quantity: { type: String, default: "" },
 
-    /* ===========================
-       🎓 Kids & Education Fields
-    =========================== */
+    /* =================================================
+       🎓 KIDS / EDUCATION
+    ================================================= */
     ageGroup: { type: String, default: "" },
 
-    /* ===========================
-       💻 Digital Product Fields
-    =========================== */
+    /* =================================================
+       💻 DIGITAL PRODUCTS
+    ================================================= */
     fileType: { type: String, default: "" },
     accessType: { type: String, default: "" },
 
     /* ===========================
-       📊 Analytics & System Data
+       📊 ANALYTICS
     =========================== */
-    views: { type: Number, default: 0 },
-    favouritesCount: { type: Number, default: 0 },
-
-    // 🧠 NEW: unique view tracking
+    views: {
+      type: Number,
+      default: 0,
+    },
+    favouritesCount: {
+      type: Number,
+      default: 0,
+    },
     viewedBy: {
-      type: [String], // userId or guestId
+      type: [String],
       default: [],
     },
 
+    /* ===========================
+       🛡 STATUS & MODERATION
+    =========================== */
     status: {
       type: String,
       enum: ["Pending", "Approved", "Rejected", "Sold", "Deleted", "Active"],
       default: "Pending",
+      index: true,
     },
-    featured: { type: Boolean, default: false },
-    expiryDate: { type: Date },
-    
-    /* ===========================
-       🚨 Moderation
-    =========================== */
-    reported: { type: Boolean, default: false },
-    reportReason: { type: String, default: "" },
-    rejectionReason: { type: String, default: "" }, // ✅ add this
-    
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    expiryDate: {
+      type: Date,
+      default: null,
+    },
+
+    reported: {
+      type: Boolean,
+      default: false,
+    },
+    reportReason: {
+      type: String,
+      default: "",
+    },
+    rejectionReason: {
+      type: String,
+      default: "",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 /* ===========================
-   ⚙️ Optional: Auto-clean old view records (30 days)
+   🔍 INDEXES (SEARCH / FILTER)
 =========================== */
-adSchema.methods.cleanupOldViews = function () {
-  // (Optional) you can expand this later if storing timestamps for views
-};
+adSchema.index({ title: "text", description: "text" });
+adSchema.index({ category: 1, city: 1, price: 1 });
+adSchema.index({ ownerUid: 1, createdAt: -1 });
+// 🌍 Geo index for nearby search
+adSchema.index({ geo: "2dsphere" });
+
 
 export default mongoose.model("Ad", adSchema);
