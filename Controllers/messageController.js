@@ -1,7 +1,6 @@
 // controllers/messageController.js
 import Message from "../models/Message.js";
 import Conversation from "../models/Conversation.js";
-import User from "../models/User.js";
 
 /* =====================================================
    🔹 Utility
@@ -39,7 +38,7 @@ export const getMessagesByConversation = async (req, res) => {
 };
 
 /* =====================================================
-   🔹 Send New Message (Text/Media/Reply/Forward)
+   🔹 Send New Message (Text / Media / Reply / Forward)
 ===================================================== */
 export const saveMessage = async (req, res) => {
   try {
@@ -51,7 +50,11 @@ export const saveMessage = async (req, res) => {
       mediaThumbnail,
       replyTo,
       forwardedFrom,
+
+      // ✅ AD CONTEXT
+      adId,
       adTitle,
+      adImage,
     } = req.body;
 
     if (!senderId || !receiverId) {
@@ -62,42 +65,68 @@ export const saveMessage = async (req, res) => {
     const finalType = detectType(req.body, mediaUrl);
 
     /* =====================================================
-       🟢 Find or create conversation
+       🟢 Find or create conversation (AD-AWARE)
     ====================================================== */
-    let convo = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
-      productTitle: adTitle || "Listing",
-    });
+   // 🔥 Build query dynamically (VERY IMPORTANT)
+const convoQuery = {
+  participants: { $all: [senderId, receiverId] },
+};
 
+// Only add adId if it exists
+if (adId) {
+  convoQuery.adId = adId;
+}
+
+let convo = await Conversation.findOne(convoQuery);
+
+
+    /* ================= CREATE ================= */
     if (!convo) {
-      // If no conversation exists → create one
       convo = await Conversation.create({
         participants: [senderId, receiverId],
+
+        // ✅ AD CONTEXT
+        adId: adId || null,
         productTitle: adTitle || "Listing",
+        productImage: adImage || "",
+
         lastMessage: finalType === "text" ? message : `[${finalType}]`,
         lastSenderId: senderId,
+
         unreadCounts: {
           [senderId]: 0,
           [receiverId]: 1,
         },
+
         updatedAtSort: new Date(),
       });
-    } else {
-      // Update existing conversation
+    }
+
+    /* ================= UPDATE ================= */
+    else {
       convo.lastMessage =
         finalType === "text" ? message : `[${finalType}]`;
       convo.lastSenderId = senderId;
       convo.updatedAtSort = new Date();
 
-      // Support both Map and Object
+      // ✅ ensure ad context remains
+      if (!convo.adId && adId) {
+        convo.adId = adId;
+        convo.productTitle = adTitle || convo.productTitle;
+        convo.productImage = adImage || convo.productImage;
+      }
+
+      // ✅ increment unread count safely (Map + Object supported)
       if (typeof convo.unreadCounts?.get === "function") {
         convo.unreadCounts.set(
           receiverId,
           (convo.unreadCounts.get(receiverId) || 0) + 1
         );
       } else {
-        convo.unreadCounts[receiverId] =
-          (convo.unreadCounts?.[receiverId] || 0) + 1;
+        convo.unreadCounts = {
+          ...convo.unreadCounts,
+          [receiverId]: (convo.unreadCounts?.[receiverId] || 0) + 1,
+        };
       }
 
       await convo.save();

@@ -5,7 +5,7 @@ import User from "../models/User.js";
 
 /* =====================================================
    🟢 GET /api/conversations/:uid
-   → Fetch all chats for Sidebar (Optimized + Safe)
+   → Fetch all chats for Sidebar (FULL DATA)
 ===================================================== */
 export const getUserConversations = async (req, res) => {
   const { uid } = req.params;
@@ -22,17 +22,17 @@ export const getUserConversations = async (req, res) => {
       convos.map(async (c) => {
         const partnerId = c.participants.find((p) => p !== uid);
 
-        // Partner info
+        // 👤 Partner info
         const partner = await User.findOne({ uid: partnerId }).lean();
 
-        // Last message
+        // 💬 Last message
         const lastMessageDoc = await Message.findOne({
           conversationId: c._id,
         })
           .sort({ createdAt: -1 })
           .lean();
 
-        // ✅ Safe unreadCount (Map OR Object)
+        // 🔔 Safe unread count (Map + Object)
         const unreadCount =
           typeof c.unreadCounts?.get === "function"
             ? c.unreadCounts.get(uid) || 0
@@ -47,11 +47,15 @@ export const getUserConversations = async (req, res) => {
           withUserPhoto: partner?.photoURL || "",
           lastSeen: partner?.lastSeen || null,
 
-          productTitle: c.productTitle,
+          // 🧾 AD CONTEXT (IMPORTANT)
+          adId: c.adId || null,
+          productTitle: c.productTitle || "",
+          productImage: c.productImage || "",
 
+          // 💬 Last message preview
           lastMessage: lastMessageDoc?.message || "",
           lastMessageType: lastMessageDoc?.type || "text",
-          lastSenderId: lastMessageDoc?.senderId,
+          lastSenderId: lastMessageDoc?.senderId || null,
           lastMessageAt: lastMessageDoc?.createdAt || c.updatedAtSort,
 
           unreadCount,
@@ -67,21 +71,59 @@ export const getUserConversations = async (req, res) => {
 };
 
 /* =====================================================
-   🟢 GET /api/conversations/count/:uid
-   → Count total conversations (chat count for dashboard)
+   🟢 GET /api/conversations/preview/:uid
+   → Lightweight preview (Dashboard)
 ===================================================== */
-export const getConversationCount = async (req, res) => {
+export const getConversationPreview = async (req, res) => {
   const { uid } = req.params;
 
   try {
-    const count = await Conversation.countDocuments({
+    const convos = await Conversation.find({
       participants: { $in: [uid] },
-    });
+    })
+      .sort({ updatedAtSort: -1 })
+      .limit(5)
+      .lean();
 
-    res.json({ count });
+    const preview = await Promise.all(
+      convos.map(async (c) => {
+        const partnerId = c.participants.find((p) => p !== uid);
+
+        const partner = await User.findOne(
+          { uid: partnerId },
+          { name: 1, photoURL: 1 }
+        ).lean();
+
+        const unreadCount =
+          typeof c.unreadCounts?.get === "function"
+            ? c.unreadCounts.get(uid) || 0
+            : c.unreadCounts?.[uid] || 0;
+
+        return {
+          conversationId: c._id,
+
+          withUserId: partnerId,
+          withUserName: partner?.name || "User",
+          withUserPhoto: partner?.photoURL || "",
+
+          // 🧾 AD CONTEXT
+          adId: c.adId || null,
+          productTitle: c.productTitle || "",
+          productImage: c.productImage || "",
+
+          lastMessage: c.lastMessage || "",
+          lastSenderId: c.lastSenderId || null,
+          lastMessageAt: c.updatedAtSort,
+
+          unreadCount,
+        };
+      })
+    );
+
+    res.json(preview);
   } catch (err) {
-    console.error("❌ Error fetching conversation count:", err);
-    res.status(500).json({ error: "Error fetching conversation count" });
+    console.error("❌ Error fetching conversation preview:", err);
+    res.status(500).json({ error: "Error fetching chat preview" });
   }
 };
 
@@ -109,37 +151,39 @@ export const markConversationRead = async (req, res) => {
     res.status(500).json({ error: "Error marking conversation read" });
   }
 };
+
 /* =====================================================
    🟢 POST /api/conversations/start
-   → Start or get conversation (AD-BASED)
+   → Start or get conversation (NO MESSAGE CREATION)
 ===================================================== */
 export const startConversation = async (req, res) => {
   try {
-    const { senderId, receiverId, productTitle, adId } = req.body;
+    const { senderId, receiverId, adId, adTitle, adImage } = req.body;
 
-    // 🔐 validation
-    if (!senderId || !receiverId || !productTitle || !adId) {
+    if (!senderId || !receiverId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // 🔥 IMPORTANT: find by participants + adId
     let convo = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
-      adId,
+      adId: adId || null,
     });
 
-    // 🆕 create if not exists
     if (!convo) {
       convo = await Conversation.create({
         participants: [senderId, receiverId],
-        adId,              // 🔥 real identity
-        productTitle,      // UI display
+
+        // 🧾 AD CONTEXT
+        adId: adId || null,
+        productTitle: adTitle || "Listing",
+        productImage: adImage || "",
+
         unreadCounts: {
           [senderId]: 0,
           [receiverId]: 0,
         },
+
         updatedAtSort: new Date(),
-        lastMessage: "",
       });
     }
 
@@ -150,9 +194,9 @@ export const startConversation = async (req, res) => {
   }
 };
 
-
 /* =====================================================
-   🟢 DELETE (HARD DELETE)
+   🟢 DELETE /api/conversations/:conversationId
+   → HARD DELETE conversation + messages
 ===================================================== */
 export const deleteConversationHard = async (req, res) => {
   const { conversationId } = req.params;
@@ -170,3 +214,4 @@ export const deleteConversationHard = async (req, res) => {
     res.status(500).json({ error: "Error deleting conversation" });
   }
 };
+  

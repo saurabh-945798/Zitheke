@@ -1,8 +1,7 @@
-// routes/conversationRoutes.js
 import express from "express";
 import {
   getUserConversations,
-  getConversationCount,
+  getConversationPreview,   // 🆕 dashboard preview
   markConversationRead,
   startConversation,
   deleteConversationHard,
@@ -11,28 +10,31 @@ import {
 const router = express.Router();
 
 /* =====================================================
-   🟢 START or GET conversation
+   🟢 START / GET CONVERSATION
 ===================================================== */
+
+// Start new or fetch existing conversation
 router.post("/start", startConversation);
 
 /* =====================================================
-   🟢 GET total conversation count (Dashboard / Stats)
-   IMPORTANT: Keep this ABOVE "/:uid"
+   🟢 DASHBOARD CHAT PREVIEW (LIGHTWEIGHT)
+   GET /api/conversations/preview/:uid
 ===================================================== */
-router.get("/count/:uid", getConversationCount);
+router.get("/preview/:uid", getConversationPreview);
 
 /* =====================================================
-   🟢 GET all conversations of a user (Sidebar / Chat list)
+   🟢 FULL CONVERSATION LIST (SIDEBAR / CHAT PAGE)
+   GET /api/conversations/:uid
 ===================================================== */
 router.get("/:uid", getUserConversations);
 
 /* =====================================================
-   🟢 Mark conversation as read
+   🟢 MARK CONVERSATION AS READ
 ===================================================== */
 router.put("/:conversationId/mark-read/:userId", markConversationRead);
 
 /* =====================================================
-   🟢 Hard delete a conversation
+   🟢 HARD DELETE CONVERSATION
 ===================================================== */
 router.delete("/delete/:conversationId", deleteConversationHard);
 

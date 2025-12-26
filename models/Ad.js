@@ -81,21 +81,44 @@ const adSchema = new mongoose.Schema(
       default: "MK",
     },
 
-    dimensions: { type: String, default: "" },
-    material: { type: String, default: "" },
-
-
     /* ===========================
        🖼️ MEDIA
     =========================== */
-    images: {
-      type: [String],
-      default: [],
-    },
-    videoUrl: {
-      type: String,
-      default: "",
-    },
+ /* ===========================
+   🖼️ MEDIA (Images + Video)
+=========================== */
+images: {
+  type: [String],
+  default: [],
+},
+video: {
+  url: {
+    type: String,
+    default: "",
+  },
+  thumbnail: {
+    type: String,
+    default: "",
+  },
+  duration: {
+    type: Number,
+    default: 0,
+  },
+  size: {
+    type: Number,
+    default: 0,
+  },
+  format: {
+    type: String,
+    default: "",
+  },
+  publicId: {
+    type: String,
+    default: "",
+  },
+},
+
+
 
     /* ===========================
        📍 LOCATION
