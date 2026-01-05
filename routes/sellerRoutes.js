@@ -1,9 +1,9 @@
 import express from "express";
-import { getSellerAds } from "../Controllers/sellerController.js";
+import { getSellerStats } from "../Controllers/sellerStatsController.js";
 
 const router = express.Router();
 
-// 🔥 Seller specific ads
-router.get("/:sellerId/ads", getSellerAds);
+// ✅ sellerId = Firebase UID (same as ownerUid in Ads)
+router.get("/:sellerId/stats", getSellerStats);
 
 export default router;

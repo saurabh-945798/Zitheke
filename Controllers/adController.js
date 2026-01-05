@@ -59,46 +59,75 @@ export const createAd = async (req, res) => {
       ? req.files.images.map((f) => f.path || f.secure_url)
       : [];
 
-// 7️⃣ 🎥 VIDEO UPLOAD (OPTIONAL — MAX 30 SEC)
-let videoData = {};
+    /* ==================================================
+       🔎 6.5️⃣ AUTO TAG GENERATION (ROOT SEARCH FIX)
+       - category
+       - subcategory
+       - title keywords
+       - existing tags (if any)
+    ================================================== */
+    const autoTags = new Set();
 
-if (req.files?.video?.[0]) {
-  const videoFile = req.files.video[0];
+    // from title
+    if (body.title) {
+      body.title
+        .toLowerCase()
+        .split(" ")
+        .forEach((word) => {
+          if (word.length > 2) autoTags.add(word);
+        });
+    }
 
-  const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
-    resource_type: "video",
-    folder: "alinafe/videos",
-  });
+    // from category & subcategory
+    if (body.category) autoTags.add(body.category.toLowerCase());
+    if (body.subcategory) autoTags.add(body.subcategory.toLowerCase());
 
-  // ✅ Thumbnail (Cloudinary way) - format safe
-  const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
-    resource_type: "video",
-    format: "jpg",
-  });
+    // preserve incoming tags if any
+    if (Array.isArray(body.tags)) {
+      body.tags.forEach((t) => autoTags.add(t.toLowerCase()));
+    }
 
-  // ⛔ HARD LIMIT: 30 seconds (cleanup too)
-  if (uploadedVideo.duration > 30) {
-    // ✅ delete uploaded video to avoid junk
-    await cloudinary.uploader.destroy(uploadedVideo.public_id, {
-      resource_type: "video",
-    });
+    body.tags = Array.from(autoTags);
 
-    return res.status(400).json({
-      success: false,
-      message: "Video duration must be 30 seconds or less",
-    });
-  }
+    // 7️⃣ 🎥 VIDEO UPLOAD (OPTIONAL — MAX 30 SEC)
+    let videoData = {};
 
-  videoData = {
-    url: uploadedVideo.secure_url,
-    thumbnail: thumbnailUrl,
-    duration: uploadedVideo.duration,
-    size: uploadedVideo.bytes,
-    format: uploadedVideo.format,
-    publicId: uploadedVideo.public_id,
-  };
-}
+    if (req.files?.video?.[0]) {
+      const videoFile = req.files.video[0];
 
+      const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
+        resource_type: "video",
+        folder: "alinafe/videos",
+      });
+
+      // ✅ Thumbnail (Cloudinary way) - format safe
+      const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
+        resource_type: "video",
+        format: "jpg",
+      });
+
+      // ⛔ HARD LIMIT: 30 seconds (cleanup too)
+      if (uploadedVideo.duration > 30) {
+        // ✅ delete uploaded video to avoid junk
+        await cloudinary.uploader.destroy(uploadedVideo.public_id, {
+          resource_type: "video",
+        });
+
+        return res.status(400).json({
+          success: false,
+          message: "Video duration must be 30 seconds or less",
+        });
+      }
+
+      videoData = {
+        url: uploadedVideo.secure_url,
+        thumbnail: thumbnailUrl,
+        duration: uploadedVideo.duration,
+        size: uploadedVideo.bytes,
+        format: uploadedVideo.format,
+        publicId: uploadedVideo.public_id,
+      };
+    }
 
     // 8️⃣ Create Ad
     const newAd = await Ad.create({
@@ -140,6 +169,7 @@ if (req.files?.video?.[0]) {
   }
 };
 
+
 /* ================================
    👤 GET USER ADS
 ================================ */
@@ -159,21 +189,72 @@ export const getUserAds = async (req, res) => {
 ================================ */
 export const getAllAds = async (req, res) => {
   try {
-    const filters = { status: "Approved" };
+    let {
+      q = "",
+      location = "",
+      category,
+      page = 1,
+      limit = 20,
+    } = req.query;
 
-    if (req.query.category) filters.category = req.query.category;
-    if (req.query.city) filters.city = req.query.city;
+    q = q.trim();
+    location = location.trim();
 
-    const ads = await Ad.find(filters).sort({ createdAt: -1 });
-    res.status(200).json(ads);
-  } catch (error) {
-    console.error("❌ Error fetching ads:", error);
-    res.status(500).json({
-      message: "Server error while fetching ads",
-      error: error.message,
+    const filters = {
+      status: { $in: ["Approved", "Active"] },
+    };
+
+    if (location) {
+      filters.city = { $regex: `^${location}`, $options: "i" };
+    }
+
+    if (category) {
+      filters.category = category;
+    }
+
+    if (q) {
+      filters.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { category: { $regex: q, $options: "i" } },
+        { subcategory: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [ads, total] = await Promise.all([
+      Ad.find(filters)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select(
+          "title description price images category subcategory " +
+            "city location " +
+            "status views favouritesCount negotiable featured createdAt " +
+            "condition brand year mileage warranty " +
+            "bedrooms bathrooms area " +
+            "salary quantity " +
+            "size color type " +
+            "age breed gender ageGroup " +
+            "fileType accessType"
+        ),
+      Ad.countDocuments(filters),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      ads,
     });
+  } catch (err) {
+    console.error("ADS FETCH ERROR:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch ads" });
   }
 };
+
 
 /* ================================
    ✏️ UPDATE AD
@@ -189,42 +270,70 @@ export const updateAd = async (req, res) => {
 
     if (imagePaths.length > 0) updates.images = imagePaths;
 
-   // 🎥 Replace video if uploaded
-if (req.files?.video?.[0]) {
-  const videoFile = req.files.video[0];
+    /* ==================================================
+       🔁 AUTO TAG UPDATE (IF TITLE / CATEGORY / SUBCATEGORY CHANGED)
+    ================================================== */
+    const updatedTags = new Set();
 
-  const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
-    resource_type: "video",
-    folder: "alinafe/videos",
-  });
+    // from title
+    if (updates.title) {
+      updates.title
+        .toLowerCase()
+        .split(" ")
+        .forEach((word) => {
+          if (word.length > 2) updatedTags.add(word);
+        });
+    }
 
-  const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
-    resource_type: "video",
-    format: "jpg",
-  });
+    // from category & subcategory
+    if (updates.category) updatedTags.add(updates.category.toLowerCase());
+    if (updates.subcategory)
+      updatedTags.add(updates.subcategory.toLowerCase());
 
-  if (uploadedVideo.duration > 30) {
-    // ✅ delete uploaded video to avoid junk
-    await cloudinary.uploader.destroy(uploadedVideo.public_id, {
-      resource_type: "video",
-    });
+    // preserve manual tags if any
+    if (Array.isArray(updates.tags)) {
+      updates.tags.forEach((t) => updatedTags.add(t.toLowerCase()));
+    }
 
-    return res.status(400).json({
-      success: false,
-      message: "Video duration must be 30 seconds or less",
-    });
-  }
+    if (updatedTags.size > 0) {
+      updates.tags = Array.from(updatedTags);
+    }
 
-  updates.video = {
-    url: uploadedVideo.secure_url,
-    thumbnail: thumbnailUrl,
-    duration: uploadedVideo.duration,
-    size: uploadedVideo.bytes,
-    format: uploadedVideo.format,
-    publicId: uploadedVideo.public_id,
-  };
-}
+    // 🎥 Replace video if uploaded
+    if (req.files?.video?.[0]) {
+      const videoFile = req.files.video[0];
 
+      const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
+        resource_type: "video",
+        folder: "alinafe/videos",
+      });
+
+      const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
+        resource_type: "video",
+        format: "jpg",
+      });
+
+      if (uploadedVideo.duration > 30) {
+        // ✅ delete uploaded video to avoid junk
+        await cloudinary.uploader.destroy(uploadedVideo.public_id, {
+          resource_type: "video",
+        });
+
+        return res.status(400).json({
+          success: false,
+          message: "Video duration must be 30 seconds or less",
+        });
+      }
+
+      updates.video = {
+        url: uploadedVideo.secure_url,
+        thumbnail: thumbnailUrl,
+        duration: uploadedVideo.duration,
+        size: uploadedVideo.bytes,
+        format: uploadedVideo.format,
+        publicId: uploadedVideo.public_id,
+      };
+    }
 
     const updatedAd = await Ad.findByIdAndUpdate(
       req.params.id,
@@ -245,6 +354,7 @@ if (req.files?.video?.[0]) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 /* ================================
    ❌ DELETE AD

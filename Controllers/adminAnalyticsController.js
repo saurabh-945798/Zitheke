@@ -8,13 +8,15 @@ const cache = new NodeCache({ stdTTL: 300, checkperiod: 320 });
 
 export const getAdminStats = async (req, res) => {
   try {
-    // ⚡ Check Cache
-    const cached = cache.get("admin_overview");
+    // ⚡ CACHE CHECK
+    const cached = cache.get("admin_overview_alinafe");
     if (cached) {
-      return res.status(200).json({ success: true, source: "cache", ...cached });
+      return res
+        .status(200)
+        .json({ success: true, source: "cache", ...cached });
     }
 
-    // ⚡ 1. Core Counts
+    // ⚡ 1. CORE COUNTS
     const [
       totalUsers,
       totalAds,
@@ -35,7 +37,7 @@ export const getAdminStats = async (req, res) => {
       Message.countDocuments(),
     ]);
 
-    // ⚡ 2. User Growth
+    // ⚡ 2. USER GROWTH
     const now = new Date();
     const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -55,7 +57,7 @@ export const getAdminStats = async (req, res) => {
             100
           ).toFixed(2);
 
-    // ⚡ 3. Monthly Trends (6 months)
+    // ⚡ 3. MONTHLY TREND GRAPH (LAST 6 MONTHS)
     const months = Array.from({ length: 6 }, (_, i) => {
       const d = new Date();
       d.setMonth(d.getMonth() - (5 - i));
@@ -69,9 +71,8 @@ export const getAdminStats = async (req, res) => {
         start.setHours(0, 0, 0, 0);
         const end = new Date(start);
         end.setMonth(start.getMonth() + 1);
-        return Ad.countDocuments({
-          createdAt: { $gte: start, $lt: end },
-        });
+
+        return Ad.countDocuments({ createdAt: { $gte: start, $lt: end } });
       })
     );
 
@@ -82,13 +83,12 @@ export const getAdminStats = async (req, res) => {
         start.setHours(0, 0, 0, 0);
         const end = new Date(start);
         end.setMonth(start.getMonth() + 1);
-        return User.countDocuments({
-          createdAt: { $gte: start, $lt: end },
-        });
+
+        return User.countDocuments({ createdAt: { $gte: start, $lt: end } });
       })
     );
 
-    // ⚡ 4. Ad Status
+    // ⚡ 4. AD STATUS TABLE
     const adStatusCount = {
       Approved: approvedAds,
       Pending: pendingAds,
@@ -96,31 +96,21 @@ export const getAdminStats = async (req, res) => {
       Sold: soldAds,
     };
 
-    // ⚡ 5. Top Insights
+    // ⚡ 5. TOP CATEGORY & TOP LOCATION
     const [topCategoryAgg, topLocationAgg, mostReportedCategoryAgg] =
       await Promise.all([
-        // TOP CATEGORY
         Ad.aggregate([
-          { $match: { category: { $exists: true, $nin: [null, ""] } } },
+          { $match: { category: { $exists: true, $ne: "" } } },
           { $group: { _id: "$category", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
           { $limit: 1 },
         ]),
 
-        // TOP LOCATION (SAFE)
         Ad.aggregate([
-          { $match: { location: { $exists: true, $nin: [null, ""] } } },
+          { $match: { location: { $exists: true, $ne: "" } } },
           {
             $group: {
-              _id: {
-                $toLower: {
-                  $cond: [
-                    { $isNumber: "$location" },
-                    "",
-                    "$location",
-                  ],
-                },
-              },
+              _id: { $toLower: "$location" },
               count: { $sum: 1 },
             },
           },
@@ -128,7 +118,6 @@ export const getAdminStats = async (req, res) => {
           { $limit: 1 },
         ]),
 
-        // MOST REPORTED CATEGORY
         Report.aggregate([
           {
             $lookup: {
@@ -138,12 +127,7 @@ export const getAdminStats = async (req, res) => {
               as: "ad",
             },
           },
-          {
-            $unwind: {
-              path: "$ad",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
+          { $unwind: "$ad" },
           {
             $group: {
               _id: "$ad.category",
@@ -157,15 +141,15 @@ export const getAdminStats = async (req, res) => {
 
     const topCategory = topCategoryAgg[0]?._id || "—";
     const topLocation =
-      topLocationAgg[0]?._id?.charAt(0).toUpperCase() +
-        topLocationAgg[0]?._id?.slice(1) || "—";
-
+      topLocationAgg[0]?._id
+        ? topLocationAgg[0]._id.charAt(0).toUpperCase() +
+          topLocationAgg[0]._id.slice(1)
+        : "—";
     const mostReportedCategory = mostReportedCategoryAgg[0]?._id || "—";
 
-    // ⚡ 6. Category Insights
+    // ⚡ 6. CATEGORY INSIGHTS
     const [categorySummary, reportedCategories, engagementByCategory] =
       await Promise.all([
-        // TOTAL ADS PER CATEGORY
         Ad.aggregate([
           {
             $group: {
@@ -175,10 +159,8 @@ export const getAdminStats = async (req, res) => {
             },
           },
           { $sort: { totalAds: -1 } },
-          { $limit: 8 },
         ]),
 
-        // TOTAL REPORTS PER CATEGORY
         Report.aggregate([
           {
             $lookup: {
@@ -188,24 +170,16 @@ export const getAdminStats = async (req, res) => {
               as: "ad",
             },
           },
-          {
-            $unwind: {
-              path: "$ad",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
+          { $unwind: "$ad" },
           {
             $group: {
               _id: "$ad.category",
               totalReports: { $sum: 1 },
             },
           },
-          { $sort: { totalReports: -1 } },
         ]),
 
-        // TOTAL MESSAGES PER CATEGORY
         Message.aggregate([
-          { $match: { adId: { $exists: true } } },
           {
             $lookup: {
               from: "ads",
@@ -214,19 +188,14 @@ export const getAdminStats = async (req, res) => {
               as: "ad",
             },
           },
-          {
-            $unwind: {
-              path: "$ad",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
+          // ✅ prevent crash if message has no adId
+          { $unwind: { path: "$ad", preserveNullAndEmptyArrays: false } },
           {
             $group: {
               _id: "$ad.category",
               totalMessages: { $sum: 1 },
             },
           },
-          { $sort: { totalMessages: -1 } },
         ]),
       ]);
 
@@ -247,16 +216,11 @@ export const getAdminStats = async (req, res) => {
       };
     });
 
-    // ⚡ 7. User Cities
-    const userCities = await User.aggregate([
-      { $match: { location: { $exists: true, $nin: [null, ""] } } },
+    const userCities = await Ad.aggregate([
+      { $match: { city: { $exists: true, $nin: ["", null] } } },
       {
         $group: {
-          _id: {
-            $toLower: {
-              $cond: [{ $isNumber: "$location" }, "", "$location"],
-            },
-          },
+          _id: { $toLower: "$city" },
           count: { $sum: 1 },
         },
       },
@@ -264,14 +228,60 @@ export const getAdminStats = async (req, res) => {
       { $limit: 6 },
     ]);
 
-    const activeUsers = Math.round(totalUsers * 0.75);
-    const inactiveUsers = totalUsers - activeUsers;
+    // ⚡ 7. TOP ACTIVE SELLERS (NEW FEATURE)
+    const topActiveSellers = await User.aggregate([
+      {
+        $lookup: {
+          from: "ads",
+          localField: "uid",
+          foreignField: "ownerUid",
+          as: "ads",
+        },
+      },
+      {
+        $addFields: {
+          totalAdsPosted: { $size: "$ads" },
+          memberSince: "$createdAt",
+          isActiveSeller: {
+            $cond: [{ $gt: [{ $size: "$ads" }, 0] }, true, false],
+          },
+        },
+      },
+      {
+        $project: {
+          uid: 1,
+          name: 1,
+          email: 1,
+          phone: 1,
+          memberSince: 1,
+          totalAdsPosted: 1,
+          isActiveSeller: 1,
+        },
+      },
+      { $sort: { totalAdsPosted: -1 } },
+      { $limit: 10 },
+    ]);
 
-    // ⚡ 8. Engagement Rate (GLOBAL)
+    // ⚡ 8. ACTIVE & INACTIVE USERS
+    // ✅ Better logic: based on recent login instead of random %.
+    // If you don't have lastLogin field, it will fallback to 0 and still not crash.
+    const activeSince = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // last 30 days
+    let activeUsers = 0;
+
+    try {
+      activeUsers = await User.countDocuments({
+        lastLogin: { $gte: activeSince },
+      });
+    } catch (e) {
+      activeUsers = Math.round(totalUsers * 0.75); // fallback
+    }
+
+    const inactiveUsers = Math.max(totalUsers - activeUsers, 0);
+
     const engagementRate =
       totalUsers > 0 ? (totalMessages / totalUsers).toFixed(1) : "0";
 
-    // ⚡ FINAL DATA
+    // FINAL RESPONSE
     const overview = {
       totalUsers,
       totalAds,
@@ -294,17 +304,21 @@ export const getAdminStats = async (req, res) => {
       userCities,
       activeUsers,
       inactiveUsers,
+
+      // 🆕 NEW DATA
+      topActiveSellers,
+
       lastUpdated: new Date(),
     };
 
-    cache.set("admin_overview", overview);
+    cache.set("admin_overview_alinafe", overview);
 
-    return res.status(200).json({ success: true, ...overview });
+    return res.status(200).json({ success: true, source: "db", ...overview });
   } catch (err) {
-    console.error("🔥 ADMIN ANALYTICS ERROR:", err);
-    res.status(500).json({
+    console.error("🔥 ALINAFE ADMIN ANALYTICS ERROR:", err);
+    return res.status(500).json({
       success: false,
-      error: err.message || "Failed to fetch admin analytics",
+      error: err.message || "Failed to fetch analytics",
     });
   }
 };

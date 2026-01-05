@@ -11,6 +11,11 @@ const adSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    userId: {
+      type: String,
+      default: "",
+      index: true,
+    },
     ownerName: {
       type: String,
       default: "",
@@ -228,6 +233,15 @@ geo: {
     fileType: { type: String, default: "" },
     accessType: { type: String, default: "" },
 
+    /* =================================================
+       DOMAIN
+    ================================================= */
+    domainName: { type: String, default: "" },
+    domainExtension: { type: String, default: "" },
+    domainRegistrationYear: { type: String, default: "" },
+    domainExpiryDate: { type: Date, default: null },
+    domainRegistrar: { type: String, default: "" },
+
     /* ===========================
        📊 ANALYTICS
     =========================== */
@@ -249,9 +263,17 @@ geo: {
     =========================== */
     status: {
       type: String,
-      enum: ["Pending", "Approved", "Rejected", "Sold", "Deleted", "Active"],
+      enum: ["Pending", "Approved", "Rejected", "Sold", "deleted"],
       default: "Pending",
       index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
+    deletedBy: {
+      type: String,
+      default: "",
     },
     featured: {
       type: Boolean,
@@ -281,13 +303,32 @@ geo: {
 );
 
 /* ===========================
-   🔍 INDEXES (SEARCH / FILTER)
+   🔍 INDEXES (FINAL)
 =========================== */
-adSchema.index({ title: "text", description: "text" });
-adSchema.index({ category: 1, city: 1, price: 1 });
+
+// ✅ ONLY ONE TEXT INDEX
+adSchema.index({
+  title: "text",
+  description: "text",
+  category: "text",
+  subcategory: "text",
+/* ===========================
+   🔑 SEARCH TAGS
+=========================== */
+tags: {
+  type: [String],
+  default: [],
+},
+});
+
+// ✅ FILTER INDEXES
+adSchema.index({ city: 1, status: 1 });
+adSchema.index({ price: 1 });
 adSchema.index({ ownerUid: 1, createdAt: -1 });
-// 🌍 Geo index for nearby search
+
+// ✅ GEO SEARCH
 adSchema.index({ geo: "2dsphere" });
+
 
 
 export default mongoose.model("Ad", adSchema);

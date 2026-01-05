@@ -13,6 +13,12 @@ import {
   searchAds,
 } from "../Controllers/adController.js";
 
+// 🔐 AUTH MIDDLEWARE
+import authMiddleware from "../middlewares/authMiddleware.js";
+
+// 🔐 OWNER / ADMIN PERMISSION MIDDLEWARE
+import adPermissionMiddleware from "../middlewares/adPermissionMiddleware.js";
+
 // 🔹 Cloudinary Integration
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -33,15 +39,15 @@ cloudinary.config({
 
 /* =============================
    📦 CLOUDINARY STORAGE
-   (Images + Video)
 ============================= */
 const storage = new CloudinaryStorage({
+  
   cloudinary,
   params: async (req, file) => {
     // 🎥 VIDEO CONFIG
     if (file.mimetype.startsWith("video")) {
       return {
-        folder: "zitheke_uploads/videos",
+        folder: "alinafe/videos",
         resource_type: "video",
         allowed_formats: ["mp4", "webm", "mov"],
       };
@@ -49,7 +55,7 @@ const storage = new CloudinaryStorage({
 
     // 🖼️ IMAGE CONFIG
     return {
-      folder: "zitheke_uploads/images",
+      folder: "alinafe/images",
       allowed_formats: ["jpg", "jpeg", "png", "webp", "avif"],
       transformation: [{ quality: "auto", fetch_format: "auto" }],
     };
@@ -62,7 +68,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 30 * 1024 * 1024, // ⛔ 30MB max (video limit)
+    fileSize: 30 * 1024 * 1024, // ⛔ 30MB
   },
   fileFilter: (req, file, cb) => {
     if (
@@ -71,10 +77,7 @@ const upload = multer({
     ) {
       cb(null, true);
     } else {
-      cb(
-        new Error("Only image and video files are allowed"),
-        false
-      );
+      cb(new Error("Only image and video files are allowed"), false);
     }
   },
 });
@@ -83,51 +86,90 @@ const upload = multer({
         🔹 ROUTES START
 ============================= */
 
-// 🟢 CREATE New Ad (Images + Optional Video)
+/* =================================================
+   🟢 CREATE AD (LOGIN REQUIRED)
+================================================= */
 router.post(
   "/create",
+  authMiddleware,
   upload.fields([
     { name: "images", maxCount: 5 },
     { name: "video", maxCount: 1 },
   ]),
-  multerErrorHandler, // ✅ VERY IMPORTANT (user-friendly error)
+  multerErrorHandler,
   createAd
 );
 
-// 👤 Get Ads created by specific user
-router.get("/user/:uid", getUserAds);
+/* =================================================
+   👤 GET LOGGED-IN USER ADS
+================================================= */
+router.get("/user/:uid", authMiddleware, getUserAds);
 
-// 🌍 Get ALL Approved Ads
-router.get("/", getAllAds);
-
-// 🔎 Search Ads (query + location)
+/* =================================================
+   🔎 SEARCH ADS (PUBLIC)
+================================================= */
 router.get("/search/ads", searchAds);
 
-// 🟣 Get Single Ad by ID
-router.get("/:id", getAdById);
+/* =================================================
+   🌍 GET ALL APPROVED ADS (PUBLIC)
+================================================= */
+router.get("/", getAllAds);
 
-// 👁️ Increment View Count
+/* =================================================
+   👁️ INCREMENT VIEW COUNT (PUBLIC)
+================================================= */
 router.put("/:id/view", incrementView);
 
-// ❤️ Update Favorite Count
-router.put("/:id/favorite", updateFavoriteCount);
+/* =================================================
+   ❤️ UPDATE FAVORITE COUNT (LOGIN)
+================================================= */
+router.put(
+  "/:id/favorite",
+  authMiddleware,
+  updateFavoriteCount
+);
 
-// 💰 Mark Ad as SOLD
-router.put("/:id/sold", markAsSold);
+/* =================================================
+   💰 MARK AD AS SOLD (OWNER / ADMIN)
+================================================= */
+router.put(
+  "/:id/sold",
+  authMiddleware,
+  adPermissionMiddleware,
+  markAsSold
+);
 
-// ✏️ Update Ad (Images + Optional Video Replace)
+/* =================================================
+   ✏️ UPDATE AD (OWNER / ADMIN)
+================================================= */
 router.put(
   "/:id",
+  authMiddleware,
+  adPermissionMiddleware,
   upload.fields([
     { name: "images", maxCount: 5 },
     { name: "video", maxCount: 1 },
   ]),
-  multerErrorHandler, // ✅ SAME handler here
+  multerErrorHandler,
   updateAd
 );
 
-// ❌ Delete Ad
-router.delete("/:id", deleteAd);
+/* =================================================
+   ❌ DELETE AD (OWNER / ADMIN)
+================================================= */
+router.delete(
+  "/:id",
+  authMiddleware,
+  adPermissionMiddleware,
+  deleteAd
+);
+
+/* =================================================
+   🟣 GET SINGLE AD BY ID (PUBLIC)
+   🔒 REGEX GUARD — ALWAYS LAST
+================================================= */
+router.get("/:id", getAdById);
+
 
 /* =============================
         🔹 ROUTES END

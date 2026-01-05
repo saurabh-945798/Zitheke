@@ -1,7 +1,11 @@
 import express from "express";
+
+// 🔐 AUTH
+import authMiddleware from "../middlewares/authMiddleware.js";
+
 import {
   getUserConversations,
-  getConversationPreview,   // 🆕 dashboard preview
+  getConversationPreview,
   markConversationRead,
   startConversation,
   deleteConversationHard,
@@ -11,31 +15,38 @@ const router = express.Router();
 
 /* =====================================================
    🟢 START / GET CONVERSATION
+   (USER MUST BE LOGGED IN)
 ===================================================== */
-
-// Start new or fetch existing conversation
-router.post("/start", startConversation);
+router.post("/start", authMiddleware, startConversation);
 
 /* =====================================================
-   🟢 DASHBOARD CHAT PREVIEW (LIGHTWEIGHT)
+   🟢 DASHBOARD CHAT PREVIEW
    GET /api/conversations/preview/:uid
 ===================================================== */
-router.get("/preview/:uid", getConversationPreview);
+router.get("/preview/:uid", authMiddleware, getConversationPreview);
 
 /* =====================================================
-   🟢 FULL CONVERSATION LIST (SIDEBAR / CHAT PAGE)
+   🟢 FULL CONVERSATION LIST
    GET /api/conversations/:uid
 ===================================================== */
-router.get("/:uid", getUserConversations);
+router.get("/:uid", authMiddleware, getUserConversations);
 
 /* =====================================================
    🟢 MARK CONVERSATION AS READ
 ===================================================== */
-router.put("/:conversationId/mark-read/:userId", markConversationRead);
+router.put(
+  "/:conversationId/mark-read/:userId",
+  authMiddleware,
+  markConversationRead
+);
 
 /* =====================================================
    🟢 HARD DELETE CONVERSATION
 ===================================================== */
-router.delete("/delete/:conversationId", deleteConversationHard);
+router.delete(
+  "/delete/:conversationId",
+  authMiddleware,
+  deleteConversationHard
+);
 
 export default router;
