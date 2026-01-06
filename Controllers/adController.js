@@ -231,13 +231,13 @@ export const getAllAds = async (req, res) => {
         .select(
           "title description price images category subcategory " +
             "city location " +
-            "status views favouritesCount negotiable featured createdAt " +
-            "condition brand year mileage warranty " +
-            "bedrooms bathrooms area " +
-            "salary quantity " +
-            "size color type " +
-            "age breed gender ageGroup " +
-            "fileType accessType"
+          "status views favouritesCount negotiable featured createdAt " +
+          "condition brand year mileage warranty " +
+          "bedrooms bathrooms area " +
+          "salary quantity " +
+          "size color type utensilType material " +
+          "age breed gender ageGroup " +
+          "fileType accessType"
         ),
       Ad.countDocuments(filters),
     ]);

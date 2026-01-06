@@ -189,6 +189,8 @@ geo: {
     ================================================= */
     size: { type: String, default: "" },
     color: { type: String, default: "" },
+    utensilType: { type: String, default: "" },
+    material: { type: String, default: "" },
 
     /* =================================================
        💼 JOBS
