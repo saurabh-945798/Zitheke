@@ -1060,25 +1060,43 @@
 //   }
 // };
 
-// migrate();
+
+
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import Admin from "./models/Admin.js";
+import Ad from "./models/Ad.js"; // 👈 path apne project ke hisaab se adjust karna
 
 dotenv.config();
-await mongoose.connect(process.env.MONGO_URI);
 
-const email = process.env.ADMIN_EMAIL.toLowerCase();
-const password = process.env.ADMIN_PASSWORD;
+const MONGO_URI = process.env.MONGO_URI;
 
-const hashed = await bcrypt.hash(password, 10);
+async function updateOwnerPhone() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ MongoDB connected");
 
-await Admin.create({
-  email,
-  password: hashed,
-  role: "admin",
-});
+    const result = await Ad.updateMany(
+      {
+        ownerEmail: "infoalinafeonline@gmail.com",
+      },
+      {
+        $set: {
+          ownerPhone: "0980634536",
+        },
+      }
+    );
 
-console.log("✅ Admin recreated with bcrypt");
-process.exit(0);
+    console.log("✅ Update completed");
+    console.log("Matched docs:", result.matchedCount);
+    console.log("Modified docs:", result.modifiedCount);
+
+    await mongoose.disconnect();
+    console.log("🔌 MongoDB disconnected");
+  } catch (err) {
+    console.error("❌ Error updating owner phone:", err);
+    process.exit(1);
+  }
+}
+
+updateOwnerPhone();
+

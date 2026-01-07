@@ -223,6 +223,7 @@ geo: {
        📦 AGRICULTURE / BUSINESS
     ================================================= */
     quantity: { type: String, default: "" },
+    productType: { type: String, default: "" },
 
     /* =================================================
        🎓 KIDS / EDUCATION

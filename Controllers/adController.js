@@ -235,6 +235,7 @@ export const getAllAds = async (req, res) => {
           "condition brand year mileage warranty " +
           "bedrooms bathrooms area " +
           "salary quantity " +
+          "productType " +
           "size color type utensilType material " +
           "age breed gender ageGroup " +
           "fileType accessType"
