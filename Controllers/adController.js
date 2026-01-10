@@ -184,6 +184,48 @@ export const getUserAds = async (req, res) => {
   }
 };
 
+
+
+/* ================================
+   ⭐ GET PROMO ADS (HOMEPAGE)
+   - Approved / Active only
+   - Limited items
+   - Lightweight fields
+================================ */
+export const getPromoAds = async (req, res) => {
+  try {
+    const { category, limit = 3 } = req.query;
+
+    const filters = {
+      status: { $in: ["Approved", "Active"] },
+    };
+
+    if (category) {
+      filters.category = category;
+    }
+
+    const ads = await Ad.find(filters)
+      .sort({ createdAt: -1 }) // latest first
+      .limit(Number(limit))
+     .select(
+  "_id title price images condition city location ownerName"
+);
+
+
+    res.status(200).json({
+      success: true,
+      ads,
+    });
+  } catch (error) {
+    console.error("PROMO ADS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch promo ads",
+    });
+  }
+};
+
+
 /* ================================
    🌍 GET ALL ADS
 ================================ */
