@@ -224,6 +224,8 @@ geo: {
     ================================================= */
     quantity: { type: String, default: "" },
     productType: { type: String, default: "" },
+    itemType: { type: String, default: "" },
+    cropType: { type: String, default: "" },
 
     /* =================================================
        🎓 KIDS / EDUCATION

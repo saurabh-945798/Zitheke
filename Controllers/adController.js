@@ -276,11 +276,12 @@ export const getAllAds = async (req, res) => {
           "status views favouritesCount negotiable featured createdAt " +
           "condition brand year mileage warranty " +
           "bedrooms bathrooms area " +
-          "salary quantity " +
+          "salary jobType experience company quantity " +
           "productType " +
           "size color type utensilType material " +
           "age breed gender ageGroup " +
-          "fileType accessType"
+          "fileType accessType " +
+          "itemType cropType"
         ),
       Ad.countDocuments(filters),
     ]);
