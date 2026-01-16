@@ -1062,41 +1062,96 @@
 
 
 
+// import mongoose from "mongoose";
+// import dotenv from "dotenv";
+// import Ad from "./models/Ad.js"; // 👈 path apne project ke hisaab se adjust karna
+
+// dotenv.config();
+
+// const MONGO_URI = process.env.MONGO_URI;
+
+// async function updateOwnerPhone() {
+//   try {
+//     await mongoose.connect(MONGO_URI);
+//     console.log("✅ MongoDB connected");
+
+//     const result = await Ad.updateMany(
+//       {
+//         ownerEmail: "infoalinafeonline@gmail.com",
+//       },
+//       {
+//         $set: {
+//           ownerPhone: "0980634536",
+//         },
+//       }
+//     );
+
+//     console.log("✅ Update completed");
+//     console.log("Matched docs:", result.matchedCount);
+//     console.log("Modified docs:", result.modifiedCount);
+
+//     await mongoose.disconnect();
+//     console.log("🔌 MongoDB disconnected");
+//   } catch (err) {
+//     console.error("❌ Error updating owner phone:", err);
+//     process.exit(1);
+//   }
+// }
+
+// updateOwnerPhone();
+
+
+
+
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Ad from "./models/Ad.js"; // 👈 path apne project ke hisaab se adjust karna
+import Category from "./models/Category.js";
+import Ad from "./models/Ad.js";
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI;
+async function run() {
+  // 🔁 CHANGE DIRECTION HERE
+  const from = "HomeFurniture";
+  const to = "Furniture";
 
-async function updateOwnerPhone() {
   try {
-    await mongoose.connect(MONGO_URI);
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI missing in .env");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB connected");
 
-    const result = await Ad.updateMany(
-      {
-        ownerEmail: "infoalinafeonline@gmail.com",
-      },
-      {
-        $set: {
-          ownerPhone: "0980634536",
-        },
-      }
+    // 1️⃣ Update Category collection
+    const catRes = await Category.updateMany(
+      { name: from },
+      { $set: { name: to } }
     );
 
-    console.log("✅ Update completed");
-    console.log("Matched docs:", result.matchedCount);
-    console.log("Modified docs:", result.modifiedCount);
+    console.log(
+      `✅ Category updated → matched=${catRes.matchedCount}, modified=${catRes.modifiedCount}`
+    );
 
+    // 2️⃣ Update Ads collection
+    const adRes = await Ad.updateMany(
+      { category: from },
+      { $set: { category: to } }
+    );
+
+    console.log(
+      `✅ Ads updated → matched=${adRes.matchedCount}, modified=${adRes.modifiedCount}`
+    );
+
+    console.log("🎉 Category rename completed successfully!");
+  } catch (err) {
+    console.error("❌ Error:", err.message);
+    process.exitCode = 1;
+  } finally {
     await mongoose.disconnect();
     console.log("🔌 MongoDB disconnected");
-  } catch (err) {
-    console.error("❌ Error updating owner phone:", err);
-    process.exit(1);
   }
 }
 
-updateOwnerPhone();
-
+run();

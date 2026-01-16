@@ -83,7 +83,7 @@ const adSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      default: "MK",
+      default: "₹",
     },
 
     /* ===========================
@@ -139,6 +139,11 @@ video: {
       trim: true,
       default: "",
     },
+    state: {
+      type: String,
+      trim: true,
+      default: "",
+    },
 
     /* ===========================
    🌍 GEO LOCATION (FOR NEARBY / TRENDING)
@@ -168,11 +173,26 @@ geo: {
     bathrooms: { type: String, default: "" },
     area: { type: String, default: "" },
     furnishing: { type: String, default: "" },
+    floorNumber: { type: String, default: "" },
+    totalFloors: { type: String, default: "" },
+    parking: { type: String, default: "" },
+    washroom: { type: String, default: "" },
+    roomType: { type: String, default: "" },
+    plotArea: { type: String, default: "" },
+    plotType: { type: String, default: "" },
+    facing: { type: String, default: "" },
 
     /* =================================================
        🚗 VEHICLES
     ================================================= */
     brand: { type: String, default: "" },
+    partName: { type: String, default: "" },
+    partCategory: { type: String, default: "" },
+    originalType: { type: String, default: "" },
+    workingStatus: { type: String, default: "" },
+    accessoryType: { type: String, default: "" },
+    vehicleType: { type: String, default: "" },
+    accessoryCondition: { type: String, default: "" },
     year: { type: String, default: "" },
     mileage: { type: String, default: "" },
     fuelType: { type: String, default: "" },
@@ -181,6 +201,7 @@ geo: {
        ⚡ ELECTRONICS / MOBILES
     ================================================= */
     model: { type: String, default: "" },
+    storage: { type: String, default: "" },
     warranty: { type: String, default: "" },
     conditionNote: { type: String, default: "" },
 
@@ -189,8 +210,6 @@ geo: {
     ================================================= */
     size: { type: String, default: "" },
     color: { type: String, default: "" },
-    utensilType: { type: String, default: "" },
-    material: { type: String, default: "" },
 
     /* =================================================
        💼 JOBS
@@ -218,34 +237,27 @@ geo: {
     serviceType: { type: String, default: "" },
     availability: { type: String, default: "" },   // Full day / Weekends
     serviceArea: { type: String, default: "" },
+    sportType: { type: String, default: "" },
+    weight: { type: String, default: "" },
 
     /* =================================================
        📦 AGRICULTURE / BUSINESS
     ================================================= */
     quantity: { type: String, default: "" },
-    productType: { type: String, default: "" },
-    itemType: { type: String, default: "" },
-    cropType: { type: String, default: "" },
-
-    /* =================================================
-       🎓 KIDS / EDUCATION
-    ================================================= */
-    ageGroup: { type: String, default: "" },
+    seedType: { type: String, default: "" },
+    variety: { type: String, default: "" },
+    fertilizerType: { type: String, default: "" },
+    form: { type: String, default: "" },
+    pesticideType: { type: String, default: "" },
+    targetCrop: { type: String, default: "" },
+    toolName: { type: String, default: "" },
+    powerType: { type: String, default: "" },
 
     /* =================================================
        💻 DIGITAL PRODUCTS
     ================================================= */
     fileType: { type: String, default: "" },
     accessType: { type: String, default: "" },
-
-    /* =================================================
-       DOMAIN
-    ================================================= */
-    domainName: { type: String, default: "" },
-    domainExtension: { type: String, default: "" },
-    domainRegistrationYear: { type: String, default: "" },
-    domainExpiryDate: { type: Date, default: null },
-    domainRegistrar: { type: String, default: "" },
 
     /* ===========================
        📊 ANALYTICS

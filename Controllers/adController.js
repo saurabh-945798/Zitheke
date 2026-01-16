@@ -186,6 +186,7 @@ export const getUserAds = async (req, res) => {
 
 
 
+
 /* ================================
    ⭐ GET PROMO ADS (HOMEPAGE)
    - Approved / Active only
@@ -224,6 +225,7 @@ export const getPromoAds = async (req, res) => {
     });
   }
 };
+
 
 
 /* ================================
@@ -272,16 +274,15 @@ export const getAllAds = async (req, res) => {
         .limit(limit)
         .select(
           "title description price images category subcategory " +
-            "city location " +
-          "status views favouritesCount negotiable featured createdAt " +
-          "condition brand year mileage warranty " +
-          "bedrooms bathrooms area " +
-          "salary jobType experience company quantity " +
-          "productType " +
-          "size color type utensilType material " +
-          "age breed gender ageGroup " +
-          "fileType accessType " +
-          "itemType cropType"
+            "city location state " +
+            "ownerName status views favouritesCount negotiable featured createdAt " +
+            "condition brand model storage year mileage fuelType warranty " +
+            " partName partCategory originalType workingStatus accessoryType vehicleType accessoryCondition " +
+            "bedrooms bathrooms area furnishing floorNumber totalFloors parking washroom roomType plotArea plotType facing  " +
+            "salary experience company quantity seedType variety fertilizerType form pesticideType targetCrop toolName powerType serviceType availability serviceArea sportType weight brand " +
+            "size color type " +
+            "age breed gender " +
+            "fileType accessType"
         ),
       Ad.countDocuments(filters),
     ]);
