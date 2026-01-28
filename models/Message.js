@@ -9,19 +9,16 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Conversation",
       required: true,
-      index: true,
     },
 
     senderId: {
       type: String,
       required: true,
-      index: true,
     },
 
     receiverId: {
       type: String,
       required: true,
-      index: true,
     },
 
     /* =====================================================
@@ -46,14 +43,12 @@ const messageSchema = new mongoose.Schema(
         "deleted", // ✅ VERY IMPORTANT (delete for everyone placeholder)
       ],
       default: "text",
-      index: true,
     },
 
     // client-side temp id for optimistic UI reconciliation
     clientTempId: {
       type: String,
       default: null,
-      index: true,
     },
 
     /* =====================================================
@@ -96,7 +91,6 @@ const messageSchema = new mongoose.Schema(
     isDelivered: {
       type: Boolean,
       default: false,
-      index: true,
     },
 
     deliveredAt: {
@@ -107,7 +101,6 @@ const messageSchema = new mongoose.Schema(
     isRead: {
       type: Boolean,
       default: false,
-      index: true,
     },
 
     readAt: {
@@ -122,7 +115,6 @@ const messageSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false,
-      index: true,
     },
 
     deletedAt: {
@@ -134,7 +126,6 @@ const messageSchema = new mongoose.Schema(
     deletedFor: {
       type: [String],
       default: [],
-      index: true,
     },
   },
   {
@@ -161,3 +152,4 @@ messageSchema.index({ mediaPublicId: 1 });
 
 export default mongoose.models.Message ||
   mongoose.model("Message", messageSchema);
+

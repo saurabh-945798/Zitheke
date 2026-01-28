@@ -9,12 +9,10 @@ const adSchema = new mongoose.Schema(
     ownerUid: {
       type: String,
       required: true,
-      index: true,
     },
     userId: {
       type: String,
       default: "",
-      index: true,
     },
     ownerName: {
       type: String,
@@ -50,7 +48,6 @@ const adSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      index: true,
     },
     subcategory: {
       type: String,
@@ -75,7 +72,6 @@ const adSchema = new mongoose.Schema(
       type: Number,
       default: null,
       min: 0,
-      index: true,
     },
     negotiable: {
       type: Boolean,
@@ -132,7 +128,6 @@ video: {
       type: String,
       trim: true,
       default: "",
-      index: true,
     },
     location: {
       type: String,
@@ -244,9 +239,11 @@ geo: {
        📦 AGRICULTURE / BUSINESS
     ================================================= */
     quantity: { type: String, default: "" },
+    quantityUnit: { type: String, default: "" },
     seedType: { type: String, default: "" },
     variety: { type: String, default: "" },
     fertilizerType: { type: String, default: "" },
+    weightUnit: { type: String, default: "" },
     form: { type: String, default: "" },
     pesticideType: { type: String, default: "" },
     targetCrop: { type: String, default: "" },
@@ -282,7 +279,6 @@ geo: {
       type: String,
       enum: ["Pending", "Approved", "Rejected", "Sold", "deleted"],
       default: "Pending",
-      index: true,
     },
     deletedAt: {
       type: Date,

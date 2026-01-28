@@ -8,7 +8,6 @@ const ConversationSchema = new mongoose.Schema(
     participants: {
       type: [String], // [senderId, receiverId] (Firebase UID)
       required: true,
-      index: true,
     },
 
     /* =====================================
@@ -18,7 +17,6 @@ const ConversationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ad",
       default: null,
-      index: true,
     },
 
     productTitle: {
@@ -60,7 +58,6 @@ const ConversationSchema = new mongoose.Schema(
     updatedAtSort: {
       type: Date,
       default: Date.now,
-      index: true,
     },
   },
   {
@@ -82,3 +79,4 @@ ConversationSchema.index({ updatedAtSort: -1 });
 ConversationSchema.index({ participants: 1, adId: 1 });
 
 export default mongoose.model("Conversation", ConversationSchema);
+
