@@ -25,13 +25,14 @@ const optional = (key, fallback = "") => {
 
 export const env = {
   NODE_ENV: optional("NODE_ENV", "development"),
+  JWT_SECRET: required("JWT_SECRET"),
 
   INFOBIP_BASE_URL: required("INFOBIP_BASE_URL").replace(/\/+$/, ""),
   INFOBIP_API_KEY: required("INFOBIP_API_KEY"),
 
   INFOBIP_EMAIL_SENDER: required("INFOBIP_EMAIL_SENDER"),
   INFOBIP_EMAIL_REPLY: optional("INFOBIP_EMAIL_REPLY", ""),
-  INFOBIP_SMS_SENDER: required("INFOBIP_SENDER_ID"),
+  INFOBIP_SMS_SENDER: required("INFOBIP_SMS_SENDER"),
 
   APP_NAME: optional("APP_NAME", "App"),
 

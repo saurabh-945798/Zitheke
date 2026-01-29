@@ -20,7 +20,7 @@ export const adRejectedTemplate = ({
 
   return baseTemplate({
     title: "Ad rejected",
-    preheader: "Your ad was not approved.",
+    preheader: "Your ad didn’t pass our review.",
     contentHtml: htmlBlock(`
       <div style="font-size:14px;line-height:22px;color:#111827;">
         <p style="margin:0 0 12px;">Hi <b>${safeName}</b>,</p>
@@ -31,7 +31,10 @@ export const adRejectedTemplate = ({
           Reason: <b>${safeReason}</b>
         </p>
         <p style="margin:0 0 12px;">
-          You can edit your ad to match our guidelines and post again.
+          You can edit the listing to match our guidelines and post again.
+        </p>
+        <p style="margin:0 0 12px;">
+          Make sure the title, photos, and description are clear and accurate.
         </p>
         <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>

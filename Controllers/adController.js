@@ -4,6 +4,10 @@ import User from "../models/User.js";
 import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
 
+const normalizePhone = (raw = "") =>
+  String(raw).trim().replace(/\s+/g, "").replace(/^\+/, "");
+const isValidPhone = (phone) => /^265\d{7,9}$/.test(phone);
+
 /* ================================
    🧠 CLOUDINARY CONFIG
 ================================ */
@@ -47,6 +51,23 @@ export const createAd = async (req, res) => {
         body.ownerPhone = body.ownerPhone || user.phone;
       }
     }
+
+    // 4.5️⃣ Ensure owner phone exists + Malawi format
+    if (!body.ownerPhone) {
+      return res.status(400).json({
+        success: false,
+        message: "Owner phone number is required",
+      });
+    }
+
+    const normalizedOwnerPhone = normalizePhone(body.ownerPhone);
+    if (!isValidPhone(normalizedOwnerPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Use phone number with country code like 265XXXXXXXXX",
+      });
+    }
+    body.ownerPhone = normalizedOwnerPhone;
 
     // 5️⃣ Boolean normalization
     body.negotiable =
@@ -166,6 +187,14 @@ export const createAd = async (req, res) => {
 
     if (Object.keys(updateFields).length > 0) {
       await User.updateOne({ uid: body.ownerUid }, { $set: updateFields });
+    }
+
+    // 9.5️⃣ If user profile phone is empty, store from ad
+    if (body.ownerPhone) {
+      await User.updateOne(
+        { uid: body.ownerUid, $or: [{ phone: null }, { phone: "" }] },
+        { $set: { phone: body.ownerPhone } }
+      );
     }
 
     // 🔟 Final response

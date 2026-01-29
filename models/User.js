@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema(
 
     // --- Basic Information ---
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, unique: true, sparse: true, default: null },
     photoURL: { type: String, default: "" },
-    phone: { type: String, default: "" },
+    phone: { type: String, default: null },
 
     // --- Location Info (For Analytics + Nearby Ads) ---
     location: { type: String, default: "" },   // Full address / area like "Andheri West"
@@ -37,6 +37,15 @@ const userSchema = new mongoose.Schema(
     ],
   },
   { timestamps: true }
+);
+
+// Unique phone numbers only when provided (ignore null/empty)
+userSchema.index(
+  { phone: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { phone: { $type: "string", $ne: "" } },
+  }
 );
 
 const User = mongoose.model("User", userSchema);

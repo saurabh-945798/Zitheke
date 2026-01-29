@@ -26,7 +26,10 @@ export const adPostedTemplate = ({
           Your ad <b>${safeTitle}</b> has been posted and is pending review.
         </p>
         <p style="margin:0 0 12px;">
-          We will notify you as soon as it is approved.
+          Our team will review it shortly. We will email you as soon as it is approved.
+        </p>
+        <p style="margin:0 0 12px;">
+          You can make edits while it is under review from your dashboard.
         </p>
         <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>

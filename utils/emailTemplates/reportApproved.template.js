@@ -28,7 +28,10 @@ export const reportApprovedTemplate = ({
           Your report for <b>${safeTitle}</b> has been approved.
         </p>
         ${safeNote ? `<p style="margin:0 0 12px;"><b>Admin note:</b> ${safeNote}</p>` : ""}
-        <p style="margin:18px 0 0;">Team Zitheke</p>
+        <p style="margin:0 0 12px;">
+          We’ve taken appropriate action based on our review.
+        </p>
+        <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>
     `),
   });

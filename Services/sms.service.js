@@ -21,13 +21,20 @@ export const SmsService = {
         {
           from: env.INFOBIP_SMS_SENDER,
           destinations: [{ to }],
-          text: `Your ${env.APP_NAME} OTP is ${otp}. Valid for ${minutes} minutes.`,
+          text: `Your ZITHEKE login OTP is ${otp}.\nThis code is valid for ${minutes} minutes.\nDo not share it with anyone.`,
         },
       ],
     };
 
     try {
       const res = await infobipClient.post("/sms/2/text/advanced", payload);
+      const msg = res?.data?.messages?.[0];
+      if (msg?.messageId || msg?.status?.name) {
+        console.info("Infobip SMS sent:", {
+          messageId: msg?.messageId,
+          status: msg?.status?.name,
+        });
+      }
       return { provider: "infobip", response: res.data };
     } catch (err) {
       console.error(

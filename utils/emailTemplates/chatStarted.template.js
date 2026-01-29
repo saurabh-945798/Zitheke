@@ -27,7 +27,10 @@ export const chatStartedTemplate = ({
         <p style="margin:0 0 12px;">
           <b>${safeSender}</b> started a chat on your listing <b>${safeTitle}</b>.
         </p>
-        <p style="margin:18px 0 0;">Team Zitheke</p>
+        <p style="margin:0 0 12px;">
+          Reply quickly to improve your chances of closing the deal.
+        </p>
+        <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>
     `),
   });

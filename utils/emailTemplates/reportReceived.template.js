@@ -25,7 +25,10 @@ export const reportReceivedTemplate = ({
         <p style="margin:0 0 12px;">
           Your report for <b>${safeTitle}</b> has been submitted. Our team will review it soon.
         </p>
-        <p style="margin:18px 0 0;">Team Zitheke</p>
+        <p style="margin:0 0 12px;">
+          We appreciate your help in keeping Zitheke safe for everyone.
+        </p>
+        <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>
     `),
   });

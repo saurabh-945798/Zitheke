@@ -4,28 +4,18 @@ import jwt from "jsonwebtoken";
 import PhoneOtp from "../models/PhoneOtp.js";
 import User from "../models/User.js";
 import { SmsService } from "../Services/sms.service.js";
+import { env } from "../config/env.js";
 
 const OTP_TTL_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
 
 const normalizePhone = (raw = "") => {
-  const trimmed = String(raw).trim().replace(/\s+/g, "");
-
-  if (!trimmed) return "";
-
-  if (trimmed.startsWith("+")) {
-    return trimmed;
-  }
-
-  // If 10 digits, assume India and add +91
-  if (/^\d{10}$/.test(trimmed)) {
-    return `+91${trimmed}`;
-  }
-
-  return trimmed;
+  const digitsOnly = String(raw).trim().replace(/\s+/g, "").replace(/^\+/, "");
+  if (!digitsOnly) return "";
+  return digitsOnly;
 };
 
-const isValidPhone = (phone) => /^\+\d{8,15}$/.test(phone);
+const isValidPhone = (phone) => /^265\d{7,9}$/.test(phone);
 
 const hashOtp = (otp) =>
   crypto.createHash("sha256").update(String(otp)).digest("hex");
@@ -39,14 +29,24 @@ export const PhoneAuthController = {
       if (!isValidPhone(normalizedPhone)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid phone number. Use country code like +91XXXXXXXXXX.",
+          message: "Use phone number with country code like 265XXXXXXXXX",
+        });
+      }
+
+      const existing = await PhoneOtp.findOne({
+        phone: normalizedPhone,
+        expiresAt: { $gt: new Date() },
+      });
+      if (existing) {
+        return res.status(429).json({
+          success: false,
+          message: "OTP already sent. Please wait before retrying.",
         });
       }
 
       const otp = String(Math.floor(100000 + Math.random() * 900000));
       const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
 
-      await PhoneOtp.deleteMany({ phone: normalizedPhone });
       await PhoneOtp.create({
         phone: normalizedPhone,
         codeHash: hashOtp(otp),
@@ -84,7 +84,7 @@ export const PhoneAuthController = {
       if (!isValidPhone(normalizedPhone)) {
         return res.status(400).json({
           success: false,
-          message: "Invalid phone number. Use country code like +91XXXXXXXXXX.",
+          message: "Use phone number with country code like 265XXXXXXXXX",
         });
       }
 
@@ -121,18 +121,26 @@ export const PhoneAuthController = {
 
       await PhoneOtp.deleteOne({ _id: record._id });
 
-      const user = await User.findOne({ phone: normalizedPhone });
+      const user =
+        (await User.findOne({ phone: normalizedPhone })) ||
+        (await User.findOne({ phone: `+${normalizedPhone}` }));
       if (!user) {
+        const signupToken = jwt.sign(
+          { phone: normalizedPhone, purpose: "phone_signup" },
+          env.JWT_SECRET,
+          { expiresIn: "10m" }
+        );
         return res.status(200).json({
           success: true,
           phone: normalizedPhone,
           requiresSignup: true,
+          signupToken,
         });
       }
 
       const token = jwt.sign(
         { uid: user.uid, email: user.email, role: user.role },
-        process.env.JWT_SECRET,
+        env.JWT_SECRET,
         { expiresIn: "7d" }
       );
 

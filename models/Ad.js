@@ -240,6 +240,7 @@ geo: {
     ================================================= */
     quantity: { type: String, default: "" },
     quantityUnit: { type: String, default: "" },
+    productType: { type: String, default: "" },
     seedType: { type: String, default: "" },
     variety: { type: String, default: "" },
     fertilizerType: { type: String, default: "" },

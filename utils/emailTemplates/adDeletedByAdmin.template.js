@@ -25,11 +25,14 @@ export const adDeletedByAdminTemplate = ({
       <div style="font-size:14px;line-height:22px;color:#111827;">
         <p style="margin:0 0 12px;">Hi <b>${safeName}</b>,</p>
         <p style="margin:0 0 12px;">
-          We removed your ad <b>${safeTitle}</b> because it didn’t meet our posting guidelines.
+          We removed your ad <b>${safeTitle}</b> because it did not meet our posting guidelines.
         </p>
         ${safeNote ? `<p style="margin:0 0 12px;"><b>Reason:</b> ${safeNote}</p>` : ""}
         <p style="margin:0 0 12px;">
-          If you believe this was a mistake, please contact our support team and we’ll help you.
+          You can edit and repost the ad after updating the details.
+        </p>
+        <p style="margin:0 0 12px;">
+          If you believe this was a mistake, contact support and we will help you.
         </p>
         <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>

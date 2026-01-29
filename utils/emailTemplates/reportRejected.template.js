@@ -28,7 +28,10 @@ export const reportRejectedTemplate = ({
           Your report for <b>${safeTitle}</b> was rejected.
         </p>
         ${safeNote ? `<p style="margin:0 0 12px;"><b>Admin note:</b> ${safeNote}</p>` : ""}
-        <p style="margin:18px 0 0;">Team Zitheke</p>
+        <p style="margin:0 0 12px;">
+          If you have additional details, you can submit a new report.
+        </p>
+        <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>
     `),
   });

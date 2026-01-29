@@ -19,10 +19,10 @@ export const resetPasswordTemplate = ({ resetLink = "" } = {}) => {
       </p>
 
       <p style="margin:0 0 14px;">
-        Click the button below:
+        Click the button below to continue:
       </p>
 
-      <a href="${safeLink}" style="display:inline-block;padding:12px 16px;background:#111827;color:#fff;text-decoration:none;border-radius:12px;font-weight:700;">
+      <a href="${safeLink}" style="display:inline-block;padding:12px 16px;background:#2E3192;color:#fff;text-decoration:none;border-radius:12px;font-weight:700;">
         Reset Password
       </a>
 
@@ -34,7 +34,7 @@ export const resetPasswordTemplate = ({ resetLink = "" } = {}) => {
 
   return baseTemplate({
     title: "Reset your password",
-    preheader: "Reset link inside.",
+    preheader: "Use the secure link to reset your password.",
     contentHtml: content,
   });
 };

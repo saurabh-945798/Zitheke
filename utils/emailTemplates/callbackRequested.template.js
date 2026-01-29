@@ -33,7 +33,10 @@ export const callbackRequestedTemplate = ({
         </p>
         ${safePhone ? `<p style="margin:0 0 12px;"><b>Phone:</b> ${safePhone}</p>` : ""}
         ${safeMessage ? `<p style="margin:0 0 12px;"><b>Message:</b><br/>${safeMessage}</p>` : ""}
-        <p style="margin:18px 0 0;">Team Zitheke</p>
+        <p style="margin:0 0 12px;">
+          Please respond as soon as possible to increase your chances of closing the deal.
+        </p>
+        <p style="margin:18px 0 0;color:#2E3192;font-weight:600;">Team Zitheke</p>
       </div>
     `),
   });

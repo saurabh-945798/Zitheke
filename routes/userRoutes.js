@@ -6,6 +6,7 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 // 👤 CONTROLLERS
 import {
   registerUser,
+  registerUserByPhone,
   getUserProfile,
   updateUserProfile,
   logoutUser,
@@ -20,6 +21,11 @@ const router = express.Router();
 router.post(
   "/register",
   registerUser
+);
+
+router.post(
+  "/phone-register",
+  registerUserByPhone
 );
 
 /* =====================================================

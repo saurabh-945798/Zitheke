@@ -4,8 +4,9 @@ import { z } from "zod";
 const phoneSchema = z
   .string()
   .trim()
-  .min(8, "Phone is required")
-  .max(20, "Phone too long");
+  .min(10, "Phone is required")
+  .max(12, "Phone too long")
+  .regex(/^(\+?265)\d{7,9}$/, "Use phone number with country code like 265XXXXXXXXX");
 
 export const sendOtpSchema = z.object({
   phone: phoneSchema,
