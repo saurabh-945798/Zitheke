@@ -14,3 +14,4 @@ yarn-error.log*
 
 # OS
 .DS_Store
+backend/serviceAccountKey.json
