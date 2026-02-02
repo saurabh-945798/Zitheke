@@ -1,0 +1,35 @@
+.typing-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 6px;
+  }
+  
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background-color: #9ca3af; /* gray-400 */
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+  
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes typingBounce {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(-5px);
+      opacity: 1;
+    }
+  }
+  
