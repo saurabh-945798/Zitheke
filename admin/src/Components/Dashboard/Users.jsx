@@ -24,7 +24,6 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const BASE_URL = "http://localhost:5000";
   const fallbackImage =
     "https://res.cloudinary.com/dxah12xl4/image/upload/v1731010204/default_user.png";
 

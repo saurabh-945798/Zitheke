@@ -39,7 +39,6 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const BASE_URL = "http://localhost:5000";
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 

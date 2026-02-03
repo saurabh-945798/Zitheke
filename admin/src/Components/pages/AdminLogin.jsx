@@ -17,10 +17,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/admin/auth/login",
-        form
-      );
+      const res = await axios.post("/api/admin/auth/login", form);
 
       // ✅ SAVE TOKEN + ADMIN DATA (VERY IMPORTANT)
       localStorage.setItem("adminToken", res.data.token);

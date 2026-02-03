@@ -17,7 +17,7 @@ const AdminContactInbox = () => {
   const fetchMessages = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/contact/admin/messages"
+        "/api/contact/admin/messages"
       );
       setMessages(res.data.data);
     } catch (err) {
@@ -30,7 +30,7 @@ const AdminContactInbox = () => {
   const markAsRead = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/contact/admin/messages/${id}/read`
+        `/api/contact/admin/messages/${id}/read`
       );
       fetchMessages();
     } catch (err) {
