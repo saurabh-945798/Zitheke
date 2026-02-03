@@ -21,7 +21,7 @@ const SellerProfile = () => {
   const { sellerId } = useParams();
   const navigate = useNavigate();
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const [seller, setSeller] = useState(null);
   const [ads, setAds] = useState([]);
@@ -39,7 +39,7 @@ const SellerProfile = () => {
 
         // ✅ 1️⃣ Seller ads (NEW CONTROLLER)
         const adsRes = await axios.get(
-          `${BASE_URL}/api/public/sellers/${sellerId}/ads`
+          `${BASE_URL}/public/sellers/${sellerId}/ads`
         );
 
         const sellerAds = adsRes.data || [];

@@ -1,7 +1,7 @@
 ﻿// src/pages/Chats/Chats.jsx
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -133,7 +133,7 @@ const TypingIndicator = () => {
 
 const Chats = () => {
   const { user } = useAuth();
-  const BASE = "http://localhost:5000";
+  const BASE = "/api";
 
   const [conversations, setConversations] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -177,7 +177,7 @@ const Chats = () => {
     if (!user?.uid) return;
 
     try {
-      const res = await axios.get(`${BASE}/api/conversations/${user.uid}`, {
+      const res = await axios.get(`${BASE}/conversations/${user.uid}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setConversations(res.data || []);
@@ -219,7 +219,7 @@ const Chats = () => {
     loadMessages({ conversationId: chatToOpen.conversationId });
 
     axios.put(
-      `${BASE}/api/conversations/${chatToOpen.conversationId}/mark-read/${user.uid}`,
+      `${BASE}/conversations/${chatToOpen.conversationId}/mark-read/${user.uid}`,
       {},
       {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -277,7 +277,7 @@ const Chats = () => {
     if (!confirm.isConfirmed) return;
 
     try {
-      await axios.delete(`${BASE}/api/conversations/delete/${selectedChat.conversationId}`, {
+      await axios.delete(`${BASE}/conversations/delete/${selectedChat.conversationId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
@@ -346,7 +346,7 @@ const Chats = () => {
 
     // mark read
     axios.put(
-      `${BASE}/api/conversations/${chat.conversationId}/mark-read/${user.uid}`,
+      `${BASE}/conversations/${chat.conversationId}/mark-read/${user.uid}`,
       {},
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
     );

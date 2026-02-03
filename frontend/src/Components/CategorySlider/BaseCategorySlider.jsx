@@ -20,7 +20,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const imageSwiperRefs = useRef({});
@@ -29,7 +29,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
     const fetchAds = async () => {
       try {
         const res = await axios.get(
-          `${BASE_URL}/api/ads${
+          `${BASE_URL}/ads${
             category ? `?category=${encodeURIComponent(category)}` : ""
           }`
         );

@@ -11,7 +11,7 @@ const SetPassword = () => {
   const [message, setMessage] = useState("");
 
   const token = params.get("token") || "";
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ const SetPassword = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/password/set/confirm`, {
+      const res = await fetch(`${BASE_URL}/settings/password/set/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),

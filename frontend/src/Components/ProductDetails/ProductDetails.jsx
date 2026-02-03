@@ -38,7 +38,7 @@ const ProductDetails = () => {
   const fromChat = searchParams.get("from") === "chat";
   const backConversationId = searchParams.get("conversationId");
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
   const [ad, setAd] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +70,7 @@ const ProductDetails = () => {
       try {
         setLoading(true);
         window.scrollTo(0, 0);
-        const res = await axios.get(`${BASE_URL}/api/ads/${id}`);
+        const res = await axios.get(`${BASE_URL}/ads/${id}`);
         setAd(res.data);
         setActiveImage(
           res.data?.images?.length
@@ -96,7 +96,7 @@ const ProductDetails = () => {
 
     const fetchSellerStats = async () => {
       try {
-        const res = await api.get(`/api/sellers/${ad.ownerUid}/stats`);
+        const res = await api.get(`/sellers/${ad.ownerUid}/stats`);
         setSellerStats(res.data || null);
       } catch (err) {
         console.error("Seller stats fetch error:", err);
@@ -118,7 +118,7 @@ const ProductDetails = () => {
         localStorage.setItem("guest_id", guestId);
       }
       try {
-        const res = await axios.put(`${BASE_URL}/api/ads/${id}/view`, {
+        const res = await axios.put(`${BASE_URL}/ads/${id}/view`, {
           userId: user?.uid || null,
           guestId,
         });
@@ -138,7 +138,7 @@ const ProductDetails = () => {
     const fetchRelated = async () => {
       try {
         const res = await fetch(
-          `${BASE_URL}/api/ads?category=${encodeURIComponent(
+          `${BASE_URL}/ads?category=${encodeURIComponent(
             ad.category
           )}&limit=8`
         );
@@ -169,7 +169,7 @@ const ProductDetails = () => {
 
     try {
       // ✅ PROTECTED API → api (interceptor)
-      const res = await api.put("/api/favorites/toggle", {
+      const res = await api.put("/favorites/toggle", {
         adId: ad._id,
       });
 
@@ -208,7 +208,7 @@ const ProductDetails = () => {
     }
 
     try {
-      const res = await api.post("/api/messages", {
+      const res = await api.post("/messages", {
         senderId: user.uid,
         receiverId: ad.ownerUid,
 
@@ -276,7 +276,7 @@ const ProductDetails = () => {
       formData.append("message", reportForm.message);
       if (reportForm.file) formData.append("file", reportForm.file);
 
-      await axios.post(`${BASE_URL}/api/reports`, formData, {
+      await axios.post(`${BASE_URL}/reports`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -1213,7 +1213,7 @@ const ProductDetails = () => {
                 onClick={async () => {
                   try {
                     const finalMessage = `📞 Request Call Back\n\nName: ${callbackForm.name}\nPhone: ${callbackForm.phone}\n\nMessage: ${callbackForm.message}`;
-                    const res = await api.post("/api/messages", {
+                    const res = await api.post("/messages", {
                       senderId: user.uid,
                       receiverId: ad.ownerUid,
 

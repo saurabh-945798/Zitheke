@@ -61,7 +61,7 @@ const CategoryPage = () => {
           category;
 
         const res = await axios.get(
-          `http://localhost:5000/api/ads?category=${encodeURIComponent(
+          `/api/ads?category=${encodeURIComponent(
             realCategory
           )}&page=1&limit=${LIMIT}`
         );
@@ -112,7 +112,7 @@ const CategoryPage = () => {
         category;
 
       const res = await axios.get(
-        `http://localhost:5000/api/ads?category=${encodeURIComponent(
+        `/api/ads?category=${encodeURIComponent(
           realCategory
         )}&page=${page}&limit=${LIMIT}`
       );

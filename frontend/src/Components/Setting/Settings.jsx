@@ -9,7 +9,7 @@ const Settings = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const authHeaders = () => {
     const token = localStorage.getItem("token");
@@ -23,7 +23,7 @@ const Settings = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/me`, {
+      const res = await fetch(`${BASE_URL}/settings/me`, {
         headers: authHeaders(),
       });
       const json = await res.json();
@@ -44,7 +44,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/email/send`, {
+      const res = await fetch(`${BASE_URL}/settings/email/send`, {
         method: "POST",
         headers: authHeaders(),
       });
@@ -60,7 +60,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/phone/send`, {
+      const res = await fetch(`${BASE_URL}/settings/phone/send`, {
         method: "POST",
         headers: authHeaders(),
       });
@@ -77,7 +77,7 @@ const Settings = () => {
     setError("");
     if (!otp.trim()) return;
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/phone/verify`, {
+      const res = await fetch(`${BASE_URL}/settings/phone/verify`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ otp: otp.trim() }),
@@ -96,7 +96,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/password/set/request`, {
+      const res = await fetch(`${BASE_URL}/settings/password/set/request`, {
         method: "POST",
         headers: authHeaders(),
       });
@@ -113,7 +113,7 @@ const Settings = () => {
     setError("");
     if (!currentPassword || !newPassword) return;
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/password/change`, {
+      const res = await fetch(`${BASE_URL}/settings/password/change`, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
@@ -135,7 +135,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/password/reset/request`, {
+      const res = await fetch(`${BASE_URL}/settings/password/reset/request`, {
         method: "POST",
         headers: authHeaders(),
       });
@@ -151,7 +151,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      const res = await fetch(`${BASE_URL}/api/settings/delete/request`, {
+      const res = await fetch(`${BASE_URL}/settings/delete/request`, {
         method: "POST",
         headers: authHeaders(),
       });

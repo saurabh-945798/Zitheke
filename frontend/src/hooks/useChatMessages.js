@@ -1,7 +1,7 @@
 // src/hooks/useChatMessages.js
 import axios from "axios";
 
-const BASE = "http://localhost:5000";
+const BASE = "/api";
 
 /**
  * useChatMessages
@@ -64,7 +64,7 @@ export const useChatMessages = ({
     if (limit) qs.append("limit", limit);
 
     const res = await axios.get(
-      `${BASE}/api/messages/${conversationId}?${qs.toString()}`,
+      `${BASE}/messages/${conversationId}?${qs.toString()}`,
       authHeader
     );
 
@@ -84,7 +84,7 @@ export const useChatMessages = ({
 
     // 🔹 mark as read
     await axios.put(
-      `${BASE}/api/conversations/${conversationId}/mark-read/${userId}`,
+      `${BASE}/conversations/${conversationId}/mark-read/${userId}`,
       {},
       authHeader
     );
@@ -180,7 +180,7 @@ export const useChatMessages = ({
     ========================= */
     try {
       const res = await axios.post(
-        `${BASE}/api/messages`,
+        `${BASE}/messages`,
         data,
         authHeader
       );
@@ -203,7 +203,7 @@ export const useChatMessages = ({
   ===================================================== */
   const deleteForMe = async (messageId) => {
     await axios.put(
-      `${BASE}/api/messages/delete-me/${messageId}`,
+      `${BASE}/messages/delete-me/${messageId}`,
       {},
       authHeader
     );
@@ -238,7 +238,7 @@ export const useChatMessages = ({
     // backend confirm
     try {
       await axios.put(
-        `${BASE}/api/messages/delete-everyone/${messageId}`,
+        `${BASE}/messages/delete-everyone/${messageId}`,
         {},
         authHeader
       );

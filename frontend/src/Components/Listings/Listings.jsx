@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import { Search, Filter, Loader2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const BASE_URL = "http://localhost:5000"; // change when deploying
+const BASE_URL = "/api";
 
 const Listings = () => {
   const [ads, setAds] = useState([]);
@@ -18,7 +18,7 @@ const Listings = () => {
     const fetchAds = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASE_URL}/api/ads`);
+        const res = await axios.get(`${BASE_URL}/ads`);
         let data = res.data || [];
 
         if (sort === "random") data = data.sort(() => Math.random() - 0.5);

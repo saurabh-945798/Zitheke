@@ -10,8 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
 
   useEffect(() => {
     // Firebase Auth Listener (Google Sign-In only)
@@ -49,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         const idToken = await currentUser.getIdToken();
-        const res = await axios.post(`${BASE_URL}/api/users/register`, {
+        const res = await axios.post(`${BASE_URL}/users/register`, {
           idToken,
           uid: currentUser.uid,
           name: currentUser.displayName || "User",
@@ -113,11 +112,11 @@ export const AuthProvider = ({ children }) => {
       };
 
       if (payload.uid && payload.email) {
-        await axios.post(`${BASE_URL}/api/users/logout`, payload);
+        await axios.post(`${BASE_URL}/users/logout`, payload);
       }
 
       const refreshToken = localStorage.getItem("refreshToken");
-      await axios.post(`${BASE_URL}/api/auth/logout`, {
+      await axios.post(`${BASE_URL}/auth/logout`, {
         refreshToken,
       });
 

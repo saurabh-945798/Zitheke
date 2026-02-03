@@ -36,7 +36,6 @@ import { Separator } from "../ui/separator.jsx";
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
 
   const [ads, setAds] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -56,9 +55,9 @@ const Dashboard = () => {
       try {
         setLoading(true);
 
-        const adsReq = api.get(`${BASE_URL}/api/ads/user/${user.uid}`);
-        const favReq = api.get(`${BASE_URL}/api/favorites/${user.uid}`);
-        const convoReq = api.get(`/api/conversations/preview/${user.uid}`);
+        const adsReq = api.get(`/ads/user/${user.uid}`);
+        const favReq = api.get(`/favorites/${user.uid}`);
+        const convoReq = api.get(`/conversations/preview/${user.uid}`);
 
         const [adsRes, favRes, convoRes] = await Promise.all([
           adsReq,

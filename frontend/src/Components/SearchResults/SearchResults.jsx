@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL = "/api";
 
 const SORTS = ["Newest", "Price", "Popular"];
 
@@ -40,7 +39,7 @@ const SearchResults = () => {
           : "popular";
 
         const res = await axios.get(
-          `${BASE_URL}/api/ads?q=${encodeURIComponent(
+          `${BASE_URL}/ads?q=${encodeURIComponent(
             searchQuery
           )}&location=${encodeURIComponent(district)}&page=${page}&limit=20&sort=${sortKey}`
         );

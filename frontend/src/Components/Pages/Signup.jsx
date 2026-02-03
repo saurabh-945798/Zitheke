@@ -16,7 +16,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+      const res = await fetch(`${BASE_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -66,7 +66,7 @@ const Signup = () => {
       const user = userCred.user;
       const idToken = await user.getIdToken();
 
-      const res = await fetch(`${BASE_URL}/api/users/register`, {
+      const res = await fetch(`${BASE_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

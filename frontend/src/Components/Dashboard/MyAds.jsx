@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import axios from "axios";
 import {
@@ -29,7 +29,7 @@ import { Separator } from "../ui/separator.jsx";
 const MyAds = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +48,7 @@ const MyAds = () => {
         }
     
         const res = await axios.get(
-          `${BASE_URL}/api/ads/user/${user.uid}`,
+          `${BASE_URL}/ads/user/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ const MyAds = () => {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`${BASE_URL}/api/ads/${id}`, {
+        await axios.delete(`${BASE_URL}/ads/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -97,7 +97,7 @@ const MyAds = () => {
   const handleMarkSold = async (id) => {
     try {
       await axios.put(
-        `${BASE_URL}/api/ads/${id}/sold`,
+        `${BASE_URL}/ads/${id}/sold`,
         {},
         {
           headers: {
@@ -130,7 +130,7 @@ const MyAds = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `${BASE_URL}/api/ads/${editingAd._id}`,
+        `${BASE_URL}/ads/${editingAd._id}`,
         updatedForm,
         {
           headers: {

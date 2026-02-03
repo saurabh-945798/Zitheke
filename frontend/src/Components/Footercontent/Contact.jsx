@@ -18,7 +18,7 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,7 +31,7 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${BASE_URL}/api/contact/submit`, form);
+      const res = await axios.post(`${BASE_URL}/contact/submit`, form);
       setStatus({
         type: "success",
         message: res.data?.message || "Message submitted successfully",

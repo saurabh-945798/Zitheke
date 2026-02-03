@@ -18,7 +18,7 @@ const ReportAd = () => {
     file: null,
   });
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   if (!state?.adId) {
     return (
@@ -70,7 +70,7 @@ const ReportAd = () => {
       formData.append("message", form.message);
       if (form.file) formData.append("file", form.file);
 
-      await axios.post(`${BASE_URL}/api/reports`, formData, {
+      await axios.post(`${BASE_URL}/reports`, formData, {
         headers: {
           Authorization: `Bearer ${token}`, // ✅ FIX
         },

@@ -54,7 +54,7 @@ const ChatBox = ({ currentUserId, sellerUserId, adTitle, onClose }) => {
     const fetchHistory = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/messages/${currentUserId}/${sellerUserId}`
+          `/api/messages/${currentUserId}/${sellerUserId}`
         );
         setMessages(res.data || []);
       } catch (err) {
@@ -92,7 +92,7 @@ const ChatBox = ({ currentUserId, sellerUserId, adTitle, onClose }) => {
       socket.emit("sendMessage", msgData);
 
       // Save to DB
-      await axios.post("http://localhost:5000/api/messages", msgData);
+      await axios.post("/api/messages", msgData);
 
       setText("");
       setSelectedSuggestion("");

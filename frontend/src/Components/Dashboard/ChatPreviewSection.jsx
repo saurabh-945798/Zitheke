@@ -24,7 +24,7 @@ const timeAgo = (date) => {
 const ChatPreviewSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const ChatPreviewSection = () => {
         }
     
         const res = await axios.get(
-          `${BASE_URL}/api/conversations/preview/${user.uid}`,
+          `${BASE_URL}/conversations/preview/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

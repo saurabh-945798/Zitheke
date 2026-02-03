@@ -6,7 +6,7 @@ import { INDIA_LOCATIONS } from "../../Data/indiaCities";
 import { Share2 } from "lucide-react";
 
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "/api";
 const LIMIT = 25;
 
 /* ðŸ”¥ FIXED Time Ago */
@@ -77,7 +77,7 @@ const FreshRecommendations = () => {
 
       if (location) params.append("location", location);
 
-      const res = await fetch(`${BASE_URL}/api/ads?${params.toString()}`);
+      const res = await fetch(`${BASE_URL}/ads?${params.toString()}`);
       const json = await res.json();
 
       const newAds = Array.isArray(json?.ads) ? json.ads : [];

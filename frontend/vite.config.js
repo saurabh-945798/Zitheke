@@ -8,6 +8,15 @@ import autoprefixer from "autoprefixer";
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      "/api": "http://localhost:5000",
+      "/socket.io": {
+        target: "http://localhost:5000",
+        ws: true,
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"), // ✅ this enables "@/..." imports

@@ -127,8 +127,7 @@ const SearchBar = () => {
   });
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-  const BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
 
   useEffect(() => {
     const q = query.trim();
@@ -142,7 +141,7 @@ const SearchBar = () => {
       try {
         setLoadingSuggestions(true);
         const res = await fetch(
-          `${BASE_URL}/api/search?q=${encodeURIComponent(q)}&limit=8`,
+          `${BASE_URL}/search?q=${encodeURIComponent(q)}&limit=8`,
           { signal: controller.signal }
         );
         const data = await res.json();

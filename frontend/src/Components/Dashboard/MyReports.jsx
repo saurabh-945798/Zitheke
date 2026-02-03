@@ -66,7 +66,7 @@ const MyReports = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
 
-  const BASE_URL = "http://localhost:5000";
+  const BASE_URL = "/api";
 
   /* ---------------------------------------------
      Fetch Reports
@@ -83,7 +83,7 @@ const MyReports = () => {
         if (!token) return setLoading(false);
 
         const res = await axios.get(
-          `${BASE_URL}/api/reports/user/${user.uid}`,
+          `${BASE_URL}/reports/user/${user.uid}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

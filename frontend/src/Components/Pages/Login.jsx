@@ -39,8 +39,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const provider = new GoogleAuthProvider();
-  const BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
   const isProd = import.meta.env.PROD === true;
   const TURNSTILE_SITE_KEY = isProd
     ? import.meta.env.VITE_TURNSTILE_SITE_KEY || ""
@@ -93,7 +92,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -138,7 +137,7 @@ const Login = () => {
     if (!otp.trim() || !pendingPhone) return;
     setOtpLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/auth/login/verify-otp`, {
+      const res = await fetch(`${BASE_URL}/auth/login/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: pendingPhone, otp: otp.trim() }),
@@ -166,7 +165,7 @@ const Login = () => {
       const user = userCred.user;
       const idToken = await user.getIdToken();
 
-      const res = await fetch(`${BASE_URL}/api/users/register`, {
+      const res = await fetch(`${BASE_URL}/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -498,5 +497,4 @@ const Login = () => {
 };
 
 export default Login;
-
 

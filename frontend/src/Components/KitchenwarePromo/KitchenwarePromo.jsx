@@ -37,7 +37,7 @@ const KitchenwarePromo = () => {
     const fetchPromoAds = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/ads/promo?category=Kitchenware%20%26%20Cookware&limit=3"
+          "/api/ads/promo?category=Kitchenware%20%26%20Cookware&limit=3"
         );
         const data = await res.json();
         if (data?.ads) setProducts(data.ads);

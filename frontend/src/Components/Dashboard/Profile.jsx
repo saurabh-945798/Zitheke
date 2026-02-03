@@ -37,8 +37,7 @@ const Profile = () => {
   const [profilePhoto, setProfilePhoto] = useState(
     localStorage.getItem("profilePhoto") || user?.photoURL || ""
   );
-  const BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const BASE_URL = "/api";
   const [mergeNotice, setMergeNotice] = useState(
     localStorage.getItem("mergeNotice") || ""
   );
@@ -57,7 +56,7 @@ const Profile = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          `http://localhost:5000/api/users/${user.uid}`,
+          `/api/users/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -78,7 +77,7 @@ const Profile = () => {
         const token = localStorage.getItem("token");
 
 await axios.post(
-  "http://localhost:5000/api/users/register",
+  "/api/users/register",
   {
     uid: user.uid,
     name: user.displayName || user.email.split("@")[0],
@@ -118,7 +117,7 @@ await axios.post(
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        `${BASE_URL}/api/users/${user.uid}`,
+        `${BASE_URL}/users/${user.uid}`,
         { photoData: pendingPhotoData },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -170,7 +169,7 @@ const handleSave = async () => {
 
     // 2ï¸âƒ£ Update backend profile (JWT protected)
     await axios.put(
-      `http://localhost:5000/api/users/${user.uid}`,
+      `/api/users/${user.uid}`,
       {
         name: form.name,
         phone: form.phone,

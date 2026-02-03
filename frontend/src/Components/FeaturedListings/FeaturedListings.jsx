@@ -9,7 +9,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "/api";
 
 const FeaturedListings = () => {
   const [ads, setAds] = useState([]);
@@ -20,7 +20,7 @@ const FeaturedListings = () => {
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/ads`);
+        const res = await axios.get(`${BASE_URL}/ads`);
         const data = Array.isArray(res.data)
           ? res.data
           : res.data?.ads || [];

@@ -6,7 +6,7 @@ let isRefreshing = false;
 let refreshQueue = [];
 
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -54,10 +54,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(
-          "http://localhost:5000/api/auth/refresh",
-          { refreshToken }
-        );
+        const res = await axios.post("/api/auth/refresh", { refreshToken });
 
         const newToken = res.data?.token;
         const newRefresh = res.data?.refreshToken;
