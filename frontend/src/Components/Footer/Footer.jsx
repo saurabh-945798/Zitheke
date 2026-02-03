@@ -161,7 +161,7 @@ const Footer = () => {
                 <Mail size={16} /> support@zitheke.com
               </li>
               <li className="flex gap-2">
-                <Phone size={16} /> +265 265 98 0 63 45 36
+                <Phone size={16} /> +265 980634536
               </li>
             </ul>
           </motion.div>

@@ -199,7 +199,7 @@ const About = () => {
       Zitheke.com — Zitheke basi.
     </p>
     <p className="mt-1 text-sm opacity-80">
-      Powered by Zitheke Online Ltd
+      Powered by Alinafe Online Ltd
     </p>
 
   </div>
