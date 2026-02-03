@@ -78,6 +78,9 @@ export const SettingsController = {
     if (user.emailVerified) {
       return res.status(200).json({ success: true, message: "Email already verified" });
     }
+    if (!user.email) {
+      return res.status(400).json({ success: false, message: "User email is missing" });
+    }
 
     const token = await createActionToken({
       userId: user._id,
@@ -87,11 +90,18 @@ export const SettingsController = {
 
     const verifyLink = `${getAppBaseUrl()}/verify-email?token=${token}`;
 
-    await EmailService.sendTemplate({
-      to: user.email,
-      template: "EMAIL_VERIFY",
-      data: { name: user.name || user.email, verifyLink },
-    });
+    try {
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "EMAIL_VERIFY",
+        data: { name: user.name || user.email, verifyLink },
+      });
+    } catch (err) {
+      return res.status(err?.status || 502).json({
+        success: false,
+        message: "Email verification send failed",
+      });
+    }
 
     return res.status(200).json({ success: true, message: "Verification email sent" });
   },
@@ -232,6 +242,9 @@ export const SettingsController = {
     if (hasPasswordAuth(user)) {
       return res.status(400).json({ success: false, message: "Password already set" });
     }
+    if (!user.email) {
+      return res.status(400).json({ success: false, message: "User email is missing" });
+    }
 
     const token = await createActionToken({
       userId: user._id,
@@ -240,11 +253,18 @@ export const SettingsController = {
     });
     const setLink = `${getAppBaseUrl()}/set-password?token=${token}`;
 
-    await EmailService.sendTemplate({
-      to: user.email,
-      template: "PASSWORD_SET",
-      data: { name: user.name || user.email, setLink },
-    });
+    try {
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "PASSWORD_SET",
+        data: { name: user.name || user.email, setLink },
+      });
+    } catch (err) {
+      return res.status(err?.status || 502).json({
+        success: false,
+        message: "Password set email failed",
+      });
+    }
 
     return res.status(200).json({ success: true, message: "Password set email sent" });
   },
@@ -274,6 +294,9 @@ export const SettingsController = {
 
     if (!user.emailVerified) {
       return res.status(403).json({ success: false, message: "Email verification required" });
+    }
+    if (!user.email) {
+      return res.status(400).json({ success: false, message: "User email is missing" });
     }
 
     user.passwordHash = await bcrypt.hash(password, 10);
@@ -333,11 +356,18 @@ export const SettingsController = {
     });
     const resetLink = `${getAppBaseUrl()}/reset-password?token=${token}`;
 
-    await EmailService.sendTemplate({
-      to: user.email,
-      template: "RESET_PASSWORD",
-      data: { resetLink },
-    });
+    try {
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "RESET_PASSWORD",
+        data: { resetLink },
+      });
+    } catch (err) {
+      return res.status(err?.status || 502).json({
+        success: false,
+        message: "Password reset email failed",
+      });
+    }
 
     return res.status(200).json({ success: true, message: "Password reset email sent" });
   },
@@ -367,6 +397,9 @@ export const SettingsController = {
 
     if (!user.emailVerified) {
       return res.status(403).json({ success: false, message: "Email verification required" });
+    }
+    if (!user.email) {
+      return res.status(400).json({ success: false, message: "User email is missing" });
     }
 
     user.passwordHash = await bcrypt.hash(password, 10);
@@ -399,11 +432,18 @@ export const SettingsController = {
     });
     const deleteLink = `${getAppBaseUrl()}/confirm-delete?token=${token}`;
 
-    await EmailService.sendTemplate({
-      to: user.email,
-      template: "ACCOUNT_DELETE_CONFIRM",
-      data: { name: user.name || user.email, deleteLink },
-    });
+    try {
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "ACCOUNT_DELETE_CONFIRM",
+        data: { name: user.name || user.email, deleteLink },
+      });
+    } catch (err) {
+      return res.status(err?.status || 502).json({
+        success: false,
+        message: "Account delete email failed",
+      });
+    }
 
     return res.status(200).json({ success: true, message: "Delete confirmation email sent" });
   },

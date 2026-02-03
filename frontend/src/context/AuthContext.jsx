@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }) => {
         name: current?.name || current?.displayName || "User",
       };
 
-      if (payload.uid && payload.email) {
+      if (payload.uid) {
         await axios.post(`${BASE_URL}/users/logout`, payload);
       }
 

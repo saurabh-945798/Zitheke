@@ -117,13 +117,19 @@ export const PasswordAuthController = {
         verified: false,
       });
 
-      EmailService.sendTemplate({
-        to: emailLower,
-        template: "WELCOME",
-        data: { name: String(name).trim() || emailLower.split("@")[0] },
-      }).catch((err) => {
+      try {
+        await EmailService.sendTemplate({
+          to: user.email,
+          template: "WELCOME",
+          data: { name: user.name || user.email.split("@")[0] },
+        });
+      } catch (err) {
         console.error("Welcome email failed:", err?.message || err);
-      });
+        return res.status(err?.status || 502).json({
+          success: false,
+          message: "Signup succeeded but welcome email failed",
+        });
+      }
 
       return res.status(201).json({
         success: true,
@@ -374,5 +380,3 @@ export const PasswordAuthController = {
     }
   },
 };
-
-

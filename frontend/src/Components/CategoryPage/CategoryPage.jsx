@@ -22,6 +22,9 @@ const CategoryPage = () => {
   const LIMIT = 20;
 
   const normalizedCategory = (category || "").replace(/[-_]/g, " ").trim();
+  const lowerCategory = normalizedCategory.toLowerCase();
+  const isJobsServices =
+    lowerCategory.includes("job") || lowerCategory.includes("service");
 
   const [ads, setAds] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -206,7 +209,7 @@ const CategoryPage = () => {
      CATEGORY FILTERS
   ====================== */
   const categoryFilters = () => {
-    if (category.toLowerCase().includes("phone")) {
+    if (lowerCategory.includes("phone")) {
       return (
         <input
           placeholder="Brand"
@@ -227,8 +230,9 @@ const CategoryPage = () => {
       "realestate",
       "kitchenware",
       "cookware",
+      "fashion",
     ];
-    if (conditionCategories.some((c) => category.toLowerCase().includes(c))) {
+    if (conditionCategories.some((c) => lowerCategory.includes(c))) {
       return (
         <select
           value={filters.condition}
@@ -353,38 +357,42 @@ const CategoryPage = () => {
         >
           <h3 className="font-semibold text-[#1F2370] text-lg">Filters</h3>
 
-          <div>
-            <p className="filter-title">Price</p>
-            <input
-              placeholder="Min MK"
-              type="number"
-              value={filters.minPrice}
-              onChange={(e) =>
-                setFilters({
-                  ...filters,
-                  minPrice: e.target.value,
-                })
-              }
-              className="filter-input mb-2"
-            />
-            <input
-              placeholder="Max MK"
-              type="number"
-              value={filters.maxPrice}
-              onChange={(e) =>
-                setFilters({
-                  ...filters,
-                  maxPrice: e.target.value,
-                })
-              }
-              className="filter-input"
-            />
-          </div>
+          {!isJobsServices && (
+            <>
+              <div>
+                <p className="filter-title">Price</p>
+                <input
+                  placeholder="Min MK"
+                  type="number"
+                  value={filters.minPrice}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      minPrice: e.target.value,
+                    })
+                  }
+                  className="filter-input mb-2"
+                />
+                <input
+                  placeholder="Max MK"
+                  type="number"
+                  value={filters.maxPrice}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      maxPrice: e.target.value,
+                    })
+                  }
+                  className="filter-input"
+                />
+              </div>
 
-          <div>
-            <p className="filter-title">Condition</p>
-            {categoryFilters()}
-          </div>
+              <div>
+                <p className="filter-title">Condition</p>
+                {categoryFilters()}
+              </div>
+            </>
+          )}
 
           <div>
             <p className="filter-title">Location</p>
@@ -565,32 +573,36 @@ const CategoryPage = () => {
                 <X onClick={() => setMobileFilters(false)} />
               </div>
 
-              <input
-                placeholder="Min MK"
-                type="number"
-                value={filters.minPrice}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    minPrice: e.target.value,
-                  })
-                }
-                className="filter-input"
-              />
-              <input
-                placeholder="Max MK"
-                type="number"
-                value={filters.maxPrice}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    maxPrice: e.target.value,
-                  })
-                }
-                className="filter-input"
-              />
+              {!isJobsServices && (
+                <>
+                  <input
+                    placeholder="Min MK"
+                    type="number"
+                    value={filters.minPrice}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        minPrice: e.target.value,
+                      })
+                    }
+                    className="filter-input"
+                  />
+                  <input
+                    placeholder="Max MK"
+                    type="number"
+                    value={filters.maxPrice}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        maxPrice: e.target.value,
+                      })
+                    }
+                    className="filter-input"
+                  />
 
-              {categoryFilters()}
+                  {categoryFilters()}
+                </>
+              )}
 
               <input
                 placeholder="City"

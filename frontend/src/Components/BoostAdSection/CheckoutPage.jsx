@@ -64,7 +64,7 @@ const CheckoutPage = () => {
                 After payment, please send your proof of payment to support with your ad title and plan name.
               </p>
               <p className="mt-2 text-sm text-[#2E3192] font-semibold">
-                Support: support@zitheke.com
+                Email: support@zitheke.com
               </p>
             </div>
           </div>

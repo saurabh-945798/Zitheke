@@ -2,7 +2,6 @@
 import { infobipClient } from "../config/infobip.js";
 import { env } from "../config/env.js";
 import FormData from "form-data";
-
 import { welcomeTemplate } from "../utils/emailTemplates/welcome.template.js";
 import { otpTemplate } from "../utils/emailTemplates/otp.template.js";
 import { resetPasswordTemplate } from "../utils/emailTemplates/resetPassword.template.js";
@@ -21,7 +20,6 @@ import { adDeletedByAdminTemplate } from "../utils/emailTemplates/adDeletedByAdm
 import { emailVerifyTemplate } from "../utils/emailTemplates/emailVerify.template.js";
 import { passwordSetTemplate } from "../utils/emailTemplates/passwordSet.template.js";
 import { accountDeleteConfirmTemplate } from "../utils/emailTemplates/accountDeleteConfirm.template.js";
-import { SmsService } from "./sms.service.js";
 
 /**
  * Infobip Email Send:
@@ -219,6 +217,7 @@ export const EmailService = {
   async sendRaw({ to, subject, text, html }) {
     const formData = new FormData();
     formData.append("from", env.INFOBIP_EMAIL_SENDER);
+    formData.append("fromName", "Zitheke Support");
     formData.append("to", to);
     formData.append("subject", subject);
     if (text) formData.append("text", text);
@@ -233,6 +232,26 @@ export const EmailService = {
           ...formData.getHeaders(),
         },
       });
+      const msg =
+        res?.data?.messages?.[0] ||
+        res?.data?.results?.[0] ||
+        res?.data?.message ||
+        null;
+      console.info("Infobip email response:", {
+        to,
+        messageId: msg?.messageId || msg?.id || null,
+        status: msg?.status?.name || msg?.status || null,
+        reason: msg?.status?.description || msg?.reason || null,
+      });
+      if (
+        String(msg?.status?.name || msg?.status || "").toUpperCase() ===
+          "REJECTED" ||
+        String(msg?.status?.name || msg?.status || "").toUpperCase() === "FAILED"
+      ) {
+        const err = new Error("Email rejected by provider");
+        err.status = 502;
+        throw err;
+      }
       return {
         provider: "infobip",
         response: res.data,
@@ -250,13 +269,17 @@ export const EmailService = {
   async sendTemplate({ to, template, data }) {
     const built = buildTemplate(template, data);
 
-    const smsTo = data?.recipientPhone || data?.phone || "";
-    if (!to && smsTo) {
-      return SmsService.sendText({
-        to: smsTo,
-        text: built.text,
-      });
+    if (!to) {
+      const err = new Error("Email recipient is required");
+      err.status = 400;
+      throw err;
     }
+
+    console.info("Email send requested:", {
+      template,
+      to,
+      subject: built.subject,
+    });
 
     return this.sendRaw({
       to,

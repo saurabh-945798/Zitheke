@@ -226,13 +226,19 @@ export const registerUser = async (req, res) => {
 
       if (created) {
         console.log("🆕 New user registered:", email);
-        EmailService.sendTemplate({
-          to: email,
-          template: "WELCOME",
-          data: { name: fallbackName },
-        }).catch((err) => {
+        try {
+          await EmailService.sendTemplate({
+            to: emailLower,
+            template: "WELCOME",
+            data: { name: fallbackName },
+          });
+        } catch (err) {
           console.error("Welcome email failed:", err?.message || err);
-        });
+          return res.status(err?.status || 502).json({
+            success: false,
+            message: "Welcome email failed",
+          });
+        }
       }
     } else {
       user.lastLogin = new Date();
@@ -432,20 +438,39 @@ export const logoutUser = async (req, res) => {
   try {
     const { uid, email, name } = req.body;
 
-    if (!uid || !email) {
+    if (!uid && !email) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
       });
     }
 
-    EmailService.sendTemplate({
-      to: email,
-      template: "LOGOUT_SUCCESS",
-      data: { name: name || email.split("@")[0] },
-    }).catch((err) => {
+    const user = uid
+      ? await User.findOne({ uid })
+      : await User.findOne({ email: String(email).trim().toLowerCase() });
+
+    if (!user || !user.email) {
+      return res.status(400).json({
+        success: false,
+        message: "User email not found for logout",
+      });
+    }
+
+    const recipientName = name || user.name || user.email.split("@")[0];
+
+    try {
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "LOGOUT_SUCCESS",
+        data: { name: recipientName },
+      });
+    } catch (err) {
       console.error("Logout email failed:", err?.message || err);
-    });
+      return res.status(err?.status || 502).json({
+        success: false,
+        message: "Logout email failed",
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -459,8 +484,6 @@ export const logoutUser = async (req, res) => {
     });
   }
 };
-
-
 
 
 
