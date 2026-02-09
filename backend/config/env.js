@@ -33,7 +33,11 @@ export const env = {
 
   INFOBIP_EMAIL_SENDER: required("INFOBIP_EMAIL_SENDER"),
   INFOBIP_EMAIL_REPLY: optional("INFOBIP_EMAIL_REPLY", ""),
-  INFOBIP_SMS_SENDER: required("INFOBIP_SMS_SENDER"),
+  // Malawi OTP reliability: use numeric sender for authentication OTP traffic.
+  OTP_SENDER: required("OTP_SENDER"),
+  // Brand/alphanumeric sender is allowed for non-OTP notifications only.
+  BRAND_SENDER: optional("BRAND_SENDER", optional("INFOBIP_SMS_SENDER", "")),
+  OTP_ALLOWED_COUNTRY_CODE: optional("OTP_ALLOWED_COUNTRY_CODE", "265"),
 
   APP_NAME: optional("APP_NAME", "App"),
   APP_BASE_URL: optional("APP_BASE_URL", "http://localhost:5173"),
