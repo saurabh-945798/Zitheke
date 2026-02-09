@@ -37,6 +37,20 @@ const MyAds = () => {
   const [updatedForm, setUpdatedForm] = useState({});
   const [filter, setFilter] = useState("All");
 
+  const resolveImageSrc = (image) => {
+    if (!image) return "/no-image.svg";
+
+    // Cloudinary / remote URLs
+    if (/^https?:\/\//i.test(image)) return image;
+
+    // Local uploaded assets served by backend static middleware
+    if (image.startsWith("/uploads/")) return image;
+    if (image.startsWith("uploads/")) return `/${image}`;
+
+    // Fallback for any relative path
+    return image.startsWith("/") ? image : `/${image}`;
+  };
+
   useEffect(() => {
     const fetchAds = async () => {
       try {
@@ -265,13 +279,7 @@ const MyAds = () => {
                 <Card className="group overflow-hidden border border-white/50 shadow-md hover:shadow-2xl transition-all rounded-3xl bg-white/80 backdrop-blur-md">
                   <CardHeader className="relative p-0">
                     <img
-                      src={
-                        ad.images?.[0]
-                          ? ad.images[0].startsWith("http")
-                            ? ad.images[0]
-                            : `${BASE_URL}${ad.images[0]}`
-                          : "https://via.placeholder.com/400x300?text=No+Image"
-                      }
+                      src={resolveImageSrc(ad.images?.[0])}
                       alt={ad.title}
                       className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />

@@ -543,12 +543,16 @@ Furniture: [
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateLocation()) return;
+    if (!user?.uid) {
+      Swal.fire("Login required", "Please login again and try posting your ad.", "warning");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("ownerUid", user.uid);
     formData.append("ownerName", user.displayName || user.name || "Unknown");
     formData.append("ownerEmail", user.email || "");
-    formData.append("ownerPhone", user.phoneNumber || "");
+    formData.append("ownerPhone", user.phone || user.phoneNumber || "");
 
     // 1?? clone form
     const payload = { ...form };
@@ -575,10 +579,7 @@ Furniture: [
     setUploading(true);
 
     try {
-      await api.post("/api/ads/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        
-      });
+      await api.post("/ads/create", formData);
       
 
       Swal.fire({

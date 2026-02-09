@@ -258,6 +258,14 @@ geo: {
     accessType: { type: String, default: "" },
 
     /* ===========================
+       🔑 SEARCH TAGS
+    =========================== */
+    tags: {
+      type: [String],
+      default: [],
+    },
+
+    /* ===========================
        📊 ANALYTICS
     =========================== */
     views: {
@@ -326,13 +334,6 @@ adSchema.index({
   description: "text",
   category: "text",
   subcategory: "text",
-/* ===========================
-   🔑 SEARCH TAGS
-=========================== */
-tags: {
-  type: [String],
-  default: [],
-},
 });
 
 // ✅ FILTER INDEXES

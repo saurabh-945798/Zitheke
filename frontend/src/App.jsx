@@ -30,6 +30,7 @@ import DashboardLayout from "./Components/Dashboard/DashboardLayout";
 import MyReports from "./Components/Dashboard/MyReports";
 import Settings from "./Components/Setting/Settings.jsx";
 import SetPassword from "./Components/Setting/SetPassword.jsx";
+import VerifyEmail from "./Components/Setting/VerifyEmail.jsx";
 
 // ✅ Marketplace Pages
 import ProductDetails from "./Components/ProductDetails/ProductDetails.jsx";
@@ -203,6 +204,7 @@ function App() {
           element={!user ? <CheckEmail /> : <Navigate to="/" replace />}
         />
         <Route path="/set-password" element={<SetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* 🚫 404 */}
         <Route

@@ -399,9 +399,14 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                {[Bookmark, MessageSquare, Bell].map((Icon, i) => (
+                {[
+                  { Icon: Bookmark, onClick: () => navigate("/dashboard/favorites") },
+                  { Icon: MessageSquare, onClick: () => navigate("/chats") },
+                  { Icon: Bell, onClick: () => navigate("/dashboard") },
+                ].map(({ Icon, onClick }, i) => (
                   <button
                     key={i}
+                    onClick={onClick}
                     className="p-2 rounded-full bg-white/15 text-white hover:bg-white/25 transition"
                   >
                     <Icon size={18} />
@@ -540,7 +545,7 @@ const Navbar = () => {
                   <button onClick={() => navigate("/")} className="flex gap-2">
                     <Home size={18} /> Home
                   </button>
-                  <button onClick={() => navigate("/categories")} className="flex gap-2">
+                  <button onClick={() => navigate("/all-ads")} className="flex gap-2">
                     <Layers size={18} /> Categories
                   </button>
                   <button onClick={() => navigate("/about")} className="flex gap-2">
@@ -595,7 +600,7 @@ const Navbar = () => {
             <Home size={22} />
             <span className="text-xs">Home</span>
           </button>
-          <button onClick={() => navigate("/categories")} className="flex flex-col items-center">
+          <button onClick={() => navigate("/all-ads")} className="flex flex-col items-center">
             <Layers size={22} />
             <span className="text-xs">Categories</span>
           </button>
@@ -605,7 +610,7 @@ const Navbar = () => {
           >
             <PlusCircle size={24} />
           </button>
-          <button onClick={() => navigate("/dashboard/messages")} className="flex flex-col items-center">
+          <button onClick={() => navigate("/chats")} className="flex flex-col items-center">
             <MessageSquare size={22} />
             <span className="text-xs">Chat</span>
           </button>

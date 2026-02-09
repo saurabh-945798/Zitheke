@@ -20,7 +20,7 @@ const Favorites = () => {
 
       try {
         setLoading(true);
-        const res = await api.get(`/api/favorites/${user.uid}`);
+        const res = await api.get(`/favorites/${user.uid}`);
         setFavorites(res.data || []);
       } catch (error) {
         console.error("âŒ Error fetching favorites:", error);
@@ -37,7 +37,7 @@ const Favorites = () => {
     try {
       if (!user?.uid) return alert("Please login");
 
-      const res = await api.put("/api/favorites/toggle", {
+      const res = await api.put("/favorites/toggle", {
         userId: user.uid,
         adId,
       });

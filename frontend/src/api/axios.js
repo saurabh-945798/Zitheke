@@ -17,6 +17,13 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
+    // Let browser set multipart boundary for FormData uploads.
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      if (config.headers) {
+        delete config.headers["Content-Type"];
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

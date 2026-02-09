@@ -81,6 +81,13 @@ export const createAd = async (req, res) => {
       ? req.files.images.map((f) => f.path || f.secure_url)
       : [];
 
+    if (imagePaths.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
+
     /* ==================================================
        🔎 6.5️⃣ AUTO TAG GENERATION (ROOT SEARCH FIX)
        - category
@@ -221,10 +228,23 @@ export const createAd = async (req, res) => {
 export const getUserAds = async (req, res) => {
   try {
     const { uid } = req.params;
+    if (!uid) {
+      return res.status(400).json({ message: "Missing user uid" });
+    }
+
+    // Prevent cross-user reads when token uid and path uid differ.
+    if (req.user?.uid && req.user.uid !== uid) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const ads = await Ad.find({ ownerUid: uid }).sort({ createdAt: -1 });
     res.status(200).json(ads);
   } catch (error) {
-    console.error("Error fetching user ads:", error);
+    console.error("Error fetching user ads:", {
+      uid: req.params?.uid,
+      message: error?.message,
+      stack: error?.stack,
+    });
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
