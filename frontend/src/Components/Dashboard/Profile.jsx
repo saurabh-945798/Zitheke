@@ -162,10 +162,12 @@ const handleSave = async () => {
     // ðŸ” JWT token
     const token = localStorage.getItem("token");
 
-    // 1ï¸âƒ£ Update Firebase display name
-    await updateProfile(auth.currentUser, {
-      displayName: form.name,
-    });
+    // 1ï¸âƒ£ Update Firebase display name only if Firebase session exists
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: form.name,
+      });
+    }
 
     // 2ï¸âƒ£ Update backend profile (JWT protected)
     await axios.put(

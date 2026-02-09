@@ -46,6 +46,11 @@ const Login = () => {
     : "";
 
   const isEmail = identifier.includes("@");
+  const digitsCandidate = identifier.trim().replace(/\D/g, "");
+  const looksPhone =
+    !isEmail &&
+    digitsCandidate.length > 0 &&
+    /^[0-9+\s()-]+$/.test(identifier.trim());
   const showCaptcha = isProd && TURNSTILE_SITE_KEY && !isEmail;
 
   useEffect(() => {
@@ -85,6 +90,22 @@ const Login = () => {
       return;
     }
 
+    const trimmedIdentifier = identifier.trim();
+    let identifierForApi = trimmedIdentifier;
+
+    if (!trimmedIdentifier.includes("@")) {
+      const digitsOnly = trimmedIdentifier.replace(/\D/g, "");
+      if (digitsOnly.startsWith("0") || digitsOnly.startsWith("265")) {
+        setError("Do not use 0 or 265. Enter only local digits.");
+        return;
+      }
+      if (digitsOnly.length !== 9) {
+        setError("For phone login, enter exactly 9 local digits.");
+        return;
+      }
+      identifierForApi = `+265${digitsOnly}`;
+    }
+
     if (showCaptcha && !captchaToken) {
       setError("Please complete the captcha first.");
       return;
@@ -96,7 +117,7 @@ const Login = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          identifier: identifier.trim(),
+          identifier: identifierForApi,
           password,
           captchaToken,
         }),
@@ -114,7 +135,7 @@ const Login = () => {
 
       if (data?.otpRequired) {
         setOtpRequired(true);
-        setPendingPhone(data?.phone || identifier.trim());
+        setPendingPhone(data?.phone || identifierForApi);
         setResendSeconds(60);
         setCaptchaToken("");
         setCaptchaNonce((n) => n + 1);
@@ -269,18 +290,27 @@ const Login = () => {
                 <label className="text-sm font-medium text-gray-600 mb-1 block">
                   Email or Phone
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <div className="relative flex items-center">
+                  {looksPhone ? (
+                    <span className="absolute left-3 text-sm font-semibold text-[#2E3192]">
+                      +265
+                    </span>
+                  ) : (
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  )}
                   <input
                     type="text"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="Email or phone number"
-                    className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl
+                    className={`w-full pr-3 py-3 border border-gray-200 rounded-xl
                                focus:ring-2 focus:ring-[#2E3192] focus:outline-none
-                               bg-white/90 shadow-sm"
+                               bg-white/90 shadow-sm ${looksPhone ? "pl-14" : "pl-10"}`}
                   />
                 </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Phone login: enter local digits only (no 0, no 265), e.g. 987456321
+                </p>
               </div>
 
               <div>
@@ -497,4 +527,3 @@ const Login = () => {
 };
 
 export default Login;
-
