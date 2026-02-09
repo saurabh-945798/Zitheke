@@ -40,6 +40,7 @@ import Listings from "./Components/Listings/Listings.jsx";
 import SellerProfile from "./Components/SellerProfile/SellerProfile";
 import PricingPage from "./Components/BoostAdSection/PricingPage.jsx";
 import CheckoutPage from "./Components/BoostAdSection/CheckoutPage.jsx";
+import SafetyTipsPage from "./Components/SafetyTips/SafetyTipsPage.jsx";
 
 function App() {
   const { user, loading } = useAuth();
@@ -170,6 +171,14 @@ function App() {
           element={
             <MainLayout>
               <CheckoutPage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/safety-tips"
+          element={
+            <MainLayout>
+              <SafetyTipsPage />
             </MainLayout>
           }
         />

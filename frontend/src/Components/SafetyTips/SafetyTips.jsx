@@ -79,6 +79,9 @@ const SafetyTips = () => {
             initial={{ scale: 0.9, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
+            onClick={() =>
+              window.open("/safety-tips", "_blank", "noopener,noreferrer")
+            }
             className="bg-[#2E3192] text-white px-8 py-3 rounded-lg shadow hover:bg-[#251f7b] font-medium transition"
           >
             Learn More Safety Tips

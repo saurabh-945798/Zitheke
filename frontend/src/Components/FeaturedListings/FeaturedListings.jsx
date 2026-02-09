@@ -148,7 +148,7 @@ const FeaturedListings = () => {
                           MK {ad.price?.toLocaleString("en-MW")}
                         </span>
                         {["New", "Used"].includes(ad.condition) &&
-                          ad.category !== "Services" && (
+                          !["Services", "Agriculture"].includes(ad.category) && (
                           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--brand)]/10 text-[var(--brand)]">
                             {ad.condition}
                           </span>
