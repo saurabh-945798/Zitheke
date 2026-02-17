@@ -67,31 +67,43 @@ const server = http.createServer(app);
 
 // allowed frontends
 const allowedOrigins = [
+  // Local development
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://alinafe.netlify.app",
-  "https://zitheke.netlify.app",
-  "https://zitheke-admin.netlify.app",
-  "https://alinafe-admin.netlify.app",
+
+  // Zitheke Production
+  "https://zitheke.com",
+  "https://www.zitheke.com"
 ];
+
 
 // BODY PARSERS
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // 🌍 GLOBAL CORS — FINAL FIXED VERSION
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("CORS blocked"));
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser/server-to-server tools (curl, health checks, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.warn("Blocked by CORS:", origin);
+    // Return false instead of throwing to avoid noisy 500s for blocked origins.
+    return callback(null, false);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 
 
