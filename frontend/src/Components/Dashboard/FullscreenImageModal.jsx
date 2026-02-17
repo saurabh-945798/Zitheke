@@ -3,11 +3,15 @@ import { X } from "lucide-react";
 
 const FullscreenImageModal = ({ url, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-3 sm:p-6"
+      onClick={onClose}
+    >
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-5 right-5 text-white hover:text-red-400 transition"
+        className="absolute top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))] text-white hover:text-red-400 transition p-2"
+        aria-label="Close fullscreen image"
       >
         <X size={28} />
       </button>
@@ -15,8 +19,9 @@ const FullscreenImageModal = ({ url, onClose }) => {
       {/* Image */}
       <img
         src={url}
-        className="max-w-[90%] max-h-[85%] rounded-xl shadow-2xl animate-zoomIn"
+        className="w-auto max-w-[95vw] max-h-[88dvh] rounded-xl shadow-2xl animate-zoomIn"
         alt="fullscreen"
+        onClick={(e) => e.stopPropagation()}
       />
 
       {/* Animations */}

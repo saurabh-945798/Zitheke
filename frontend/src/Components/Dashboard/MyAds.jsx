@@ -9,6 +9,8 @@ import {
   Eye,
   CheckCircle,
   Loader2,
+  ImagePlus,
+  X,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +28,8 @@ import {
 import { Badge } from "../ui/badge.jsx";
 import { Separator } from "../ui/separator.jsx";
 
+const HIDE_CONDITION_CATEGORIES = new Set(["Agriculture", "Jobs", "Services"]);
+
 const MyAds = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -36,6 +40,12 @@ const MyAds = () => {
   const [editingAd, setEditingAd] = useState(null);
   const [updatedForm, setUpdatedForm] = useState({});
   const [filter, setFilter] = useState("All");
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalAds, setTotalAds] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const resolveImageSrc = (image) => {
     if (!image) return "/no-image.svg";
@@ -51,35 +61,66 @@ const MyAds = () => {
     return image.startsWith("/") ? image : `/${image}`;
   };
 
-  useEffect(() => {
-    const fetchAds = async () => {
-      try {
-        const token = localStorage.getItem("token");
-    
-        if (!token) {
-          console.warn("No JWT token found");
-          return;
-        }
-    
-        const res = await axios.get(
-          `${BASE_URL}/ads/user/${user.uid}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-    
-        setAds(res.data || []);
-      } catch (error) {
-        console.error("Error fetching ads:", error);
-      } finally {
+  const fetchAds = async ({ nextPage = 1, append = false } = {}) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.warn("No JWT token found");
         setLoading(false);
+        return;
       }
-    };
-    
-    if (user?.uid) fetchAds();
-  }, [user]);
+
+      if (append) setLoadingMore(true);
+      else setLoading(true);
+
+      const res = await axios.get(`${BASE_URL}/ads/user/${user.uid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: nextPage,
+          limit: 18,
+          status: filter,
+        },
+      });
+
+      const payload = res?.data;
+      const nextAds = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.ads)
+        ? payload.ads
+        : [];
+
+      const pagination = payload?.pagination || {};
+
+      setAds((prev) => (append ? [...prev, ...nextAds] : nextAds));
+      setPage(pagination?.page || nextPage);
+      setHasMore(
+        typeof pagination?.hasMore === "boolean"
+          ? pagination.hasMore
+          : false
+      );
+      if (typeof pagination?.total === "number") {
+        setTotalAds(pagination.total);
+      } else {
+        setTotalAds((prev) => (append ? (Number(prev) || 0) + nextAds.length : nextAds.length));
+      }
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+      if (!append) setAds([]);
+      if (!append) setHasMore(false);
+      if (!append) setTotalAds(0);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.uid) fetchAds({ nextPage: 1, append: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.uid, filter]);
 
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
@@ -137,12 +178,15 @@ const MyAds = () => {
       condition: ad.condition,
       city: ad.city,
       location: ad.location,
+      images: Array.isArray(ad.images) ? [...ad.images] : [],
     });
+    setNewImageUrl("");
   };
 
   const handleUpdateAd = async (e) => {
     e.preventDefault();
     try {
+      setIsSaving(true);
       await axios.put(
         `${BASE_URL}/ads/${editingAd._id}`,
         updatedForm,
@@ -161,6 +205,8 @@ const MyAds = () => {
       setEditingAd(null);
     } catch {
       Swal.fire("Error", "Update failed.", "error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -168,8 +214,32 @@ const MyAds = () => {
     setUpdatedForm({ ...updatedForm, [e.target.name]: e.target.value });
   };
 
+  const addImageUrl = () => {
+    const next = newImageUrl.trim();
+    if (!next) return;
+    const current = updatedForm.images || [];
+    if (current.length >= 5) {
+      Swal.fire("Limit reached", "You have already uploaded 5 images.", "warning");
+      return;
+    }
+    if (!/^https?:\/\//i.test(next) && !next.startsWith("/")) {
+      Swal.fire("Invalid URL", "Image URL must start with http(s):// or /", "info");
+      return;
+    }
+    setUpdatedForm((prev) => ({ ...prev, images: [...(prev.images || []), next] }));
+    setNewImageUrl("");
+  };
+
+  const removeImage = (index) => {
+    setUpdatedForm((prev) => ({
+      ...prev,
+      images: (prev.images || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const safeAds = Array.isArray(ads) ? ads : [];
   const filteredAds =
-    filter === "All" ? ads : ads.filter((ad) => ad.status === filter);
+    filter === "All" ? safeAds : safeAds.filter((ad) => ad.status === filter);
 
   if (loading)
     return (
@@ -199,7 +269,7 @@ const MyAds = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl font-semibold bg-gradient-to-r from-[#2E3192] to-[#1F2370] bg-clip-text text-transparent"
             >
-              Manage Your Ads âœ¨
+              Manage Your Ads !!
             </motion.h1>
             <p className="text-gray-500 text-sm mt-1">
               Keep track of your listings, edits, and performance insights.
@@ -364,70 +434,186 @@ const MyAds = () => {
           </motion.div>
         )}
 
+        {!loading && filteredAds.length > 0 && (
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <p className="text-sm text-gray-500">
+              Showing {filteredAds.length} of {totalAds || filteredAds.length} ads
+            </p>
+            {hasMore && (
+              <Button
+                type="button"
+                onClick={() => fetchAds({ nextPage: page + 1, append: true })}
+                disabled={loadingMore}
+                className="bg-[#2E3192] hover:bg-[#1F2370] text-white rounded-full px-6 py-2"
+              >
+                {loadingMore ? "Loading..." : "Load More"}
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* EDIT DIALOG */}
         <AnimatePresence>
           {editingAd && (
-            <Dialog open={!!editingAd} onOpenChange={() => setEditingAd(null)}>
-              <DialogContent className="max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
-                <DialogHeader>
+            <Dialog
+              open={!!editingAd}
+              onOpenChange={(open) => {
+                if (!open) setEditingAd(null);
+              }}
+            >
+              <DialogContent className="w-[95vw] max-w-5xl h-[88vh] max-h-[88vh] bg-white rounded-2xl shadow-xl border border-gray-100 p-0 overflow-hidden flex flex-col">
+                <DialogHeader className="px-5 pt-5 pb-3 border-b shrink-0">
                   <DialogTitle className="text-[#2E3192] text-xl font-semibold">
-                    âœï¸ Edit Ad Details
+                    Edit Ad Details
                   </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleUpdateAd} className="space-y-4 mt-3">
-                  <Input
-                    name="title"
-                    value={updatedForm.title || ""}
-                    onChange={handleChange}
-                    placeholder="Title"
-                  />
-                  <Textarea
-                    name="description"
-                    value={updatedForm.description || ""}
-                    onChange={handleChange}
-                    placeholder="Description"
-                    rows="3"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      name="price"
-                      type="number"
-                      value={updatedForm.price || ""}
-                      onChange={handleChange}
-                      placeholder="Price"
-                    />
-                    <Input
-                      name="condition"
-                      value={updatedForm.condition || "Used"}
-                      onChange={handleChange}
-                      placeholder="Condition"
-                    />
+                <form onSubmit={handleUpdateAd} className="flex flex-col flex-1 min-h-0">
+                  <div className="px-5 py-4 flex-1 min-h-0 overflow-y-scroll overscroll-contain pr-3 [scrollbar-gutter:stable] [scrollbar-width:auto] [scrollbar-color:#6F7DE8_#E7EAFE] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-[#E7EAFE] [&::-webkit-scrollbar-thumb]:bg-[#6F7DE8] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[#E7EAFE]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">Title</label>
+                        <Input
+                          name="title"
+                          value={updatedForm.title || ""}
+                          onChange={handleChange}
+                          placeholder="Title"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">Price</label>
+                        <Input
+                          name="price"
+                          type="number"
+                          value={updatedForm.price || ""}
+                          onChange={handleChange}
+                          placeholder="Price"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">Description</label>
+                        <Textarea
+                          name="description"
+                          value={updatedForm.description || ""}
+                          onChange={handleChange}
+                          placeholder="Description"
+                          rows="4"
+                        />
+                      </div>
+
+                      {!HIDE_CONDITION_CATEGORIES.has(editingAd?.category || "") && (
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 mb-1 block">Condition</label>
+                          <select
+                            name="condition"
+                            value={updatedForm.condition || "Used"}
+                            onChange={handleChange}
+                            className="h-10 w-full rounded-md border border-input bg-white px-3 text-sm"
+                          >
+                            <option value="New">New</option>
+                            <option value="Used">Used</option>
+                          </select>
+                        </div>
+                      )}
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">City</label>
+                        <Input
+                          name="city"
+                          value={updatedForm.city || ""}
+                          onChange={handleChange}
+                          placeholder="City"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="text-sm font-medium text-gray-700 mb-1 block">Location</label>
+                        <Input
+                          name="location"
+                          value={updatedForm.location || ""}
+                          onChange={handleChange}
+                          placeholder="Location"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2 rounded-xl border border-gray-100 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-[#2E3192]">Images</p>
+                          <p className="text-xs text-gray-500">{(updatedForm.images || []).length}/5</p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                          <Input
+                            value={newImageUrl}
+                            onChange={(e) => setNewImageUrl(e.target.value)}
+                            placeholder="https://... or /uploads/..."
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={addImageUrl}
+                            disabled={(updatedForm.images || []).length >= 5}
+                            className="sm:w-auto"
+                          >
+                            <ImagePlus size={16} className="mr-1" /> Add
+                          </Button>
+                        </div>
+
+                        <div className="mb-3 flex gap-4 overflow-x-auto overflow-y-hidden snap-x snap-mandatory pb-2 [scrollbar-width:thin] [scrollbar-color:#9EA7F8_#EEF0FF] [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-[#EEF0FF] [&::-webkit-scrollbar-thumb]:bg-[#9EA7F8] [&::-webkit-scrollbar-thumb]:rounded-full">
+                          {(updatedForm.images || []).map((img, index) => (
+                            <div
+                              key={`${img}-${index}`}
+                              className="relative shrink-0 snap-start min-w-[220px] h-40 rounded-xl overflow-hidden border bg-gray-50"
+                            >
+                              <img
+                                src={resolveImageSrc(img)}
+                                alt={`Ad ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute top-2 right-2 bg-black/60 hover:bg-black/75 text-white rounded-full p-1.5"
+                                aria-label={`Remove image ${index + 1}`}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input
-                      name="city"
-                      value={updatedForm.city || ""}
-                      onChange={handleChange}
-                      placeholder="City"
-                    />
-                    <Input
-                      name="location"
-                      value={updatedForm.location || ""}
-                      onChange={handleChange}
-                      placeholder="Location"
-                    />
+
+                  <div className="sticky bottom-0 border-t bg-white p-4 flex flex-col sm:flex-row sm:justify-end gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setEditingAd(null)}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSaving}
+                      className="bg-gradient-to-r from-[#2E3192] to-[#1F2370] text-white font-semibold rounded-full hover:scale-[1.02] transition-transform"
+                    >
+                      {isSaving ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </span>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-[#2E3192] to-[#1F2370] text-white font-semibold rounded-full mt-3 hover:scale-[1.02] transition-transform"
-                  >
-                    Save Changes
-                  </Button>
                 </form>
               </DialogContent>
             </Dialog>
           )}
         </AnimatePresence>
+
       </main>
     </div>
   );

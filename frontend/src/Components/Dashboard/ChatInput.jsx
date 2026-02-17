@@ -30,11 +30,11 @@ const QUICK_MESSAGES = [
   "Last price?",
   "Is this still available?",
   "Location please",
-  "Delivery available?",
+  "Delivery available?",  
   "I am interested",
 ];
 
-const formatBytes = (bytes) => {
+const formatBytes = (bytes) => {  
   if (!bytes && bytes !== 0) return "";
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
@@ -233,9 +233,22 @@ const ChatInput = ({ value, onChange, onSend }) => {
 
   const hasText = value?.trim()?.length > 0;
 
+  const autoResizeTextarea = () => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const nextHeight = Math.min(el.scrollHeight, 140);
+    el.style.height = `${nextHeight}px`;
+    el.style.overflowY = el.scrollHeight > 140 ? "auto" : "hidden";
+  };
+
+  useEffect(() => {
+    autoResizeTextarea();
+  }, [value]);
+
   return (
     <div
-      className="sticky bottom-0 z-40 w-full"
+      className="w-full"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
@@ -243,17 +256,17 @@ const ChatInput = ({ value, onChange, onSend }) => {
       {/* âœ… Floating input bar container */}
       <div
         ref={barRef}
-        className="relative mx-2 sm:mx-4 mb-2 sm:mb-3"
+        className="relative mx-1.5 sm:mx-4 mb-2 sm:mb-3"
         style={CHAT_VARS}
       >
         {/* Quick replies (horizontal scroll pills) */}
-        <div className="mb-2">
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <div className="mb-2 hidden sm:block">
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar snap-x snap-mandatory">
             {QUICK_MESSAGES.map((msg, idx) => (
               <button
                 key={idx}
                 onClick={() => applyQuick(msg)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-xs border bg-white/60 backdrop-blur
+                className={`shrink-0 snap-start px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs border bg-white/60 backdrop-blur
                   hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition
                   ${focusRing}`}
                 style={{
@@ -280,15 +293,15 @@ const ChatInput = ({ value, onChange, onSend }) => {
         {/* File preview card */}
         {previewFile && (
           <div
-            className="mb-2 p-3 rounded-2xl border bg-white/70 backdrop-blur"
+            className="mb-2 p-2.5 sm:p-3 rounded-2xl border bg-white/70 backdrop-blur"
             style={{
               borderColor: "var(--chat-border)",
               boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
             }}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               {/* Thumbnail */}
-              <div className="w-20 h-20 rounded-xl overflow-hidden border bg-white flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border bg-white flex items-center justify-center shrink-0">
                 {previewFile.type.startsWith("image") ? (
                   <img
                     src={previewUrl}
@@ -311,14 +324,14 @@ const ChatInput = ({ value, onChange, onSend }) => {
 
               {/* Meta */}
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800 truncate">
+                <div className="text-xs sm:text-sm font-medium text-gray-800 truncate">
                   {previewFile.name}
                 </div>
-                <div className="text-xs text-gray-500 mt-0.5">
+                <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
                   {formatBytes(previewFile.size)}
                 </div>
 
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex flex-wrap items-center gap-2 mt-2">
                   <button
                     onClick={() => {
                       setPreviewFile(null);
@@ -358,18 +371,18 @@ const ChatInput = ({ value, onChange, onSend }) => {
 
         {/* Floating bar (blur + rounded full + subtle shadow) */}
         <div
-          className="w-full rounded-[999px] border backdrop-blur-md bg-[var(--chat-bg)]"
+          className="w-full rounded-[24px] sm:rounded-[999px] border backdrop-blur-md bg-[var(--chat-bg)]"
           style={{
             borderColor: "var(--chat-border)",
             boxShadow: "var(--chat-shadow)",
           }}
         >
           {/* Structured layout: left (attach), center (text), right (send + emoji) */}
-          <div className="flex items-center gap-2 px-2 sm:px-3 py-2">
+          <div className="flex items-end gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2">
             {/* LEFT: Attach */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className={`w-11 h-11 sm:w-10 sm:h-10 rounded-full grid place-items-center text-gray-600
+              className={`w-10 h-10 sm:w-10 sm:h-10 rounded-full grid place-items-center text-gray-600 shrink-0
                 hover:bg-white/60 transition active:scale-95 ${focusRing}`}
               aria-label="Attach file"
               title="Attach"
@@ -380,7 +393,7 @@ const ChatInput = ({ value, onChange, onSend }) => {
                 e.currentTarget.style.transform = "rotate(0deg)";
               }}
             >
-              <Paperclip size={22} />
+              <Paperclip size={18} className="sm:w-[22px] sm:h-[22px]" />
             </button>
 
             <input
@@ -392,25 +405,26 @@ const ChatInput = ({ value, onChange, onSend }) => {
             />
 
             {/* CENTER: Text Field */}
-            <div className="flex-1 min-w-0 px-1">
+            <div className="flex-1 min-w-0 px-0.5 sm:px-1">
               <textarea
                 ref={inputRef}
                 className={`w-full resize-none bg-transparent outline-none text-sm sm:text-[15px] leading-5
-                  placeholder:text-gray-400 py-3 px-3 rounded-2xl
+                  placeholder:text-gray-400 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-2xl
                   ${focusRing}`}
                 placeholder="Message"
                 value={value}
                 onChange={onChange}
+                onInput={autoResizeTextarea}
                 onKeyDown={onKeyDown}
                 rows={1}
                 aria-label="Message input"
                 style={{
-                  minHeight: "48px", // mobile larger height
+                  minHeight: "44px",
                   maxHeight: "140px",
                 }}
               />
               {/* Typing support hint */}
-              <div className="px-3 pb-1 -mt-2">
+              <div className="hidden sm:block px-3 pb-1 -mt-2">
                 <span className="text-[11px] text-gray-500">
                   Press <b>Enter</b> to send â€¢ <b>Shift</b>+<b>Enter</b> for new line
                 </span>
@@ -418,21 +432,21 @@ const ChatInput = ({ value, onChange, onSend }) => {
             </div>
 
             {/* RIGHT: Emoji + Send */}
-            <div className="flex items-center gap-1 pr-1">
+            <div className="flex items-center gap-1 pr-0.5 sm:pr-1 shrink-0">
               <button
                 onClick={() => setShowEmoji((s) => !s)}
-                className={`w-11 h-11 sm:w-10 sm:h-10 rounded-full grid place-items-center text-gray-700
+                className={`w-10 h-10 sm:w-10 sm:h-10 rounded-full grid place-items-center text-gray-700
                   hover:bg-white/60 transition active:scale-95 ${focusRing}`}
                 aria-label="Open emoji picker"
                 title="Emoji"
               >
-                <Smile size={22} />
+                <Smile size={18} className="sm:w-[22px] sm:h-[22px]" />
               </button>
 
               <button
                 onClick={sendText}
                 disabled={!hasText}
-                className={`w-11 h-11 sm:w-10 sm:h-10 rounded-full grid place-items-center text-white
+                className={`w-10 h-10 sm:w-10 sm:h-10 rounded-full grid place-items-center text-white
                   disabled:opacity-60 disabled:cursor-not-allowed transition ${focusRing}`}
                 style={{ background: "var(--chat-accent)" }}
                 aria-label="Send message"
@@ -444,7 +458,7 @@ const ChatInput = ({ value, onChange, onSend }) => {
                   e.currentTarget.style.transform = "scale(1)";
                 }}
               >
-                <Send size={18} />
+                <Send size={17} className="sm:w-[18px] sm:h-[18px]" />
               </button>
             </div>
           </div>
@@ -454,7 +468,7 @@ const ChatInput = ({ value, onChange, onSend }) => {
         {showEmoji && (
           <div
             ref={emojiPopoverRef}
-            className="absolute bottom-[82px] left-2 sm:left-4 w-[320px] max-w-[92vw] bg-white border rounded-2xl shadow-xl p-3 z-50"
+            className="absolute bottom-[78px] left-0 right-0 sm:left-4 sm:right-auto w-auto sm:w-[320px] max-w-[96vw] bg-white border rounded-2xl shadow-xl p-3 z-50"
             style={{
               transformOrigin: "bottom left",
               animation: "emojiPop 140ms ease-out",
@@ -492,7 +506,7 @@ const ChatInput = ({ value, onChange, onSend }) => {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3 overflow-x-auto no-scrollbar pb-1">
               {EMOJI_CATEGORIES.map((t) => (
                 <button
                   key={t.key}
@@ -510,7 +524,7 @@ const ChatInput = ({ value, onChange, onSend }) => {
             </div>
 
             {/* Grid */}
-            <div className="mt-3 grid grid-cols-8 gap-2">
+            <div className="mt-3 grid grid-cols-7 sm:grid-cols-8 gap-2">
               {emojiList.map((x, i) => (
                 <button
                   key={`${x.cat}-${x.e}-${i}`}

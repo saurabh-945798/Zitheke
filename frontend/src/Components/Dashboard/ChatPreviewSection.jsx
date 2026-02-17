@@ -63,13 +63,13 @@ const ChatPreviewSection = () => {
   }, [user?.uid]);
 
   return (
-    <Card className="relative overflow-hidden rounded-3xl border border-white/50 bg-white/60 backdrop-blur-xl shadow-xl p-6">
+    <Card className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/50 bg-white/60 backdrop-blur-xl shadow-xl p-4 sm:p-6">
       {/* Gradient glow */}
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#2E3192]/20 rounded-full blur-3xl" />
 
       {/* Header */}
-      <div className="relative flex items-center justify-between mb-5">
-        <h3 className="text-lg font-semibold text-[#1A1D64] flex items-center gap-2">
+      <div className="relative flex items-center justify-between gap-2 mb-4 sm:mb-5">
+        <h3 className="text-base sm:text-lg font-semibold text-[#1A1D64] flex items-center gap-2 min-w-0">
           <div className="p-2 rounded-xl bg-[#E9EDFF]">
             <MessageSquare className="w-5 h-5 text-[#2E3192]" />
           </div>
@@ -78,7 +78,7 @@ const ChatPreviewSection = () => {
 
         <button
           onClick={() => navigate("/chats")}
-          className="text-sm font-medium text-[#2E3192] flex items-center gap-1 hover:underline"
+          className="text-xs sm:text-sm font-medium text-[#2E3192] flex items-center gap-1 hover:underline shrink-0"
         >
           View all <ChevronRight size={16} />
         </button>
@@ -108,7 +108,7 @@ const ChatPreviewSection = () => {
                   navigate(`/chats?cid=${chat.conversationId}`)
                 }
                 className={`
-                  group relative w-full flex items-center gap-4 rounded-2xl p-4
+                  group relative w-full flex items-center gap-3 sm:gap-4 rounded-2xl p-3 sm:p-4
                   border transition shadow-sm hover:shadow-lg
                   ${
                     isUnread

@@ -1,6 +1,7 @@
 // src/services/sms.service.js
 import { infobipClient } from "../config/infobip.js";
 import { env } from "../config/env.js";
+import { buildOtpMessage } from "../config/otpSmsTemplate.js";
 
 const normalizeError = (err) => {
   const status = err?.response?.status || 500;
@@ -53,7 +54,7 @@ const logOtpAttempt = (level, payload) => {
 };
 
 export const SmsService = {
-  async sendOtp({ to, otp, minutes = 5 }) {
+  async sendOtp({ to, otp }) {
     // Malawi carriers can silently block OTP sent from unapproved alphanumeric sender IDs.
     // For authentication OTP, always use numeric sender for best delivery reliability.
     const e164 = normalizeToE164(to);
@@ -68,7 +69,8 @@ export const SmsService = {
         {
           from: env.OTP_SENDER,
           destinations: [{ to: normalizedTo }],
-          text: `Your ZITHEKE login OTP is ${otp}.\nThis code is valid for ${minutes} minutes.\nDo not share it with anyone.`,
+          // Enforced operator-approved template for OTP traffic.
+          text: buildOtpMessage(otp),
         },
       ],
     };

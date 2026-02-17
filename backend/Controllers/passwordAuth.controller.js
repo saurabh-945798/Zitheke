@@ -273,7 +273,6 @@ export const PasswordAuthController = {
       await SmsService.sendOtp({
         to: normalizedPhone.replace(/^\+/, ""),
         otp,
-        minutes: OTP_TTL_MINUTES,
       });
 
       return res.status(200).json({

@@ -25,6 +25,7 @@ const CategoryPage = () => {
   const lowerCategory = normalizedCategory.toLowerCase();
   const isJobsServices =
     lowerCategory.includes("job") || lowerCategory.includes("service");
+  const isAgriculture = lowerCategory.includes("agriculture");
 
   const [ads, setAds] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -162,7 +163,7 @@ const CategoryPage = () => {
         a.city?.toLowerCase().includes(activeFilters.city.toLowerCase())
       );
     }
-    if (activeFilters.condition) {
+    if (!isAgriculture && activeFilters.condition) {
       result = result.filter(
         (a) =>
           a.condition?.toLowerCase() === activeFilters.condition.toLowerCase()
@@ -231,6 +232,7 @@ const CategoryPage = () => {
       "kitchenware",
       "cookware",
       "fashion",
+      "sport",
     ];
     if (conditionCategories.some((c) => lowerCategory.includes(c))) {
       return (
@@ -336,16 +338,27 @@ const CategoryPage = () => {
       )}
 
       {/* ================= MOBILE FILTER BUTTON ================= */}
-      <div className="px-6 mb-6 lg:hidden">
+      <div className="px-4 mb-4 lg:hidden sticky top-[84px] z-30">
         <button
           onClick={() => setMobileFilters(true)}
           className="w-full flex items-center justify-center gap-2
-          bg-white rounded-xl border border-[var(--border)]
-          py-3 font-semibold text-[#1F2370]"
+          bg-white/95 backdrop-blur rounded-xl border border-[var(--border)]
+          py-3 font-semibold text-[#1F2370] shadow-sm"
         >
           <SlidersHorizontal size={18} /> Filters
         </button>
       </div>
+
+      {/* floating trigger fallback for very small devices */}
+      <button
+        onClick={() => setMobileFilters(true)}
+        className="lg:hidden fixed bottom-5 right-5 z-30 inline-flex items-center gap-2
+        px-4 py-3 rounded-full bg-[#2E3192] text-white text-sm font-semibold
+        shadow-[0_14px_34px_rgba(46,49,146,0.35)]"
+      >
+        <SlidersHorizontal size={16} />
+        Filters
+      </button>
 
       {/* ================= CONTENT ================= */}
       <div className="relative max-w-7xl mx-auto px-6 grid lg:grid-cols-[300px_1fr] gap-10">
@@ -387,10 +400,12 @@ const CategoryPage = () => {
                 />
               </div>
 
-              <div>
-                <p className="filter-title">Condition</p>
-                {categoryFilters()}
-              </div>
+              {!isAgriculture && (
+                <div>
+                  <p className="filter-title">Condition</p>
+                  {categoryFilters()}
+                </div>
+              )}
             </>
           )}
 
@@ -557,7 +572,7 @@ const CategoryPage = () => {
               animate={{ opacity: 0.4 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileFilters(false)}
-              className="fixed inset-0 bg-black z-40"
+              className="fixed inset-0 bg-black z-[90]"
             />
 
             <motion.div
@@ -565,8 +580,14 @@ const CategoryPage = () => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.3 }}
-              className="fixed bottom-0 left-0 right-0 z-50
-              bg-white rounded-t-3xl p-6 space-y-4"
+              className="fixed bottom-0 left-0 right-0 z-[100]
+              bg-white rounded-t-3xl p-6 space-y-4
+              max-h-[80vh] overflow-y-auto overscroll-contain
+              [scrollbar-width:thin] [scrollbar-color:#9EA7F8_#EEF0FF]
+              [&::-webkit-scrollbar]:w-2
+              [&::-webkit-scrollbar-track]:bg-[#EEF0FF]
+              [&::-webkit-scrollbar-thumb]:bg-[#9EA7F8]
+              [&::-webkit-scrollbar-thumb]:rounded-full"
             >
               <div className="flex justify-between items-center">
                 <h3 className="font-semibold">Filters</h3>
@@ -600,7 +621,7 @@ const CategoryPage = () => {
                     className="filter-input"
                   />
 
-                  {categoryFilters()}
+                  {!isAgriculture && categoryFilters()}
                 </>
               )}
 

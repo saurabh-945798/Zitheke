@@ -407,9 +407,9 @@ const Chats = () => {
         <Sidebar />
       </div>
 
-      <div className="lg:ml-64 p-3 sm:p-4">
+      <div className="lg:ml-64 p-0 sm:p-4">
         {/* Split layout upgrade: left glass + right soft blur */}
-        <div className="relative flex h-[88vh] overflow-hidden rounded-[28px] shadow-[0_18px_60px_rgba(15,23,42,0.12)] border border-white/60">
+        <div className="relative flex h-[100dvh] sm:h-[calc(100dvh-1rem)] lg:h-[88vh] overflow-hidden rounded-none sm:rounded-[28px] shadow-none sm:shadow-[0_18px_60px_rgba(15,23,42,0.12)] border-x-0 sm:border border-white/60">
           {/* LEFT PANEL (glassmorphism + subtle gradient) */}
           <div className="hidden lg:flex w-[360px] shrink-0 flex-col bg-white/40 backdrop-blur-xl border-r border-white/60">
             {/* Search bar: floating pill style with icon + clear button, shadow on focus */}
@@ -530,7 +530,7 @@ const Chats = () => {
                   onClick={() => setMobileConvoOpen(false)}
                 />
                 <motion.div
-                  className="absolute left-0 top-0 h-full w-[88%] max-w-[360px] bg-white/55 backdrop-blur-xl border-r border-white/60 shadow-2xl"
+                  className="absolute left-0 top-0 h-full w-[92vw] max-w-[360px] bg-white/55 backdrop-blur-xl border-r border-white/60 shadow-2xl flex flex-col"
                   initial={{ x: -30, opacity: 0 }}
                   animate={{ x: 0, opacity: 1, transition: { duration: 0.22 } }}
                   exit={{ x: -30, opacity: 0, transition: { duration: 0.18 } }}
@@ -750,7 +750,7 @@ const Chats = () => {
               {activeAd && (
                 <div className="px-3 sm:px-4 py-3 border-b border-white/60 bg-white/45 backdrop-blur-xl">
                   <div className="rounded-3xl bg-white/65 backdrop-blur-xl border border-white/70 shadow-sm overflow-hidden">
-                    <div className="flex items-center gap-4 p-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3">
                       <div className="relative shrink-0">
                         <img
                           src={
@@ -782,7 +782,7 @@ const Chats = () => {
                               `/ad/${activeAd.adId}?from=chat&conversationId=${selectedChat?.conversationId || ""}`
                             )
                           }
-                          className="h-11 px-4 rounded-2xl bg-[#2E3192] text-white text-sm font-semibold shadow hover:shadow-md active:scale-[0.99] transition"
+                          className="h-11 w-full sm:w-auto px-4 rounded-2xl bg-[#2E3192] text-white text-sm font-semibold shadow hover:shadow-md active:scale-[0.99] transition"
                         >
                           View Ad
                         </button>
@@ -813,7 +813,7 @@ const Chats = () => {
                   </div>
 
                   {/* Content container (readability max-width) */}
-                  <div className="relative px-2 sm:px-4 py-3 sm:py-4">
+                  <div className="relative px-2 sm:px-4 pt-3 sm:pt-4 pb-28 sm:pb-6">
                     <div className="mx-auto w-full max-w-[920px] space-y-1.5 sm:space-y-2">
                       <AnimatePresence initial={false}>
                         {messages.map((msg, i) => (
@@ -844,7 +844,7 @@ const Chats = () => {
 
             {/* Mobile: sticky input + larger tap targets (ChatInput already; wrapper makes it sticky) */}
             {selectedChat && (
-              <div className="sticky bottom-0 z-20 px-3 sm:px-4 pb-3 pt-2 bg-white/55 backdrop-blur-xl border-t border-white/60 shadow-[0_-10px_30px_rgba(15,23,42,0.06)]">
+              <div className="sticky bottom-0 z-20 px-2 sm:px-4 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:pb-3 pt-2 bg-white/55 backdrop-blur-xl border-t border-white/60 shadow-[0_-10px_30px_rgba(15,23,42,0.06)]">
                 <div className="mx-auto w-full max-w-[920px]">
                   <ChatInput
                     value={text}
@@ -870,7 +870,7 @@ const Chats = () => {
         </div>
 
         {/* Mobile: add the original Sidebar (if you want) as a bottom-safe area (optional) */}
-        <div className="lg:hidden mt-3">
+        <div className="hidden lg:hidden mt-3">
           {/* Keep Sidebar available for other navigation; user asked slide-over for conversations specifically */}
           <div className="rounded-3xl bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm overflow-hidden">
             <Sidebar />

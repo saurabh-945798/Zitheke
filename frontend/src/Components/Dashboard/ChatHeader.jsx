@@ -40,7 +40,7 @@ const ChatHeader = ({
       transition={{ duration: 0.25, ease: "easeOut" }}
       className="
         sticky top-0 z-30
-        px-4 py-3
+        px-3 sm:px-4 py-3
         flex items-center justify-between
         bg-white/60 backdrop-blur-xl
         border-b border-white/40
@@ -48,7 +48,7 @@ const ChatHeader = ({
       "
     >
       {/* ================= LEFT ================= */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* Avatar with Gradient Ring */}
         <div className="relative shrink-0">
           <div className="
@@ -77,7 +77,7 @@ const ChatHeader = ({
         {/* Name + Status */}
         <div className="min-w-0">
           <p className="
-            text-[16px] font-semibold text-gray-900
+            text-[14px] sm:text-[16px] font-semibold text-gray-900
             leading-tight truncate
           ">
             {chat?.withUserName}
@@ -85,6 +85,7 @@ const ChatHeader = ({
 
           {/* Status Chip */}
           <span className="
+            hidden sm:inline-flex
             inline-flex items-center
             mt-0.5 px-2 py-[2px]
             rounded-full
@@ -101,7 +102,7 @@ const ChatHeader = ({
       </div>
 
       {/* ================= RIGHT ================= */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 sm:gap-3 shrink-0">
         {/* Ad Context Pill */}
         {(adTitle || adPrice) && (
           <div className="
@@ -132,7 +133,7 @@ const ChatHeader = ({
           title="Delete chat"
           onClick={onDelete}
           className="
-            w-11 h-11
+            w-10 h-10 sm:w-11 sm:h-11
             flex items-center justify-center
             rounded-xl
             text-gray-500
@@ -151,7 +152,7 @@ const ChatHeader = ({
           title="Back"
           onClick={() => window.history.back()}
           className="
-            w-11 h-11
+            w-10 h-10 sm:w-11 sm:h-11
             flex items-center justify-center
             rounded-xl
             text-gray-500

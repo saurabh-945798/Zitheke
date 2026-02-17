@@ -41,6 +41,7 @@ import SellerProfile from "./Components/SellerProfile/SellerProfile";
 import PricingPage from "./Components/BoostAdSection/PricingPage.jsx";
 import CheckoutPage from "./Components/BoostAdSection/CheckoutPage.jsx";
 import SafetyTipsPage from "./Components/SafetyTips/SafetyTipsPage.jsx";
+import BrowseListings from "./Components/BrowseListings/BrowseListings.jsx";
 
 function App() {
   const { user, loading } = useAuth();
@@ -179,6 +180,14 @@ function App() {
           element={
             <MainLayout>
               <SafetyTipsPage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/browse-listings"
+          element={
+            <MainLayout>
+              <BrowseListings />
             </MainLayout>
           }
         />

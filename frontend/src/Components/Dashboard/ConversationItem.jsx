@@ -2,13 +2,15 @@ import React from "react";
 
 const ConversationItem = ({ chat, onClick, selected }) => {
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className={`flex items-center gap-3 p-3 cursor-pointer border-b border-gray-100 transition 
+      className={`w-full text-left flex items-center gap-3 p-3 cursor-pointer border-b border-gray-100 transition 
         ${selected ? "bg-[#E8EBFF]" : "hover:bg-gray-50"}`}
     >
       <img
         src={chat.withUserPhoto}
+        alt={chat.withUserName || "User"}
         className="w-11 h-11 rounded-full object-cover border border-gray-200"
       />
 
@@ -40,7 +42,7 @@ const ConversationItem = ({ chat, onClick, selected }) => {
           {chat.unreadCount}
         </span>
       )}
-    </div>
+    </button>
   );
 };
 

@@ -102,7 +102,7 @@ const MessageBubble = ({
 
   /* ðŸ§± Bubble base (responsive width + thinner borders) */
   const bubbleBase =
-    "relative group px-3 py-2 pb-7 max-w-[92%] sm:max-w-[78%] lg:max-w-[62%] xl:max-w-[54%] " +
+    "relative group px-3 py-2 pb-7 max-w-[95%] sm:max-w-[78%] lg:max-w-[62%] xl:max-w-[54%] " +
     "shadow-[0_10px_30px_rgba(0,0,0,0.06)] ring-1 ring-black/5 transition";
 
   const bubbleDeleted =
@@ -152,7 +152,7 @@ const MessageBubble = ({
   return (
     <>
       <div
-        className={`flex ${isMe ? "justify-end" : "justify-start"} ${
+        className={`flex ${isMe ? "justify-end" : "justify-start"} px-0.5 sm:px-0 ${
           prevSameSender ? "mt-0.5" : "mt-1"
         } mb-0.5`}
       >
@@ -229,7 +229,7 @@ const MessageBubble = ({
             >
               <img
                 src={msg.mediaUrl}
-                className="w-full max-h-64 object-cover transform-gpu transition duration-300 group-hover:scale-[1.02]"
+                className="w-full max-h-52 sm:max-h-64 object-cover transform-gpu transition duration-300 group-hover:scale-[1.02]"
                 onError={() => setImgError(true)}
                 alt="attachment"
                 loading="lazy"
@@ -275,7 +275,7 @@ const MessageBubble = ({
             <video
               src={msg.mediaUrl}
               controls
-              className="w-full max-h-72 object-cover"
+              className="w-full max-h-56 sm:max-h-72 object-cover"
               onError={() => setVideoError(true)}
             />
           </div>

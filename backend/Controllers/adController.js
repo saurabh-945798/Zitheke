@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Ad from "../models/Ad.js";
 import User from "../models/User.js";
+import Conversation from "../models/Conversation.js";
+import Message from "../models/Message.js";
 import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
 import { normalizeMalawiPhone, isValidMalawiPhone } from "../utils/phone.js";
@@ -237,8 +239,106 @@ export const getUserAds = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const ads = await Ad.find({ ownerUid: uid }).sort({ createdAt: -1 });
-    res.status(200).json(ads);
+    const {
+      q = "",
+      status = "All",
+      sort = "newest",
+      page = 1,
+      limit = 18,
+    } = req.query;
+
+    const normalizedPage = Math.max(parseInt(page, 10) || 1, 1);
+    const normalizedLimit = Math.min(Math.max(parseInt(limit, 10) || 18, 1), 100);
+    const trimmedQuery = String(q || "").trim();
+    const trimmedStatus = String(status || "All").trim();
+
+    const filters = { ownerUid: uid };
+    if (trimmedStatus && trimmedStatus !== "All") {
+      filters.status = trimmedStatus;
+    }
+    if (trimmedQuery) {
+      filters.title = { $regex: trimmedQuery, $options: "i" };
+    }
+
+    let sortStage = { createdAt: -1 };
+    if (sort === "oldest") sortStage = { createdAt: 1 };
+    if (sort === "views_desc") sortStage = { views: -1, createdAt: -1 };
+    if (sort === "views_asc") sortStage = { views: 1, createdAt: -1 };
+
+    const skip = (normalizedPage - 1) * normalizedLimit;
+
+    const [ads, total] = await Promise.all([
+      Ad.find(filters).sort(sortStage).skip(skip).limit(normalizedLimit),
+      Ad.countDocuments(filters),
+    ]);
+
+    const adIds = ads.map((ad) => ad._id).filter(Boolean);
+    const kpiByAdId = {};
+
+    if (adIds.length > 0) {
+      const conversations = await Conversation.find({
+        adId: { $in: adIds },
+        participants: uid,
+      }).select("_id adId");
+
+      const convToAdMap = new Map();
+      const conversationIds = [];
+      for (const convo of conversations) {
+        const convoId = String(convo._id);
+        conversationIds.push(convo._id);
+        convToAdMap.set(convoId, String(convo.adId));
+      }
+
+      let messageCountByConversation = {};
+      if (conversationIds.length > 0) {
+        const messageAgg = await Message.aggregate([
+          { $match: { conversationId: { $in: conversationIds }, isDeleted: { $ne: true } } },
+          { $group: { _id: "$conversationId", count: { $sum: 1 } } },
+        ]);
+        messageCountByConversation = messageAgg.reduce((acc, row) => {
+          acc[String(row._id)] = row.count || 0;
+          return acc;
+        }, {});
+      }
+
+      for (const adId of adIds) {
+        const key = String(adId);
+        kpiByAdId[key] = { messageCount: 0 };
+      }
+
+      for (const convo of conversations) {
+        const convoId = String(convo._id);
+        const adKey = convToAdMap.get(convoId);
+        if (!adKey) continue;
+        const count = messageCountByConversation[convoId] || 0;
+        kpiByAdId[adKey].messageCount += count;
+      }
+    }
+
+    const adsWithKpis = ads.map((ad) => {
+      const adObj = ad.toObject();
+      const kpis = kpiByAdId[String(ad._id)] || { messageCount: 0 };
+      return {
+        ...adObj,
+        messageCount: kpis.messageCount,
+      };
+    });
+
+    return res.status(200).json({
+      ads: adsWithKpis,
+      pagination: {
+        page: normalizedPage,
+        limit: normalizedLimit,
+        total,
+        pages: Math.ceil(total / normalizedLimit),
+        hasMore: normalizedPage * normalizedLimit < total,
+      },
+      filters: {
+        q: trimmedQuery,
+        status: trimmedStatus,
+        sort,
+      },
+    });
   } catch (error) {
     console.error("Error fetching user ads:", {
       uid: req.params?.uid,
@@ -372,6 +472,7 @@ export const getAllAds = async (req, res) => {
 export const updateAd = async (req, res) => {
   try {
     const updates = { ...req.body };
+    const MAX_IMAGES = 5;
 
     // 🖼️ Update images
     const imagePaths = req.files?.images
@@ -379,6 +480,14 @@ export const updateAd = async (req, res) => {
       : [];
 
     if (imagePaths.length > 0) updates.images = imagePaths;
+
+    // Enforce max 5 images for update flow (including JSON body updates)
+    if (Array.isArray(updates.images) && updates.images.length > MAX_IMAGES) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already uploaded 5 images.",
+      });
+    }
 
     /* ==================================================
        🔁 AUTO TAG UPDATE (IF TITLE / CATEGORY / SUBCATEGORY CHANGED)
@@ -644,5 +753,7 @@ export const searchAds = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 

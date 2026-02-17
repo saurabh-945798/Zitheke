@@ -1,7 +1,5 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
-import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
+import React, { useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import api from "../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,6 +19,10 @@ import {
 import { Card, CardHeader, CardContent, CardFooter } from "../ui/card.jsx";
 import ChatPreviewSection from "./ChatPreviewSection.jsx";
 import FavoritesPreviewSection from "./FavoritesPreviewSection.jsx";
+import DashboardStats from "./DashboardStats.jsx";
+import RecentAdsPanel from "./RecentAdsPanel.jsx";
+import useDashboardData from "./hooks/useDashboardData.js";
+import useAdsFilters from "./hooks/useAdsFilters.js";
 
 
 import { Button } from "../ui/button.jsx";
@@ -36,65 +38,40 @@ import { Separator } from "../ui/separator.jsx";
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const FALLBACK_AD_IMAGE = "/no-image.svg";
 
-  const [ads, setAds] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    ads,
+    favorites,
+    unreadMessagesCount,
+    loading,
+    error: dashboardError,
+    retry,
+  } = useDashboardData(user?.uid);
   const [selectedAd, setSelectedAd] = useState(null);
-  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all"); // all | active | sold
-  const [chats, setChats] = useState([]);
+  const {
+    totalViews,
+    totalFavorites,
+    activeAdsCount,
+    messagesCount,
+    recentAds,
+    filteredAds,
+  } = useAdsFilters({
+    ads,
+    favorites,
+    unreadMessagesCount,
+    activeTab,
+    query,
+  });
 
-  
-  useEffect(() => {
-    if (!user?.uid) return;
-  
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        const adsReq = api.get(`/ads/user/${user.uid}`);
-        const favReq = api.get(`/favorites/${user.uid}`);
-        const convoReq = api.get(`/conversations/preview/${user.uid}`);
-
-        const [adsRes, favRes, convoRes] = await Promise.all([
-          adsReq,
-          favReq,
-          convoReq,
-        ]);
-
-        setAds(adsRes.data || []);
-        setFavorites(favRes.data || []);
-        const unreadTotal = Array.isArray(convoRes.data)
-          ? convoRes.data.reduce((sum, c) => sum + (c.unreadCount || 0), 0)
-          : 0;
-        setUnreadMessagesCount(unreadTotal);
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user?.uid]);
-  
-  
-
-  const totalViews = useMemo(
-    () => ads.reduce((acc, ad) => acc + (ad.views || 0), 0),
-    [ads]
-  );
-  const totalFavorites = useMemo(() => favorites.length, [favorites]);
-  const activeAdsCount = useMemo(
-    () => ads.filter((ad) => (ad.status || "Active") !== "Sold").length,
-    [ads]
-  );
-
-  // unread chat count (dynamic)
-  const messagesCount = unreadMessagesCount;
+  const getAdImage = (ad) => {
+    const image = ad?.images?.[0];
+    if (!image || typeof image !== "string") return FALLBACK_AD_IMAGE;
+    return image;
+  };
 
   const stats = useMemo(
     () => [
@@ -129,35 +106,6 @@ const Dashboard = () => {
     ],
     [activeAdsCount, messagesCount, totalFavorites, totalViews]
   );
-
-  const recentAds = useMemo(() => {
-    const list = [...ads].reverse();
-    return list.slice(0, 4);
-  }, [ads]);
-
-  const filteredAds = useMemo(() => {
-    let list = [...ads].reverse();
-
-    if (activeTab === "active") {
-      list = list.filter((a) => (a.status || "Active") !== "Sold");
-    }
-    if (activeTab === "sold") {
-      list = list.filter((a) => (a.status || "Active") === "Sold");
-    }
-
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      list = list.filter(
-        (a) =>
-          (a.title || "").toLowerCase().includes(q) ||
-          (a.description || "").toLowerCase().includes(q) ||
-          (a.category || "").toLowerCase().includes(q) ||
-          (a.city || "").toLowerCase().includes(q)
-      );
-    }
-
-    return list;
-  }, [ads, activeTab, query]);
 
   if (loading) {
     return (
@@ -195,6 +143,26 @@ const Dashboard = () => {
     );
   }
 
+  if (dashboardError) {
+    return (
+      <div className="min-h-screen bg-[#F4F6FF] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white border border-red-100 rounded-3xl shadow-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-[#1A1D64]">
+            Dashboard unavailable
+          </h2>
+          <p className="text-sm text-gray-600 mt-2">{dashboardError}</p>
+          <button
+            type="button"
+            onClick={retry}
+            className="mt-5 inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#2E3192] text-white hover:bg-[#1F2370] transition"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const statusBadgeClass = (status) => {
     const s = status || "Active";
     if (s === "Sold") return "bg-gray-200 text-gray-700";
@@ -203,8 +171,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-[#F4F6FF] font-[Poppins] text-gray-800">
-      {/* âœ… Sidebar */}
-      {/* <Sidebar /> */}
+      {/* Sidebar managed by dashboard layout */}
 
       {/* Main */}
       <div className="flex-1 lg:ml-64 relative overflow-hidden">
@@ -298,183 +265,24 @@ const Dashboard = () => {
         {/* Content */}
         <div className="relative z-10 px-4 sm:px-6 md:px-8 py-8 space-y-10">
           {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5"
-          >
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.02, y: -2 }}
-                transition={{ type: "spring", stiffness: 220 }}
-                className="relative overflow-hidden rounded-3xl border border-white/50 bg-white/55 backdrop-blur-xl shadow-lg"
-              >
-                <div
-                  className={`absolute inset-0 opacity-90 bg-gradient-to-br ${stat.gradient}`}
-                />
-                <div className="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_30%_20%,white,transparent_50%)]" />
-                <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full bg-white/20 blur-2xl" />
-
-                <div className="relative p-5 text-white">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm/5 opacity-85">{stat.title}</p>
-                      <div className="mt-1 flex items-end gap-2">
-                        <h2 className="text-3xl font-bold">{stat.value}</h2>
-                        <span className="text-xs opacity-80 pb-1">
-                          {stat.sub}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-md">
-                      {stat.icon}
-                    </div>
-                  </div>
-
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="text-xs opacity-85">
-                      Live stats
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold bg-white/15 border border-white/20 px-3 py-1 rounded-full">
-                      Insights <ArrowUpRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <DashboardStats stats={stats} />
 
           {/* Recent Ads + Overview */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            {/* Recent Ads */}
-            <Card className="xl:col-span-2 shadow-xl border border-white/50 bg-white/60 backdrop-blur-xl rounded-3xl overflow-hidden">
-              <CardHeader className="px-6 pt-6 pb-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-xl font-semibold text-[#1A1D64] flex items-center gap-2">
-                      Your Recent Ads
-                    </h2>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Quick access to your latest listings.
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+            <div className="xl:col-span-2 space-y-6">
+              {/* Recent Ads */}
+              <RecentAdsPanel
+                recentAds={recentAds}
+                statusBadgeClass={statusBadgeClass}
+                getAdImage={getAdImage}
+                onQuickView={setSelectedAd}
+                onOpenAd={(ad) => navigate(`/ad/${ad._id}`)}
+                onViewAll={() => navigate("/dashboard/my-ads")}
+                onCreateAd={() => navigate("/dashboard/createAd")}
+              />
 
-                  <Button
-                    variant="outline"
-                    className="border-[#2E3192] text-[#2E3192] rounded-full px-4 hover:bg-[#E9EDFF]"
-                    onClick={() => navigate("/dashboard/my-ads")}
-                  >
-                    View All
-                  </Button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="px-6 pb-6">
-                {recentAds.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {recentAds.map((ad) => (
-                      <motion.div
-                        key={ad._id}
-                        whileHover={{ y: -3 }}
-                        transition={{ type: "spring", stiffness: 170 }}
-                        className="group rounded-3xl overflow-hidden border border-white/50 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-2xl transition-all"
-                      >
-                        <div className="relative h-48 overflow-hidden">
-                          <motion.img
-                            whileHover={{ scale: 1.06 }}
-                            transition={{ duration: 0.35 }}
-                            src={
-                              ad.images?.[0] ||
-                              "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-                            }
-                            alt={ad.title}
-                            className="w-full h-full object-cover"
-                          />
-
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-90" />
-
-                          <Badge
-                            className={`absolute top-3 left-3 rounded-full px-3 py-1 ${statusBadgeClass(
-                              ad.status
-                            )}`}
-                          >
-                            {ad.status || "Active"}
-                          </Badge>
-
-                          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
-                            <div className="min-w-0">
-                              <h3 className="text-white font-semibold text-lg truncate">
-                                {ad.title}
-                              </h3>
-                              <p className="text-white/80 text-xs truncate">
-                                {ad.category || "Category"} •{" "}
-                                {ad.city || "City"}
-                              </p>
-                            </div>
-
-                            <div className="flex items-center gap-1 text-white/90 text-xs bg-white/10 border border-white/15 px-2.5 py-1 rounded-full backdrop-blur">
-                              <Eye size={14} />
-                              {ad.views || 0}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="p-4">
-                          <p className="text-sm text-gray-600 line-clamp-2">
-                            {ad.description || "No description provided"}
-                          </p>
-
-                          <div className="mt-4 flex items-center justify-between">
-                            <Button
-                              variant="outline"
-                              className="text-xs rounded-full px-3 border-[#2E3192] text-[#2E3192] hover:bg-[#E9EDFF]"
-                              onClick={() => setSelectedAd(ad)}
-                            >
-                              Quick View
-                            </Button>
-
-                            <Button
-                              className="text-xs rounded-full px-3 bg-[#2E3192] hover:bg-[#1F2370] text-white"
-                              onClick={() => navigate(`/ad/${ad._id}`)}
-                            >
-                              Open <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-14">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/4076/4076508.png"
-                      className="w-20 mb-4 opacity-80"
-                      alt="no ads"
-                    />
-                    <p className="text-gray-600 font-medium">
-                      No ads yet
-                    </p>
-                    <p className="text-gray-500 text-sm mt-1">
-                      Post your first ad to see it here.
-                    </p>
-                    <Button
-                      className="mt-5 rounded-full bg-[#2E3192] hover:bg-[#1F2370] text-white"
-                      onClick={() => navigate("/dashboard/createAd")}
-                    >
-                      <PlusCircle className="w-4 h-4 mr-2" />
-                      Post new ad
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
               <ChatPreviewSection />
-              
-
-            </Card>
-
-            
+            </div>
 
             {/* Side Panel */}
             <div className="space-y-6">
@@ -516,10 +324,10 @@ const Dashboard = () => {
                   </motion.button>
                 </div>
               </Card>
-              {/* ðŸ”¹ Chat Preview Section */}
+              <FavoritesPreviewSection />
 
 
-              {/* Compact â€œAll Adsâ€ Preview (advanced) */}
+              {/* Compact All Ads Preview */}
               <Card className="rounded-3xl shadow-xl border border-white/50 bg-white/60 backdrop-blur-xl overflow-hidden">
                 <CardHeader className="px-6 pt-6 pb-4">
                   <div className="flex items-center justify-between">
@@ -532,7 +340,7 @@ const Dashboard = () => {
                         <span className="font-medium">
                           {activeTab.toUpperCase()}
                         </span>
-                        {query ? ` • "${query}"` : ""}
+                        {query ? ` - "${query}"` : ""}
                       </p>
                     </div>
                     <Badge className="rounded-full bg-[#E9EDFF] text-[#1A1D64] px-3 py-1">
@@ -551,10 +359,7 @@ const Dashboard = () => {
                           className="w-full text-left group rounded-2xl border border-white/60 bg-white/70 backdrop-blur-md hover:bg-white/90 transition shadow-sm hover:shadow-md p-3 flex items-center gap-3"
                         >
                           <img
-                            src={
-                              ad.images?.[0] ||
-                              "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-                            }
+                            src={getAdImage(ad)}
                             alt={ad.title}
                             className="w-12 h-12 rounded-xl object-cover border border-white/70"
                           />
@@ -563,7 +368,7 @@ const Dashboard = () => {
                               {ad.title}
                             </p>
                             <p className="text-xs text-gray-500 truncate">
-                              {ad.category || "Category"} • {ad.city || "City"}
+                              {ad.category || "Category"} - {ad.city || "City"}
                             </p>
                           </div>
                           <div className="flex flex-col items-end gap-1">
@@ -625,8 +430,6 @@ const Dashboard = () => {
                   </div>
                 </CardFooter>
               </Card>
-              <FavoritesPreviewSection />
-
             </div>
           </div>
         </div>
@@ -648,17 +451,13 @@ const Dashboard = () => {
                     </Badge>
                   </DialogTitle>
                   <p className="text-sm text-gray-500 mt-1">
-                    {selectedAd.category || "Category"} •{" "}
-                    {selectedAd.city || "City"}
+                    {selectedAd.category || "Category"} - {selectedAd.city || "City"}
                   </p>
                 </DialogHeader>
 
                 <div className="relative">
                   <img
-                    src={
-                      selectedAd.images?.[0] ||
-                      "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-                    }
+                    src={getAdImage(selectedAd)}
                     alt={selectedAd.title}
                     className="w-full h-72 object-cover"
                   />
@@ -713,3 +512,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

@@ -62,6 +62,25 @@ const ProductDetails = () => {
     file: null,
   });
 
+  const getPostedAgo = (createdAt) => {
+    if (!createdAt) return "Recently added";
+
+    const now = Date.now();
+    const postedAt = new Date(createdAt).getTime();
+    if (Number.isNaN(postedAt)) return "Recently added";
+
+    const diffMs = Math.max(0, now - postedAt);
+    const minutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (minutes < 1) return "Posted just now";
+    if (minutes < 60)
+      return `Posted ${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+    if (hours < 24) return `Posted ${hours} hour${hours === 1 ? "" : "s"} ago`;
+    return `Posted ${days} day${days === 1 ? "" : "s"} ago`;
+  };
+
   // SAFE phone extraction
 
   /* Fetch Ad Details */
@@ -624,16 +643,7 @@ const ProductDetails = () => {
             {/* Posted Date */}
             <div className="mt-3 text-gray-500 text-sm flex items-center gap-2">
               <Clock className="text-[#2E3192]" size={15} />
-              {ad.createdAt
-                ? `Posted on ${new Date(ad.createdAt).toLocaleDateString(
-                    "en-US",
-                    {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    }
-                  )}`
-                : "Recently added"}
+              {getPostedAgo(ad.createdAt)}
             </div>
           </div>
 
@@ -1142,15 +1152,7 @@ const ProductDetails = () => {
 
                   {/* Date */}
                   <div className="text-xs text-gray-400 mt-2">
-                    {item.createdAt
-                      ? `Posted on ${new Date(
-                          item.createdAt
-                        ).toLocaleDateString("en-MW", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}`
-                      : "Recently added"}
+                    {getPostedAgo(item.createdAt)}
                   </div>
                 </div>
               </motion.div>

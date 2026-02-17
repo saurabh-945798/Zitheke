@@ -335,7 +335,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
             <button
               type="button"
               ref={prevRef}
-              className="alinafe-nav-btn alinafe-prev absolute 
+              className="hidden sm:inline-flex alinafe-nav-btn alinafe-prev absolute 
   left-2 top-[25%] -translate-y-1/2
   sm:left-0 z-10"
               aria-label="Previous"
@@ -346,7 +346,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
             <button
               type="button"
               ref={nextRef}
-              className="alinafe-nav-btn alinafe-next absolute 
+              className="hidden sm:inline-flex alinafe-nav-btn alinafe-next absolute 
   right-2 top-[25%] -translate-y-1/2
   sm:right-0 z-10"
               aria-label="Next"
