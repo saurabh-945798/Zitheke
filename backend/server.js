@@ -10,6 +10,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 import connectDB from "./config/db.js";
 
@@ -64,6 +65,7 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
+let io;
 
 // allowed frontends
 const allowedOrigins = [
@@ -76,18 +78,18 @@ const allowedOrigins = [
   "https://www.zitheke.com"
 ];
 
+const isAllowedOrigin = (origin) => !origin || allowedOrigins.includes(origin);
+
 
 // BODY PARSERS
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", 1);
 
 // 🌍 GLOBAL CORS — FINAL FIXED VERSION
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow non-browser/server-to-server tools (curl, health checks, etc.)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
 
@@ -103,7 +105,17 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// Express v5-safe preflight handling (avoid app.options("*", ...))
+app.use((req, res, next) => {
+  if (req.method !== "OPTIONS") return next();
+  return cors(corsOptions)(req, res, () => res.sendStatus(204));
+});
+
+// Attach io reference for controllers/routes.
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 
 
@@ -194,19 +206,14 @@ app.use((req, res) =>
 //       SOCKET.IO (FIXED)
 // ===============================
 
-const io = new Server(server, {
+io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-      // allow server-to-server or curl
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
+      if (isAllowedOrigin(origin)) return callback(null, true);
+      console.warn("Blocked Socket CORS:", origin);
       return callback(new Error("Socket CORS blocked"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST"],
     credentials: true,
   },
   transports: ["websocket", "polling"], // 🔥 IMPORTANT
@@ -214,18 +221,29 @@ const io = new Server(server, {
 
 
 // 🔌 Attach io to req (for controllers)
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
-
 // AUTH SOCKET
 io.use((socket, next) => {
-  const uid = socket.handshake.auth?.uid;
-  if (!uid) return next(new Error("Missing UID"));
-  socket.userId = uid;
-  next();
+  try {
+    const token = socket.handshake.auth?.token;
+    const fallbackUid = socket.handshake.auth?.uid;
+    const secret = process.env.JWT_SECRET;
+
+    if (token && secret) {
+      const decoded = jwt.verify(token, secret);
+      socket.userId = decoded?.uid;
+      if (!socket.userId) return next(new Error("Missing UID in token"));
+      return next();
+    }
+
+    if (process.env.NODE_ENV !== "production" && fallbackUid) {
+      socket.userId = fallbackUid;
+      return next();
+    }
+
+    return next(new Error("Unauthorized socket"));
+  } catch (err) {
+    return next(new Error("Unauthorized socket"));
+  }
 });
 
 // ===============================
@@ -237,7 +255,8 @@ io.on("connection", async (socket) => {
   console.log(`🟢 User Connected: ${userId}`);
   setUserOnline(userId, socket.id);
 
-  await User.updateOne({ uid: userId }, { lastSeen: new Date() });
+  try {
+    await User.updateOne({ uid: userId }, { lastSeen: new Date() });
 
   // 🔹 Personal room (for direct delivery)
   socket.join(userId);
@@ -245,18 +264,24 @@ io.on("connection", async (socket) => {
   // =========================================================
   // 📥 Deliver Offline Messages
   // =========================================================
-  const offline = await Message.find({
-    receiverId: userId,
-    isDelivered: false,
-  }).sort({ createdAt: 1 });
+    const offline = await Message.find({
+      receiverId: userId,
+      isDelivered: false,
+    })
+      .sort({ createdAt: 1 })
+      .limit(200);
 
-  if (offline.length > 0) {
-    socket.emit("message:batch-deliver", offline);
+    if (offline.length > 0) {
+      socket.emit("message:batch-deliver", offline);
 
-    await Message.updateMany(
-      { receiverId: userId, isDelivered: false },
-      { isDelivered: true, deliveredAt: new Date() }
-    );
+      const ids = offline.map((m) => m._id);
+      await Message.updateMany(
+        { _id: { $in: ids } },
+        { isDelivered: true, deliveredAt: new Date() }
+      );
+    }
+  } catch (err) {
+    console.error("Socket connect bootstrap error:", err?.message || err);
   }
 
   // =========================================================
@@ -467,20 +492,49 @@ io.on("connection", async (socket) => {
     console.log(`🔴 User disconnected: ${userId}`);
     setUserOffline(userId);
 
-    await User.updateOne({ uid: userId }, { lastSeen: new Date() });
+    try {
+      await User.updateOne({ uid: userId }, { lastSeen: new Date() });
+    } catch (err) {
+      console.error("Socket disconnect cleanup error:", err?.message || err);
+    }
   });
 });
 
 
 // START SERVER
+app.use((err, req, res, next) => {
+  console.error("Unhandled route error:", err?.message || err);
+  if (res.headersSent) return next(err);
+  return res.status(err?.status || 500).json({
+    success: false,
+    message: err?.message || "Internal Server Error",
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () =>
   console.log(`✅ Alinafe/Zitheke Server running on PORT ${PORT}`)
 );
 
 // Graceful Shutdown
-process.on("SIGINT", async () => {
-  console.log("🔻 Closing Server...");
-  await mongoose.connection.close();
-  process.exit(0);
+const shutdown = async (signal) => {
+  console.log(`Shutdown signal received: ${signal}`);
+  try {
+    await new Promise((resolve) => server.close(resolve));
+    if (io) io.close();
+    await mongoose.connection.close();
+    process.exit(0);
+  } catch (err) {
+    console.error("Shutdown error:", err?.message || err);
+    process.exit(1);
+  }
+};
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
 });
