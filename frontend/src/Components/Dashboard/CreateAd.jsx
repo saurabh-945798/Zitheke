@@ -187,6 +187,8 @@ Furniture: [
 
     Fashion: ["Men", "Women", "Footwear", "Watches", "Bags"],
 
+    Stationary: ["Stationary"],
+
  
 
     "Kitchenware & Cookware": ["Kitchen utensils"],
