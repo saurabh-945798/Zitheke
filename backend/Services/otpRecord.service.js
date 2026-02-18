@@ -39,7 +39,6 @@ export const issueOtpRecord = async ({
       expiresAt,
       resendAllowedAt,
       attempts: 0,
-      status: "active",
       lockedUntil: null,
       lastSentAt: now,
       messageId: "",
