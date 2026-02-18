@@ -8,6 +8,12 @@ import { SmsService } from "../Services/sms.service.js";
 import { env } from "../config/env.js";
 import { normalizeMalawiPhone, isValidMalawiPhone } from "../utils/phone.js";
 import { createSessionAndTokens } from "../Services/authTokens.service.js";
+import {
+  hashOtp,
+  issueOtpRecord,
+  markOtpProviderMeta,
+  markOtpSendFailed,
+} from "../Services/otpRecord.service.js";
 
 const OTP_TTL_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
@@ -15,8 +21,6 @@ const MAX_ATTEMPTS = 5;
 const normalizePhone = (raw = "") => normalizeMalawiPhone(raw);
 const isValidPhone = (phone) => isValidMalawiPhone(phone);
 
-const hashOtp = (otp) =>
-  crypto.createHash("sha256").update(String(otp)).digest("hex");
 const hashToken = (token) =>
   crypto.createHash("sha256").update(String(token)).digest("hex");
 
@@ -66,32 +70,34 @@ export const PhoneAuthController = {
         });
       }
 
-      const existing = await PhoneOtp.findOne({
+      const issued = await issueOtpRecord({
         phone: normalizedPhone,
         purpose: "login",
-        expiresAt: { $gt: new Date() },
+        ttlMinutes: OTP_TTL_MINUTES,
       });
-      if (existing) {
+      if (issued.blocked) {
         return res.status(429).json({
           success: false,
           message: "OTP already sent. Please wait before retrying.",
+          retryAfterSeconds: issued.retryAfterSeconds,
         });
       }
 
-      const otp = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
-
-      await PhoneOtp.create({
-        phone: normalizedPhone,
-        codeHash: hashOtp(otp),
-        purpose: "login",
-        expiresAt,
-      });
-
-      await SmsService.sendOtp({
-        to: normalizedPhone.replace(/^\+/, ""),
-        otp,
-      });
+      try {
+        const sms = await SmsService.sendOtp({
+          to: normalizedPhone.replace(/^\+/, ""),
+          otp: issued.otp,
+        });
+        const msg = sms?.response?.messages?.[0];
+        await markOtpProviderMeta(issued.record?._id, {
+          messageId: msg?.messageId || "",
+          providerStatus: msg?.status?.name || "",
+          providerGroup: msg?.status?.groupName || "",
+        });
+      } catch (smsErr) {
+        await markOtpSendFailed(issued.record?._id, smsErr?.message || "SMS send failed");
+        throw smsErr;
+      }
 
       return res.status(200).json({
         success: true,
@@ -125,7 +131,8 @@ export const PhoneAuthController = {
       const record = await PhoneOtp.findOne({
         phone: normalizedPhone,
         purpose: "login",
-      });
+        status: "active",
+      }).sort({ createdAt: -1 });
       if (!record) {
         return res.status(400).json({
           success: false,
@@ -156,7 +163,10 @@ export const PhoneAuthController = {
         });
       }
 
-      await PhoneOtp.deleteOne({ _id: record._id });
+      await PhoneOtp.updateMany(
+        { phone: normalizedPhone, purpose: "login", status: "active" },
+        { status: "verified" }
+      );
 
       const user =
         (await User.findOne({ phone: normalizedPhone })) ||
@@ -223,32 +233,34 @@ export const PhoneAuthController = {
         });
       }
 
-      const existing = await PhoneOtp.findOne({
+      const issued = await issueOtpRecord({
         phone: normalizedPhone,
         purpose: "change",
-        expiresAt: { $gt: new Date() },
+        ttlMinutes: OTP_TTL_MINUTES,
       });
-      if (existing) {
+      if (issued.blocked) {
         return res.status(429).json({
           success: false,
           message: "OTP already sent. Please wait before retrying.",
+          retryAfterSeconds: issued.retryAfterSeconds,
         });
       }
 
-      const otp = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000);
-
-      await PhoneOtp.create({
-        phone: normalizedPhone,
-        codeHash: hashOtp(otp),
-        purpose: "change",
-        expiresAt,
-      });
-
-      await SmsService.sendOtp({
-        to: normalizedPhone.replace(/^\+/, ""),
-        otp,
-      });
+      try {
+        const sms = await SmsService.sendOtp({
+          to: normalizedPhone.replace(/^\+/, ""),
+          otp: issued.otp,
+        });
+        const msg = sms?.response?.messages?.[0];
+        await markOtpProviderMeta(issued.record?._id, {
+          messageId: msg?.messageId || "",
+          providerStatus: msg?.status?.name || "",
+          providerGroup: msg?.status?.groupName || "",
+        });
+      } catch (smsErr) {
+        await markOtpSendFailed(issued.record?._id, smsErr?.message || "SMS send failed");
+        throw smsErr;
+      }
 
       return res.status(200).json({
         success: true,
@@ -282,7 +294,8 @@ export const PhoneAuthController = {
       const record = await PhoneOtp.findOne({
         phone: normalizedPhone,
         purpose: "change",
-      });
+        status: "active",
+      }).sort({ createdAt: -1 });
       if (!record) {
         return res.status(400).json({
           success: false,
@@ -313,7 +326,10 @@ export const PhoneAuthController = {
         });
       }
 
-      await PhoneOtp.deleteOne({ _id: record._id });
+      await PhoneOtp.updateMany(
+        { phone: normalizedPhone, purpose: "change", status: "active" },
+        { status: "verified" }
+      );
 
       const uid = req.user?.uid;
       if (!uid) {
