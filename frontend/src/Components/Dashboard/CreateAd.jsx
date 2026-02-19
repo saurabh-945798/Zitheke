@@ -185,7 +185,7 @@ Furniture: [
       "Indoor Games (Chess, Carrom, etc.)",
     ],
 
-    Fashion: ["Men", "Women", "Footwear", "Watches", "Bags"],
+    Fashion: ["Men", "Women", "Footwear", "Watches", "Bags", "Curtains", "Others"],
 
     Stationary: ["Stationary"],
 

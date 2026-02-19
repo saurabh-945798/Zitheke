@@ -25,6 +25,12 @@ export const QUERY_CATEGORY_MAP = {
     plumber: { category: "Services", subcategory: "Plumber" },
     carpenter: { category: "Services", subcategory: "Carpenter" },
 
+    // Fashion
+    fashion: { category: "Fashion" },
+    curtains: { category: "Fashion", subcategory: "Curtains" },
+    curtain: { category: "Fashion", subcategory: "Curtains" },
+    others: { category: "Fashion", subcategory: "Others" },
+
     // Stationary
     stationary: { category: "Stationary", subcategory: "Stationary" },
     stationery: { category: "Stationary", subcategory: "Stationary" },
