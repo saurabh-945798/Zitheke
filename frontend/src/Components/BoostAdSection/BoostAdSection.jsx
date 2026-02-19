@@ -167,7 +167,7 @@ const BoostAdSection = () => {
 
             {/* Price teaser */}
             <div className="mt-4 text-lg font-semibold text-[#F9B233]">
-              From MK 2,000 <span className="text-sm text-white/70">/ week</span>
+              From MK 3,000 <span className="text-sm text-white/70">/ week</span>
             </div>
 
             <ul className="mt-6 space-y-3 text-sm text-white/90">
