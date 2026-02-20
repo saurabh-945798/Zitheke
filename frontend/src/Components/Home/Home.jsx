@@ -17,19 +17,13 @@ import Furniture from "../CategorySlider/Furniture.jsx";
 import Utensils from "../CategorySlider/Utensils.jsx";
 import Sports from "../CategorySlider/Sports.jsx";
 
-// Category Overview
-// import CategoriesSection from "../CategoriesSection/CategoriesSection.jsx";
-
 // Practical / Utility Categories
 import JobsServices from "../CategorySlider/Jobs.jsx";
 import Agriculture from "../CategorySlider/Agriculture.jsx";
-import KidsEducation from "../CategorySlider/Education.jsx";
-import DigitalProducts from "../CategorySlider/DigitalProducts.jsx";
 
 // Other Sections
 import FeaturedListings from "../FeaturedListings/FeaturedListings.jsx";
 import SafetyTips from "../SafetyTips/SafetyTips.jsx";
-import Footer from "../Footer/Footer.jsx";
 import KitchenwarePromo from "../KitchenwarePromo/KitchenwarePromo.jsx";
 import BoostAdSection from "../BoostAdSection/BoostAdSection.jsx";
 import Livestock from "../CategorySlider/Livestock.jsx";
@@ -37,66 +31,49 @@ import Livestock from "../CategorySlider/Livestock.jsx";
 const Home = () => {
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-[Poppins] flex flex-col">
-
-      {/* 🦸 HERO (Discovery starts here) */}
       <HeroSection />
 
-      {/* 🧭 QUICK CATEGORY ACCESS */}
       <CategoryBar />
-                      <Utensils />
+      <Utensils />
 
-
-      {/* 🔥 TRENDING / PROMOTED */}
       <SpotlightSection />
 
-      {/* 🆕 FRESH & NEW ADS */}
-            <KitchenwarePromo/>
+      {/* Promo Flow (ordered, spaced) */}
+      <KitchenwarePromo sectionKey="kitchenware" />
 
       <FreshRecommendations />
 
+      <KitchenwarePromo sectionKey="agriculture" />
 
-      {/* 🏷️ HIGH-VALUE CATEGORIES */}
       <section className="space-y-0">
-        <FeaturedListings/>
-
+        <FeaturedListings />
+        <KitchenwarePromo sectionKey="electronics" />
         <RealEstate />
         <Vehicles />
         <Electronics />
-        <BoostAdSection/>
+        <BoostAdSection />
       </section>
 
-      {/* 🛒 DAILY-USE CATEGORIES */}
       <section className="space-y-0">
         <FashionBeauty />
+        <KitchenwarePromo sectionKey="fashion" />
         <Furniture />
         <Sports />
-        <Livestock/>
-    </section>
+        <Livestock />
+      </section>
 
-      {/* 🌐 EXPLORE ALL CATEGORIES */}
-      {/* <section>
-        <CategoriesSection />
-      </section> */}
-
-      {/* 💼 PRACTICAL / SERVICE CATEGORIES */}
       <section className="space-y-0">
         <JobsServices />
         <Agriculture />
-       </section>
+      </section>
 
- 
+      <KitchenwarePromo sectionKey="vehicles" />
 
-      {/* 🛡️ TRUST & SAFETY */}
       <section>
         <SafetyTips />
       </section>
-
-     
     </div>
   );
 };
 
 export default Home;
-
-
-

@@ -33,6 +33,14 @@ const Login = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState("email");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+  const [forgotInfo, setForgotInfo] = useState("");
+  const [forgotResendSeconds, setForgotResendSeconds] = useState(0);
   const [resendSeconds, setResendSeconds] = useState(0);
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaNonce, setCaptchaNonce] = useState(0);
@@ -60,6 +68,14 @@ const Login = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, [resendSeconds]);
+
+  useEffect(() => {
+    if (forgotResendSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setForgotResendSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [forgotResendSeconds]);
 
   const storeAuth = (data) => {
     if (data?.token) {
@@ -216,6 +232,96 @@ const Login = () => {
     }
   };
 
+  const openForgotModal = () => {
+    const inferredEmail = identifier.includes("@")
+      ? identifier.trim().toLowerCase()
+      : "";
+    setShowForgotModal(true);
+    setForgotStep("email");
+    setForgotEmail(inferredEmail);
+    setForgotOtp("");
+    setForgotError("");
+    setForgotInfo("");
+    setForgotResendSeconds(0);
+  };
+
+  const closeForgotModal = () => {
+    setShowForgotModal(false);
+    setForgotStep("email");
+    setForgotEmail("");
+    setForgotOtp("");
+    setForgotError("");
+    setForgotInfo("");
+    setForgotResendSeconds(0);
+  };
+
+  const handleSendForgotOtp = async () => {
+    setForgotError("");
+    setForgotInfo("");
+    const email = forgotEmail.trim().toLowerCase();
+    if (!email || !email.includes("@")) {
+      setForgotError("Please enter a valid registered email.");
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/auth/password/forgot/request-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to send OTP");
+      }
+      setForgotStep("otp");
+      setForgotInfo("OTP sent to your registered email address.");
+      setForgotResendSeconds(60);
+    } catch (err) {
+      setForgotError(err.message || "Failed to send OTP");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyForgotOtp = async () => {
+    setForgotError("");
+    setForgotInfo("");
+    const email = forgotEmail.trim().toLowerCase();
+    const otpCode = forgotOtp.trim();
+    if (!email || !otpCode) {
+      setForgotError("Email and OTP are required.");
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/auth/password/forgot/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: otpCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "OTP verification failed");
+      }
+
+      if (!data?.resetToken) {
+        throw new Error("Reset session could not be created. Try again.");
+      }
+
+      sessionStorage.setItem("forgotResetToken", data.resetToken);
+      sessionStorage.setItem("forgotResetEmail", email);
+      closeForgotModal();
+      navigate("/reset-password-otp");
+    } catch (err) {
+      setForgotError(err.message || "OTP verification failed");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-white via-[#F8FAFC] to-[#F2F4FF]">
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#2E3192]/20 rounded-full blur-3xl"></div>
@@ -335,6 +441,15 @@ const Login = () => {
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <div className="mt-2 text-right">
+                  <button
+                    type="button"
+                    onClick={openForgotModal}
+                    className="text-xs font-medium text-[#2E3192] hover:underline"
+                  >
+                    Forgot password?
                   </button>
                 </div>
               </div>
@@ -518,6 +633,100 @@ const Login = () => {
               >
                 Continue with Google
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">
+            <h3 className="text-xl font-semibold text-gray-800 mb-1">
+              Forgot Password
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {forgotStep === "email"
+                ? "You will receive an OTP on your registered email."
+                : "Enter the OTP sent to your registered email."}
+            </p>
+
+            {forgotError && (
+              <p className="text-red-600 text-xs font-medium bg-red-50 py-2 px-3 rounded-lg border border-red-100 mb-3">
+                {forgotError}
+              </p>
+            )}
+            {forgotInfo && (
+              <p className="text-green-700 text-xs font-medium bg-green-50 py-2 px-3 rounded-lg border border-green-100 mb-3">
+                {forgotInfo}
+              </p>
+            )}
+
+            <div className="space-y-3">
+              <input
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="Registered email"
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm"
+                disabled={forgotStep === "otp"}
+              />
+
+              {forgotStep === "otp" && (
+                <>
+                  <input
+                    type="text"
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value)}
+                    placeholder="Enter OTP"
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm"
+                  />
+                  <div className="text-xs text-gray-500 text-center">
+                    {forgotResendSeconds > 0
+                      ? `Resend OTP in ${forgotResendSeconds}s`
+                      : "Need a new OTP?"}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 mt-5">
+              <button
+                onClick={closeForgotModal}
+                className="px-4 py-2 rounded-lg border"
+                type="button"
+              >
+                Cancel
+              </button>
+
+              {forgotStep === "email" ? (
+                <button
+                  onClick={handleSendForgotOtp}
+                  disabled={forgotLoading}
+                  className="px-5 py-2 bg-[#2E3192] text-white rounded-lg hover:bg-[#1F2370] disabled:opacity-70"
+                  type="button"
+                >
+                  {forgotLoading ? "Sending..." : "Send OTP"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleSendForgotOtp}
+                    disabled={forgotResendSeconds > 0 || forgotLoading}
+                    className="px-4 py-2 rounded-lg border border-[#2E3192]/30 text-[#2E3192] disabled:opacity-60"
+                    type="button"
+                  >
+                    Resend OTP
+                  </button>
+                  <button
+                    onClick={handleVerifyForgotOtp}
+                    disabled={forgotLoading}
+                    className="px-5 py-2 bg-[#2E3192] text-white rounded-lg hover:bg-[#1F2370] disabled:opacity-70"
+                    type="button"
+                  >
+                    {forgotLoading ? "Verifying..." : "Verify OTP"}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade, Navigation } from "swiper/modules";
+import { Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import { motion } from "framer-motion";
@@ -21,8 +21,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const BASE_URL = "/api";
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
+  const mainSwiperRef = useRef(null);
   const imageSwiperRefs = useRef({});
 
   useEffect(() => {
@@ -334,10 +333,8 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
           <div className="flex">
             <button
               type="button"
-              ref={prevRef}
-              className="hidden sm:inline-flex alinafe-nav-btn alinafe-prev absolute 
-  left-2 top-[25%] -translate-y-1/2
-  sm:left-0 z-10"
+              onClick={() => mainSwiperRef.current?.slidePrev()}
+              className="inline-flex alinafe-nav-btn alinafe-prev absolute left-2 top-[25%] -translate-y-1/2 sm:left-0 z-10 h-10 w-10 sm:h-[52px] sm:w-[52px]"
               aria-label="Previous"
             >
               <ArrowRight size={18} className="rotate-180" />
@@ -345,10 +342,8 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
 
             <button
               type="button"
-              ref={nextRef}
-              className="hidden sm:inline-flex alinafe-nav-btn alinafe-next absolute 
-  right-2 top-[25%] -translate-y-1/2
-  sm:right-0 z-10"
+              onClick={() => mainSwiperRef.current?.slideNext()}
+              className="inline-flex alinafe-nav-btn alinafe-next absolute right-2 top-[25%] -translate-y-1/2 sm:right-0 z-10 h-10 w-10 sm:h-[52px] sm:w-[52px]"
               aria-label="Next"
             >
               <ArrowRight size={18} />
@@ -361,14 +356,8 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
             loop
             allowTouchMove={true}
             simulateTouch={true}
-            navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
-            }}
-            modules={[Navigation]}
-            onBeforeInit={(swiper) => {
-              swiper.params.navigation.prevEl = prevRef.current;
-              swiper.params.navigation.nextEl = nextRef.current;
+            onSwiper={(swiper) => {
+              mainSwiperRef.current = swiper;
             }}
             breakpoints={{
               480: {

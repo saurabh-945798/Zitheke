@@ -14,6 +14,8 @@ const userActionTokenSchema = new mongoose.Schema(
         "email_verify",
         "password_set",
         "password_reset",
+        "password_reset_otp",
+        "password_reset_otp_session",
         "delete_account",
       ],
       required: true,

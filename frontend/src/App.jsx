@@ -11,6 +11,7 @@ import Home from "./Components/Home/Home.jsx";
 import Login from "./Components/Pages/Login.jsx";
 import Signup from "./Components/Pages/Signup.jsx";
 import CheckEmail from "./Components/Pages/CheckEmail.jsx";
+import ResetPasswordOtp from "./Components/Pages/ResetPasswordOtp.jsx";
 
 // ✅ Static Pages (Footer Links)
 import About from "./Components/Footercontent/About.jsx";
@@ -222,6 +223,7 @@ function App() {
           element={!user ? <CheckEmail /> : <Navigate to="/" replace />}
         />
         <Route path="/set-password" element={<SetPassword />} />
+        <Route path="/reset-password-otp" element={<ResetPasswordOtp />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* 🚫 404 */}

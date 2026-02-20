@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import User from "../models/User.js";
 import PhoneOtp from "../models/PhoneOtp.js";
+import UserActionToken from "../models/UserActionToken.js";
 import { SmsService } from "../Services/sms.service.js";
 import { createSessionAndTokens } from "../Services/authTokens.service.js";
 import { normalizeMalawiPhone, isValidMalawiPhone } from "../utils/phone.js";
@@ -17,6 +18,9 @@ import {
 
 const OTP_TTL_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
+const EMAIL_RESET_OTP_TTL_MINUTES = 10;
+const EMAIL_RESET_SESSION_TTL_MINUTES = 15;
+const EMAIL_RESET_MAX_ATTEMPTS = 5;
 
 const sanitizeUser = (user) => ({
   uid: user.uid,
@@ -35,6 +39,9 @@ const hasPasswordAuth = (user) => {
   if (providers.includes("password")) return true;
   return user.authProvider === "password";
 };
+
+const hashToken = (value) =>
+  crypto.createHash("sha256").update(String(value)).digest("hex");
 
 const ensurePasswordProvider = async (user) => {
   const providers = Array.isArray(user.authProviders) ? user.authProviders : [];
@@ -381,6 +388,228 @@ export const PasswordAuthController = {
       });
     } catch (error) {
       console.error("? OTP verify error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  },
+
+  async requestForgotPasswordOtp(req, res) {
+    try {
+      const email = String(req.body?.email || "")
+        .trim()
+        .toLowerCase();
+
+      if (!email || !email.includes("@")) {
+        return res.status(400).json({
+          success: false,
+          message: "Valid email is required",
+        });
+      }
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(200).json({
+          success: true,
+          message: "If this email is registered, an OTP has been sent.",
+        });
+      }
+
+      if (!hasPasswordAuth(user)) {
+        return res.status(403).json({
+          success: false,
+          errorCode: "GOOGLE_ACCOUNT",
+          message:
+            "This account was created using Google. Please continue with Google Sign-In.",
+        });
+      }
+
+      const otp = String(crypto.randomInt(100000, 1000000));
+      const otpHash = hashToken(otp);
+      const expiresAt = new Date(
+        Date.now() + EMAIL_RESET_OTP_TTL_MINUTES * 60 * 1000
+      );
+
+      await UserActionToken.updateMany(
+        { userId: user._id, purpose: "password_reset_otp", usedAt: null },
+        { usedAt: new Date() }
+      );
+
+      await UserActionToken.create({
+        userId: user._id,
+        purpose: "password_reset_otp",
+        tokenHash: otpHash,
+        expiresAt,
+        meta: { attempts: 0, email },
+      });
+
+      await EmailService.sendTemplate({
+        to: user.email,
+        template: "OTP",
+        data: { otp, minutes: EMAIL_RESET_OTP_TTL_MINUTES },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "If this email is registered, an OTP has been sent.",
+      });
+    } catch (error) {
+      console.error("Forgot password OTP request error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  },
+
+  async verifyForgotPasswordOtp(req, res) {
+    try {
+      const email = String(req.body?.email || "")
+        .trim()
+        .toLowerCase();
+      const otp = String(req.body?.otp || "").trim();
+
+      if (!email || !otp) {
+        return res.status(400).json({
+          success: false,
+          message: "Email and OTP are required",
+        });
+      }
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired OTP",
+        });
+      }
+
+      const otpRecord = await UserActionToken.findOne({
+        userId: user._id,
+        purpose: "password_reset_otp",
+        usedAt: null,
+      }).sort({ createdAt: -1 });
+
+      if (!otpRecord || otpRecord.expiresAt <= new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired OTP",
+        });
+      }
+
+      const providedHash = hashToken(otp);
+      if (otpRecord.tokenHash !== providedHash) {
+        const attempts = Number(otpRecord?.meta?.attempts || 0) + 1;
+        otpRecord.meta = { ...(otpRecord.meta || {}), attempts };
+        if (attempts >= EMAIL_RESET_MAX_ATTEMPTS) {
+          otpRecord.usedAt = new Date();
+        }
+        await otpRecord.save();
+        return res.status(400).json({
+          success: false,
+          message: "Wrong OTP. Please try again.",
+        });
+      }
+
+      otpRecord.usedAt = new Date();
+      await otpRecord.save();
+
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetTokenHash = hashToken(resetToken);
+      const resetExpiresAt = new Date(
+        Date.now() + EMAIL_RESET_SESSION_TTL_MINUTES * 60 * 1000
+      );
+
+      await UserActionToken.updateMany(
+        {
+          userId: user._id,
+          purpose: "password_reset_otp_session",
+          usedAt: null,
+        },
+        { usedAt: new Date() }
+      );
+
+      await UserActionToken.create({
+        userId: user._id,
+        purpose: "password_reset_otp_session",
+        tokenHash: resetTokenHash,
+        expiresAt: resetExpiresAt,
+        meta: { flow: "forgot_password_otp", email },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "OTP verified",
+        resetToken,
+      });
+    } catch (error) {
+      console.error("Forgot password OTP verify error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  },
+
+  async resetPasswordWithOtp(req, res) {
+    try {
+      const token = String(req.body?.token || "").trim();
+      const password = String(req.body?.password || "");
+
+      if (!token || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Token and password are required",
+        });
+      }
+
+      if (password.length < 6) {
+        return res.status(400).json({
+          success: false,
+          message: "Password must be at least 6 characters.",
+        });
+      }
+
+      const tokenHash = hashToken(token);
+      const sessionRecord = await UserActionToken.findOne({
+        tokenHash,
+        purpose: "password_reset_otp_session",
+        usedAt: null,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (!sessionRecord) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired reset session. Please request OTP again.",
+        });
+      }
+
+      const user = await User.findById(sessionRecord.userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      user.passwordHash = await bcrypt.hash(password, 10);
+      const providers = Array.isArray(user.authProviders) ? user.authProviders : [];
+      if (!providers.includes("password")) providers.push("password");
+      user.authProviders = providers;
+      if (!user.authProvider) user.authProvider = "password";
+      await user.save();
+
+      sessionRecord.usedAt = new Date();
+      await sessionRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Password reset successful. Please login.",
+      });
+    } catch (error) {
+      console.error("Forgot password reset error:", error);
       return res.status(500).json({
         success: false,
         message: "Server error",

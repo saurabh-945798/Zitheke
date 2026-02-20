@@ -31,6 +31,21 @@ router.post(
   smsLimiter,
   PasswordAuthController.verifyLoginOtp
 );
+router.post(
+  "/password/forgot/request-otp",
+  emailAuthLimiter,
+  PasswordAuthController.requestForgotPasswordOtp
+);
+router.post(
+  "/password/forgot/verify-otp",
+  emailAuthLimiter,
+  PasswordAuthController.verifyForgotPasswordOtp
+);
+router.post(
+  "/password/forgot/reset",
+  emailAuthLimiter,
+  PasswordAuthController.resetPasswordWithOtp
+);
 
 router.get("/sessions", authMiddleware, listSessions);
 router.delete("/sessions/:id", authMiddleware, revokeSession);
