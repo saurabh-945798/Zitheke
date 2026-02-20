@@ -38,7 +38,7 @@ const createActionToken = async ({ userId, purpose, minutes = 30, meta = {} }) =
   return token;
 };
 
-const getAppBaseUrl = () => env.APP_BASE_URL || "http://localhost:5173";
+const APP_BASE_URL = env.APP_BASE_URL;
 
 const hasPasswordAuth = (user) => {
   const providers = Array.isArray(user.authProviders) ? user.authProviders : [];
@@ -94,7 +94,7 @@ export const SettingsController = {
       minutes: 60,
     });
 
-    const verifyLink = `${getAppBaseUrl()}/verify-email?token=${token}`;
+    const verifyLink = `${APP_BASE_URL}/verify-email?token=${token}`;
 
     try {
       await EmailService.sendTemplate({
@@ -262,7 +262,7 @@ export const SettingsController = {
       purpose: "password_set",
       minutes: 30,
     });
-    const setLink = `${getAppBaseUrl()}/set-password?token=${token}`;
+    const setLink = `${APP_BASE_URL}/set-password?token=${token}`;
 
     try {
       await EmailService.sendTemplate({
@@ -365,7 +365,7 @@ export const SettingsController = {
       purpose: "password_reset",
       minutes: 30,
     });
-    const resetLink = `${getAppBaseUrl()}/reset-password?token=${token}`;
+    const resetLink = `${APP_BASE_URL}/reset-password?token=${token}`;
 
     try {
       await EmailService.sendTemplate({
@@ -441,7 +441,7 @@ export const SettingsController = {
       purpose: "delete_account",
       minutes: 30,
     });
-    const deleteLink = `${getAppBaseUrl()}/confirm-delete?token=${token}`;
+    const deleteLink = `${APP_BASE_URL}/confirm-delete?token=${token}`;
 
     try {
       await EmailService.sendTemplate({

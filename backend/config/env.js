@@ -23,8 +23,34 @@ const optional = (key, fallback = "") => {
   return String(v).trim();
 };
 
+const NODE_ENV = optional("NODE_ENV", "development");
+const IS_PRODUCTION = NODE_ENV === "production";
+
+const normalizeBaseUrl = (urlValue) => {
+  const trimmed = String(urlValue || "").trim().replace(/\/+$/, "");
+  let parsed;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    throw new Error(`Invalid APP_BASE_URL: ${trimmed}`);
+  }
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error(`Invalid APP_BASE_URL protocol: ${parsed.protocol}`);
+  }
+  return parsed.toString().replace(/\/+$/, "");
+};
+
+const resolveAppBaseUrl = () => {
+  const configured = optional("APP_BASE_URL", "");
+  if (configured) return normalizeBaseUrl(configured);
+  if (IS_PRODUCTION) {
+    throw new Error("Missing required env: APP_BASE_URL (production)");
+  }
+  return "http://localhost:5173";
+};
+
 export const env = {
-  NODE_ENV: optional("NODE_ENV", "development"),
+  NODE_ENV,
   JWT_SECRET: required("JWT_SECRET"),
   JWT_REFRESH_SECRET: optional("JWT_REFRESH_SECRET", optional("JWT_SECRET")),
 
@@ -40,7 +66,7 @@ export const env = {
   OTP_ALLOWED_COUNTRY_CODE: optional("OTP_ALLOWED_COUNTRY_CODE", "265"),
 
   APP_NAME: optional("APP_NAME", "App"),
-  APP_BASE_URL: optional("APP_BASE_URL", "http://localhost:5173"),
+  APP_BASE_URL: resolveAppBaseUrl(),
 
   // If set, email routes require: header "x-internal-email-key"
   INTERNAL_EMAIL_KEY: optional("INTERNAL_EMAIL_KEY", ""),
