@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import crypto from "crypto";
 
 const ALLOWED_IMAGE_MIMES = new Set([
   "image/jpeg",
@@ -38,18 +39,31 @@ export const optimizeImageFile = async (filePath, mimeType = "") => {
   }
 
   const dir = path.dirname(filePath);
-  const name = path.basename(filePath, path.extname(filePath));
-  const optimizedPath = path.join(dir, `${name}.jpg`);
+  const baseName = path.basename(filePath, path.extname(filePath));
+  const finalPath = path.join(dir, `${baseName}.jpg`);
+  const tempPath = path.join(
+    dir,
+    `${baseName}.tmp-${crypto.randomBytes(6).toString("hex")}.jpg`
+  );
 
-  await sharp(filePath)
-    .rotate()
-    .resize({ width: 1400, withoutEnlargement: true })
-    .jpeg({ quality: 75, mozjpeg: true })
-    .toFile(optimizedPath);
+  try {
+    await sharp(filePath)
+      .rotate()
+      .resize({ width: 1400, withoutEnlargement: true })
+      .jpeg({ quality: 75, mozjpeg: true })
+      .toFile(tempPath);
 
-  if (optimizedPath !== filePath) {
     await fs.unlink(filePath).catch(() => {});
-  }
 
-  return optimizedPath;
+    // If a stale file already exists at final path, replace it safely.
+    if (tempPath !== finalPath) {
+      await fs.unlink(finalPath).catch(() => {});
+      await fs.rename(tempPath, finalPath);
+    }
+
+    return finalPath;
+  } catch (err) {
+    await fs.unlink(tempPath).catch(() => {});
+    throw err;
+  }
 };

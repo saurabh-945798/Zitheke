@@ -17,6 +17,20 @@ import {
 
 const normalizePhone = (raw = "") => normalizeMalawiPhone(raw);
 const isValidPhone = (phone) => isValidMalawiPhone(phone);
+const normalizeConditionInput = (raw) => {
+  if (raw === undefined || raw === null || raw === "") {
+    return { ok: true, value: undefined };
+  }
+
+  const normalized = String(raw).trim().toLowerCase();
+  if (normalized === "new") return { ok: true, value: "New" };
+  if (normalized === "used") return { ok: true, value: "Used" };
+
+  return {
+    ok: false,
+    message: "Invalid condition. Allowed values are New or Used.",
+  };
+};
 
 /* ================================
    🟢 CREATE AD (Pending by default)
@@ -77,18 +91,38 @@ export const createAd = async (req, res) => {
     body.deliveryAvailable =
       body.deliveryAvailable === "true" || body.deliveryAvailable === true;
 
+    // 5.5️⃣ Condition normalization (schema-safe)
+    const normalizedCondition = normalizeConditionInput(body.condition);
+    if (!normalizedCondition.ok) {
+      return res.status(400).json({
+        success: false,
+        message: normalizedCondition.message,
+      });
+    }
+    if (normalizedCondition.value) {
+      body.condition = normalizedCondition.value;
+    }
+
     // 6️⃣ Images from local uploads (new uploads only)
     const imageFiles = req.files?.images || [];
     const imagePaths = [];
 
     for (const file of imageFiles) {
-      const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
-      if (optimizedPath !== file.path) {
-        file.path = optimizedPath;
-        file.filename = optimizedPath.split(/[/\\]/).pop();
+      try {
+        const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
+        if (optimizedPath !== file.path) {
+          file.path = optimizedPath;
+          file.filename = optimizedPath.split(/[/\\]/).pop();
+        }
+        const publicPath = publicPathFromFile(file);
+        imagePaths.push(toPublicUrl(req, publicPath));
+      } catch (imgErr) {
+        await fs.unlink(file.path).catch(() => {});
+        return res.status(400).json({
+          success: false,
+          message: "Image optimization failed. Please upload a valid image.",
+        });
       }
-      const publicPath = publicPathFromFile(file);
-      imagePaths.push(toPublicUrl(req, publicPath));
     }
 
     if (imagePaths.length === 0) {
@@ -463,16 +497,39 @@ export const updateAd = async (req, res) => {
       return res.status(404).json({ message: "Ad not found" });
     }
 
+    if (Object.prototype.hasOwnProperty.call(updates, "condition")) {
+      const normalizedCondition = normalizeConditionInput(updates.condition);
+      if (!normalizedCondition.ok) {
+        return res.status(400).json({
+          success: false,
+          message: normalizedCondition.message,
+        });
+      }
+      if (normalizedCondition.value) {
+        updates.condition = normalizedCondition.value;
+      } else {
+        delete updates.condition;
+      }
+    }
+
     // 🖼️ Update images (local upload + sharp optimize)
     const imageFiles = req.files?.images || [];
     const imagePaths = [];
     for (const file of imageFiles) {
-      const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
-      if (optimizedPath !== file.path) {
-        file.path = optimizedPath;
-        file.filename = optimizedPath.split(/[/\\]/).pop();
+      try {
+        const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
+        if (optimizedPath !== file.path) {
+          file.path = optimizedPath;
+          file.filename = optimizedPath.split(/[/\\]/).pop();
+        }
+        imagePaths.push(toPublicUrl(req, publicPathFromFile(file)));
+      } catch (imgErr) {
+        await fs.unlink(file.path).catch(() => {});
+        return res.status(400).json({
+          success: false,
+          message: "Image optimization failed. Please upload a valid image.",
+        });
       }
-      imagePaths.push(toPublicUrl(req, publicPathFromFile(file)));
     }
 
     if (imagePaths.length > 0) updates.images = imagePaths;
@@ -737,7 +794,3 @@ export const searchAds = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
-
-
