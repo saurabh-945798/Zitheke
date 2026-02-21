@@ -1,23 +1,22 @@
 import mongoose from "mongoose";
+import fs from "fs/promises";
 import Ad from "../models/Ad.js";
 import User from "../models/User.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
-import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
 import { normalizeMalawiPhone, isValidMalawiPhone } from "../utils/phone.js";
+import { optimizeImageFile } from "../utils/optimizeImage.js";
+import {
+  isCloudinaryUrl,
+  isLocalUploadUrl,
+  localAbsolutePathFromUrl,
+  publicPathFromFile,
+  toPublicUrl,
+} from "../utils/uploadPath.js";
 
 const normalizePhone = (raw = "") => normalizeMalawiPhone(raw);
 const isValidPhone = (phone) => isValidMalawiPhone(phone);
-
-/* ================================
-   🧠 CLOUDINARY CONFIG
-================================ */
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 /* ================================
    🟢 CREATE AD (Pending by default)
@@ -78,10 +77,19 @@ export const createAd = async (req, res) => {
     body.deliveryAvailable =
       body.deliveryAvailable === "true" || body.deliveryAvailable === true;
 
-    // 6️⃣ Images from Cloudinary / Multer
-    const imagePaths = req.files?.images
-      ? req.files.images.map((f) => f.path || f.secure_url)
-      : [];
+    // 6️⃣ Images from local uploads (new uploads only)
+    const imageFiles = req.files?.images || [];
+    const imagePaths = [];
+
+    for (const file of imageFiles) {
+      const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
+      if (optimizedPath !== file.path) {
+        file.path = optimizedPath;
+        file.filename = optimizedPath.split(/[/\\]/).pop();
+      }
+      const publicPath = publicPathFromFile(file);
+      imagePaths.push(toPublicUrl(req, publicPath));
+    }
 
     if (imagePaths.length === 0) {
       return res.status(400).json({
@@ -120,43 +128,20 @@ export const createAd = async (req, res) => {
 
     body.tags = Array.from(autoTags);
 
-    // 7️⃣ 🎥 VIDEO UPLOAD (OPTIONAL — MAX 30 SEC)
+    // 7️⃣ 🎥 VIDEO UPLOAD (OPTIONAL)
     let videoData = {};
 
     if (req.files?.video?.[0]) {
       const videoFile = req.files.video[0];
-
-      const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
-        resource_type: "video",
-        folder: "alinafe/videos",
-      });
-
-      // ✅ Thumbnail (Cloudinary way) - format safe
-      const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
-        resource_type: "video",
-        format: "jpg",
-      });
-
-      // ⛔ HARD LIMIT: 30 seconds (cleanup too)
-      if (uploadedVideo.duration > 30) {
-        // ✅ delete uploaded video to avoid junk
-        await cloudinary.uploader.destroy(uploadedVideo.public_id, {
-          resource_type: "video",
-        });
-
-        return res.status(400).json({
-          success: false,
-          message: "Video duration must be 30 seconds or less",
-        });
-      }
+      const publicPath = publicPathFromFile(videoFile);
 
       videoData = {
-        url: uploadedVideo.secure_url,
-        thumbnail: thumbnailUrl,
-        duration: uploadedVideo.duration,
-        size: uploadedVideo.bytes,
-        format: uploadedVideo.format,
-        publicId: uploadedVideo.public_id,
+        url: toPublicUrl(req, publicPath),
+        thumbnail: "",
+        duration: 0,
+        size: videoFile.size || 0,
+        format: "mp4",
+        publicId: "",
       };
     }
 
@@ -473,11 +458,22 @@ export const updateAd = async (req, res) => {
   try {
     const updates = { ...req.body };
     const MAX_IMAGES = 5;
+    const existingAd = await Ad.findById(req.params.id);
+    if (!existingAd) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
 
-    // 🖼️ Update images
-    const imagePaths = req.files?.images
-      ? req.files.images.map((f) => f.path || f.secure_url)
-      : [];
+    // 🖼️ Update images (local upload + sharp optimize)
+    const imageFiles = req.files?.images || [];
+    const imagePaths = [];
+    for (const file of imageFiles) {
+      const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
+      if (optimizedPath !== file.path) {
+        file.path = optimizedPath;
+        file.filename = optimizedPath.split(/[/\\]/).pop();
+      }
+      imagePaths.push(toPublicUrl(req, publicPathFromFile(file)));
+    }
 
     if (imagePaths.length > 0) updates.images = imagePaths;
 
@@ -521,37 +517,21 @@ export const updateAd = async (req, res) => {
     // 🎥 Replace video if uploaded
     if (req.files?.video?.[0]) {
       const videoFile = req.files.video[0];
-
-      const uploadedVideo = await cloudinary.uploader.upload(videoFile.path, {
-        resource_type: "video",
-        folder: "alinafe/videos",
-      });
-
-      const thumbnailUrl = cloudinary.url(uploadedVideo.public_id, {
-        resource_type: "video",
-        format: "jpg",
-      });
-
-      if (uploadedVideo.duration > 30) {
-        // ✅ delete uploaded video to avoid junk
-        await cloudinary.uploader.destroy(uploadedVideo.public_id, {
-          resource_type: "video",
-        });
-
-        return res.status(400).json({
-          success: false,
-          message: "Video duration must be 30 seconds or less",
-        });
-      }
+      const publicPath = publicPathFromFile(videoFile);
 
       updates.video = {
-        url: uploadedVideo.secure_url,
-        thumbnail: thumbnailUrl,
-        duration: uploadedVideo.duration,
-        size: uploadedVideo.bytes,
-        format: uploadedVideo.format,
-        publicId: uploadedVideo.public_id,
+        url: toPublicUrl(req, publicPath),
+        thumbnail: "",
+        duration: 0,
+        size: videoFile.size || 0,
+        format: "mp4",
+        publicId: "",
       };
+
+      if (isLocalUploadUrl(existingAd.video?.url)) {
+        const oldVideoPath = localAbsolutePathFromUrl(existingAd.video.url);
+        if (oldVideoPath) await fs.unlink(oldVideoPath).catch(() => {});
+      }
     }
 
     const updatedAd = await Ad.findByIdAndUpdate(
@@ -559,10 +539,6 @@ export const updateAd = async (req, res) => {
       updates,
       { new: true }
     );
-
-    if (!updatedAd) {
-      return res.status(404).json({ message: "Ad not found" });
-    }
 
     res.status(200).json({
       message: "Ad updated successfully",
@@ -583,11 +559,19 @@ export const deleteAd = async (req, res) => {
     const ad = await Ad.findById(req.params.id);
     if (!ad) return res.status(404).json({ message: "Ad not found" });
 
-    // 🗑️ Delete video from Cloudinary if exists
-    if (ad.video?.publicId) {
-      await cloudinary.uploader.destroy(ad.video.publicId, {
-        resource_type: "video",
-      });
+    // Best-effort local file cleanup (existing Cloudinary URLs are untouched)
+    if (Array.isArray(ad.images)) {
+      for (const imgUrl of ad.images) {
+        if (isCloudinaryUrl(imgUrl)) continue;
+        if (isLocalUploadUrl(imgUrl)) {
+          const localPath = localAbsolutePathFromUrl(imgUrl);
+          if (localPath) await fs.unlink(localPath).catch(() => {});
+        }
+      }
+    }
+    if (ad.video?.url && isLocalUploadUrl(ad.video.url)) {
+      const localVideoPath = localAbsolutePathFromUrl(ad.video.url);
+      if (localVideoPath) await fs.unlink(localVideoPath).catch(() => {});
     }
 
     await ad.deleteOne();

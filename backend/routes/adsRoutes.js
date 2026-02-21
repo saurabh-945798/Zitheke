@@ -1,5 +1,4 @@
 import express from "express";
-import multer from "multer";
 import {
   createAd,
   getUserAds,
@@ -20,68 +19,11 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 // 🔐 OWNER / ADMIN PERMISSION MIDDLEWARE
 import adPermissionMiddleware from "../middlewares/adPermissionMiddleware.js";
 
-// 🔹 Cloudinary Integration
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-
 // 🔥 Multer Error Handler
 import multerErrorHandler from "../middlewares/multerErrorHandler.js";
+import { adUpload } from "../middlewares/localUpload.js";
 
 const router = express.Router();
-
-/* =============================
-   🔧 CLOUDINARY CONFIG
-============================= */
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-/* =============================
-   📦 CLOUDINARY STORAGE
-============================= */
-const storage = new CloudinaryStorage({
-  
-  cloudinary,
-  params: async (req, file) => {
-    // 🎥 VIDEO CONFIG
-    if (file.mimetype.startsWith("video")) {
-      return {
-        folder: "alinafe/videos",
-        resource_type: "video",
-        allowed_formats: ["mp4", "webm", "mov"],
-      };
-    }
-
-    // 🖼️ IMAGE CONFIG
-    return {
-      folder: "alinafe/images",
-      allowed_formats: ["jpg", "jpeg", "png", "webp", "avif"],
-      transformation: [{ quality: "auto", fetch_format: "auto" }],
-    };
-  },
-});
-
-/* =============================
-   📤 MULTER CONFIG
-============================= */
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 30 * 1024 * 1024, // ⛔ 30MB
-  },
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype.startsWith("image/") ||
-      file.mimetype.startsWith("video/")
-    ) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image and video files are allowed"), false);
-    }
-  },
-});
 
 /* =============================
         🔹 ROUTES START
@@ -93,10 +35,7 @@ const upload = multer({
 router.post(
   "/create",
   authMiddleware,
-  upload.fields([
-    { name: "images", maxCount: 5 },
-    { name: "video", maxCount: 1 },
-  ]),
+  adUpload,
   multerErrorHandler,
   createAd
 );
@@ -155,10 +94,7 @@ router.put(
   "/:id",
   authMiddleware,
   adPermissionMiddleware,
-  upload.fields([
-    { name: "images", maxCount: 5 },
-    { name: "video", maxCount: 1 },
-  ]),
+  adUpload,
   multerErrorHandler,
   updateAd
 );

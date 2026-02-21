@@ -38,6 +38,7 @@ import emailRoutes from "./routes/email.routes.js";
 import phoneAuthRoutes from "./routes/phoneAuth.routes.js";
 import authRoutes from "./routes/authRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 
 
@@ -159,6 +160,7 @@ app.use("/api/email", emailRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth/phone", phoneAuthRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 
 /* =========================
