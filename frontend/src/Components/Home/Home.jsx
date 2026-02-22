@@ -38,16 +38,13 @@ const Home = () => {
 
       <SpotlightSection />
 
-      {/* Promo Flow (ordered, spaced) */}
-      <KitchenwarePromo sectionKey="kitchenware" />
+      {/* Common Boosted Ads Section (single placement) */}
+      <KitchenwarePromo />
 
       <FreshRecommendations />
 
-      <KitchenwarePromo sectionKey="agriculture" />
-
       <section className="space-y-0">
         <FeaturedListings />
-        <KitchenwarePromo sectionKey="electronics" />
         <RealEstate />
         <Vehicles />
         <Electronics />
@@ -56,7 +53,6 @@ const Home = () => {
 
       <section className="space-y-0">
         <FashionBeauty />
-        <KitchenwarePromo sectionKey="fashion" />
         <Furniture />
         <Sports />
         <Livestock />
@@ -66,8 +62,6 @@ const Home = () => {
         <JobsServices />
         <Agriculture />
       </section>
-
-      <KitchenwarePromo sectionKey="vehicles" />
 
       <section>
         <SafetyTips />
