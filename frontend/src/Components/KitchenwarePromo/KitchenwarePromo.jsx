@@ -155,7 +155,7 @@ const KitchenwarePromo = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/all-ads")}
+              onClick={() => navigate("/boosted-ads")}
               className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-[#F9B233] text-[#1A1D64] font-semibold shadow-lg hover:bg-[#E7A21F] transition"
             >
               Explore Boosted Ads

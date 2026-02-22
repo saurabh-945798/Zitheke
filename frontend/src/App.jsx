@@ -43,6 +43,7 @@ import PricingPage from "./Components/BoostAdSection/PricingPage.jsx";
 import CheckoutPage from "./Components/BoostAdSection/CheckoutPage.jsx";
 import SafetyTipsPage from "./Components/SafetyTips/SafetyTipsPage.jsx";
 import BrowseListings from "./Components/BrowseListings/BrowseListings.jsx";
+import BoostedPage from "./Components/BoostedPage/BoostedPage.jsx";
 
 function App() {
   const { user, loading } = useAuth();
@@ -189,6 +190,14 @@ function App() {
           element={
             <MainLayout>
               <BrowseListings />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/boosted-ads"
+          element={
+            <MainLayout>
+              <BoostedPage />
             </MainLayout>
           }
         />
