@@ -389,12 +389,12 @@ export const getPromoAds = async (req, res) => {
       filters.category = category;
     }
 
-    const ads = await Ad.find(filters)
-      .sort({ createdAt: -1 }) // latest first
-      .limit(Number(limit))
-     .select(
-  "_id title price images condition city location ownerName"
-);
+      const ads = await Ad.find(filters)
+        .sort({ createdAt: -1 }) // latest first
+        .limit(Number(limit))
+       .select(
+    "_id title price images condition category city location ownerName negotiable"
+  );
 
 
     res.status(200).json({
