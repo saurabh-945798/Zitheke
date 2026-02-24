@@ -39,6 +39,7 @@ import phoneAuthRoutes from "./routes/phoneAuth.routes.js";
 import authRoutes from "./routes/authRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import ogPreviewRoutes from "./routes/ogPreview.routes.js";
 
 
 
@@ -191,6 +192,8 @@ app.use("/api/sellers", sellerRoutes);
 /* =========================
    🏠 ROOT & 404
 ========================= */
+app.use("/", ogPreviewRoutes);
+
 app.get("/", (req, res) => {
   res.send("🔥 Alinafe + Zitheke API Running");
 });

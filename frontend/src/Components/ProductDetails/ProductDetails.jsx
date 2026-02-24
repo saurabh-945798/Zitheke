@@ -9,12 +9,12 @@ import CATEGORY_FIELDS from "../Dashboard/CategoryFields.js";
 
 import {
   MapPin,
-  Phone,
   Heart,
   Eye,
   ArrowLeft,
   CheckCircle2,
   ShieldCheck,
+  MessageCircle,
   MessageSquare,
   Gauge,
   Calendar,
@@ -28,6 +28,43 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
+
+const normalizePhone = (number) => {
+  if (number === null || number === undefined) return "";
+  let cleaned = String(number).trim();
+  if (!cleaned) return "";
+
+  cleaned = cleaned
+    .replace(/[\s\-()]/g, "")
+    .replace(/^\+/, "")
+    .replace(/^00/, "");
+
+  if (!/^\d+$/.test(cleaned)) return "";
+  if (cleaned.length < 8 || cleaned.length > 15) return "";
+  return cleaned;
+};
+
+const buildWhatsappMessage = ({ title, price, link }) => {
+  const lines = [
+    "🟦 ZITHEKE Marketplace",
+    "",
+    "Hello 👋",
+    "",
+    "I’m interested in your listing on ZITHEKE:",
+    "",
+    title ? `📦 Product: ${title}` : "",
+    price ? `💰 Price: MK ${price}` : "",
+    "",
+    link ? "🔗 View Ad:" : "",
+    link || "",
+    "",
+    "Is this item still available?",
+    "",
+    "— Sent via ZITHEKE Marketplace",
+  ].filter(Boolean);
+
+  return lines.join("\n");
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -47,7 +84,6 @@ const ProductDetails = () => {
   const [isFav, setIsFav] = useState(false);
   const [showFullImage, setShowFullImage] = useState(false);
   const [fullImageIndex, setFullImageIndex] = useState(0);
-  const [showPhone, setShowPhone] = useState(false);
   const [sellerStats, setSellerStats] = useState(null);
   const [showCallbackModal, setShowCallbackModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -231,26 +267,21 @@ const ProductDetails = () => {
         senderId: user.uid,
         receiverId: ad.ownerUid,
 
-        // ✅ sender (buyer)
         senderName: user.displayName || user.email.split("@")[0],
         senderEmail: user.email,
         senderPhoto: user.photoURL || null,
 
-        // ✅ receiver (seller)
         receiverName: ad.ownerName,
         receiverPhoto: ad.ownerImage || null,
 
-        // ✅ AD CONTEXT (FOR CHAT HEADER)
         adId: ad._id,
         productTitle: ad.title,
         productImage: ad.images?.[0] || "",
 
-        // ✅ DEFAULT MESSAGE
         message: "Hi, I’m interested in this ad.",
       });
 
       const convoId = res.data?.conversationId || res.data?._id;
-
       navigate(`/chats?conversationId=${convoId}&receiverId=${ad.ownerUid}`);
     } catch (error) {
       Swal.fire("Error", "Failed to start chat", "error");
@@ -321,8 +352,6 @@ const ProductDetails = () => {
       }
     }
   };
-
-  const phone = ad?.ownerPhone || ad?.owner?.phone || ad?.phone;
 
   if (loading)
     return (
@@ -436,6 +465,56 @@ const ProductDetails = () => {
         </div>
       </div>
     );
+  };
+
+  const resolveSellerWhatsappRaw = (product) => {
+    if (!product) return "";
+
+    const directMatch =
+      product?.seller?.whatsappNumber ||
+      product?.user?.whatsappNumber ||
+      product?.postedBy?.whatsappNumber ||
+      product?.whatsappNumber ||
+      product?.ownerWhatsapp ||
+      product?.ownerPhone ||
+      product?.owner?.phone ||
+      product?.phone ||
+      product?.contactNumber;
+
+    if (directMatch) return directMatch;
+
+    const whatsappSameAsPhone =
+      product?.whatsappSameAsPhone === true ||
+      product?.seller?.whatsappSameAsPhone === true ||
+      product?.user?.whatsappSameAsPhone === true ||
+      product?.postedBy?.whatsappSameAsPhone === true;
+
+    if (!whatsappSameAsPhone) return "";
+    return product?.seller?.phone || product?.phone || "";
+  };
+
+  const sellerWhatsappNumber = normalizePhone(resolveSellerWhatsappRaw(ad));
+  const isWhatsappAvailable = Boolean(sellerWhatsappNumber);
+
+  const openWhatsAppChat = () => {
+    if (!isWhatsappAvailable) return;
+
+    const priceText =
+      ad?.price !== null && ad?.price !== undefined && ad?.price !== ""
+        ? Number(ad.price).toLocaleString()
+        : "";
+    const productLink = typeof window !== "undefined" ? window.location.href : "";
+
+    const message = buildWhatsappMessage({
+      title: ad?.title || "",
+      price: priceText,
+      link: productLink,
+    });
+
+    const waUrl = `https://wa.me/${sellerWhatsappNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -817,77 +896,32 @@ const ProductDetails = () => {
 
                 {/* ACTION BUTTONS */}
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  {/* MOBILE CALL */}
                   <button
-                    onClick={() =>
-                      !user
-                        ? Swal.fire(
-                            "Login required",
-                            "Please login to call the seller",
-                            "info"
-                          )
-                        : phone
-                        ? window.open(`tel:${phone}`)
-                        : Swal.fire("Phone number not available", "", "info")
-                    }
-                    className="flex sm:hidden items-center justify-center gap-2 w-full whitespace-nowrap 
-          bg-[#2E3192] text-white py-2.5 rounded-xl font-medium 
-          hover:bg-[#1F2370] transition-all shadow-sm"
+                    type="button"
+                    onClick={openWhatsAppChat}
+                    disabled={!isWhatsappAvailable}
+                    aria-label="Chat on WhatsApp"
+                    className={`flex items-center justify-center gap-2 whitespace-nowrap py-2.5 px-4 rounded-xl font-medium shadow-sm transition ${
+                      isWhatsappAvailable
+                        ? "bg-[#25D366] text-white hover:bg-[#1DA851]"
+                        : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    }`}
                   >
-                    <Phone size={18} />
-                    Call Seller
+                    <MessageCircle size={18} />
+                   WhatsApp
                   </button>
 
-                  {/* DESKTOP CALL */}
-                  <div className="hidden sm:flex items-center gap-2">
-                    {!user ? (
-                      <button
-                        onClick={() =>
-                          Swal.fire(
-                            "Login required",
-                            "Please login to view seller contact",
-                            "info"
-                          )
-                        }
-                        className="flex items-center gap-2 border border-[#2E3192] text-[#2E3192] whitespace-nowrap
-              px-4 py-2.5 rounded-xl font-medium hover:bg-[#2E3192] hover:text-white"
-                      >
-                        <Phone size={18} />
-                        Show Contact
-                      </button>
-                    ) : !showPhone ? (
-                      <button
-                        onClick={() => setShowPhone(true)}
-                        className="flex items-center gap-2 border border-[#2E3192] text-[#2E3192] whitespace-nowrap
-              px-4 py-2.5 rounded-xl font-medium hover:bg-[#2E3192] hover:text-white"
-                      >
-                        <Phone size={18} />
-                        Show Contact
-                      </button>
-                    ) : (
-                      <div
-                        className="flex items-center gap-2 bg-[#2E3192]/10 whitespace-nowrap 
-              border border-[#2E3192] text-[#2E3192] 
-              px-4 py-2.5 rounded-xl"
-                      >
-                        <Phone size={18} />
-                        {phone || "Not Available"}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CHAT (PRIMARY) */}
                   <button
+                    type="button"
                     onClick={handleStartChat}
-                    className="flex items-center justify-center gap-2 whitespace-nowrap 
-          bg-[#2E3192] text-white py-2.5 px-4 
-          rounded-xl font-medium hover:bg-[#1F2370] shadow-sm"
+                    className="flex items-center justify-center gap-2 whitespace-nowrap bg-[#2E3192] text-white py-2.5 px-4 rounded-xl font-medium hover:bg-[#1F2370] shadow-sm"
                   >
                     <MessageSquare size={18} />
                     Start Chat
                   </button>
                 </div>
               </div>
+              
 
               {/* SECONDARY CALLBACK LINK */}
               <div className="pt-2 border-t border-gray-100 text-center">
