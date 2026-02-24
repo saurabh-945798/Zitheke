@@ -92,14 +92,15 @@ const renderOgHtml = ({ title, description, image, url }) => {
 };
 
 // Dynamic OG endpoint for every product page.
-router.get("/ad/:id", async (req, res) => {
+router.get("/ad/:id", async (req, res, next) => {
   const { id } = req.params;
   const userAgent = req.headers["user-agent"] || "";
   const isCrawler = CRAWLER_UA_REGEX.test(userAgent);
 
-  // For normal browsers, do not render OG HTML. Redirect to SPA route directly.
+  // For normal browsers, do not render OG HTML here.
+  // Pass control to next handler (typically Nginx/SPA fallback flow).
   if (!isCrawler) {
-    return res.redirect(302, `${FRONTEND_BASE_URL}/ad/${id}`);
+    return next();
   }
 
   // Crawler path: validate id and render OG-only HTML.
@@ -148,4 +149,3 @@ router.get("/ad/:id", async (req, res) => {
 });
 
 export default router;
-
