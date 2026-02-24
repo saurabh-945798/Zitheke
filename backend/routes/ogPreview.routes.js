@@ -11,6 +11,10 @@ const FRONTEND_BASE_URL =
 
 const OG_FALLBACK_IMAGE = `${FRONTEND_BASE_URL}/logo.png`;
 
+// Social crawler detection for OG HTML responses.
+const CRAWLER_UA_REGEX =
+  /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|TelegramBot|Slackbot/i;
+
 const escapeHtml = (value = "") =>
   String(value)
     .replace(/&/g, "&amp;")
@@ -24,7 +28,7 @@ const buildAbsoluteImageUrl = (imagePath) => {
   if (!raw) return OG_FALLBACK_IMAGE;
 
   if (/^https?:\/\//i.test(raw)) {
-    // Guard against accidentally leaked localhost URLs in production data.
+    // Guard against localhost URL leakage in stored ad data.
     if (/^https?:\/\/(localhost|127\.0\.0\.1)/i.test(raw)) {
       const idx = raw.indexOf("/uploads/");
       if (idx !== -1) return `${FRONTEND_BASE_URL}${raw.substring(idx)}`;
@@ -32,8 +36,7 @@ const buildAbsoluteImageUrl = (imagePath) => {
     return raw;
   }
 
-  const normalized = raw.startsWith("/") ? raw : `/${raw}`;
-  return `${FRONTEND_BASE_URL}${normalized}`;
+  return `${FRONTEND_BASE_URL}${raw.startsWith("/") ? raw : `/${raw}`}`;
 };
 
 const getLocationText = (ad) =>
@@ -58,12 +61,11 @@ const renderNotFoundHtml = () => `<!doctype html>
   </body>
 </html>`;
 
-const renderOgHtml = ({ adId, title, description, image, url }) => {
+const renderOgHtml = ({ title, description, image, url }) => {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeImage = escapeHtml(image);
   const safeUrl = escapeHtml(url);
-  const safeRedirectPath = `/ad/${escapeHtml(adId)}`;
 
   return `<!doctype html>
 <html lang="en">
@@ -82,24 +84,25 @@ const renderOgHtml = ({ adId, title, description, image, url }) => {
     <meta name="twitter:title" content="${safeTitle}" />
     <meta name="twitter:description" content="${safeDescription}" />
     <meta name="twitter:image" content="${safeImage}" />
-
-    <meta http-equiv="refresh" content="0;url=${safeRedirectPath}" />
   </head>
   <body>
-    <script>
-      window.location.href = "${safeRedirectPath}";
-    </script>
-    <noscript>
-      <p>Redirecting to listing... <a href="${safeRedirectPath}">Open ad</a></p>
-    </noscript>
+    <p>Preview metadata generated for social crawler.</p>
   </body>
 </html>`;
 };
 
-// Dynamic OG endpoint for every product page
+// Dynamic OG endpoint for every product page.
 router.get("/ad/:id", async (req, res) => {
   const { id } = req.params;
+  const userAgent = req.headers["user-agent"] || "";
+  const isCrawler = CRAWLER_UA_REGEX.test(userAgent);
 
+  // For normal browsers, do not render OG HTML. Redirect to SPA route directly.
+  if (!isCrawler) {
+    return res.redirect(302, `${FRONTEND_BASE_URL}/ad/${id}`);
+  }
+
+  // Crawler path: validate id and render OG-only HTML.
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).type("html").send(renderNotFoundHtml());
   }
@@ -117,13 +120,13 @@ router.get("/ad/:id", async (req, res) => {
     const locationText = getLocationText(ad);
     const priceText = getPriceText(ad?.price);
     const ogDescription =
-      [priceText ? `MK ${priceText}` : "", locationText].filter(Boolean).join(" | ") ||
-      "Find listings on ZITHEKE";
+      [priceText ? `MK ${priceText}` : "", locationText]
+        .filter(Boolean)
+        .join(" | ") || "Find listings on ZITHEKE";
     const ogImage = buildAbsoluteImageUrl(ad?.images?.[0]);
     const ogUrl = `${FRONTEND_BASE_URL}/ad/${id}`;
 
     const html = renderOgHtml({
-      adId: id,
       title: ogTitle,
       description: ogDescription,
       image: ogImage,
