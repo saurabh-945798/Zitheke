@@ -24,26 +24,53 @@ const isValidPhone = (phone) => isValidMalawiPhone(phone);
 const hashToken = (token) =>
   crypto.createHash("sha256").update(String(token)).digest("hex");
 
+const maskSecret = (secret = "") => {
+  const s = String(secret || "");
+  if (!s) return "(missing)";
+  if (s.length <= 8) return "****";
+  return `${s.slice(0, 4)}...${s.slice(-4)}`;
+};
+
 const verifyTurnstile = async ({ token, ip }) => {
-  if (env.NODE_ENV !== "production") return true;
-  if (!env.TURNSTILE_SECRET_KEY) return false;
-  if (!token) return false;
+  if (env.NODE_ENV !== "production") {
+    return { ok: true, skipped: true, reason: "non-production" };
+  }
+  if (!env.TURNSTILE_SECRET_KEY) {
+    return { ok: false, errorCodes: ["missing-secret-config"] };
+  }
+  if (!token) {
+    return { ok: false, errorCodes: ["missing-input-response"] };
+  }
 
   const params = new URLSearchParams();
   params.append("secret", env.TURNSTILE_SECRET_KEY);
   params.append("response", token);
   if (ip) params.append("remoteip", ip);
 
-  const resp = await fetch(
-    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
-    }
-  );
-  const data = await resp.json();
-  return data?.success === true;
+  try {
+    const resp = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      }
+    );
+    const data = await resp.json();
+    return {
+      ok: data?.success === true,
+      errorCodes: Array.isArray(data?.["error-codes"]) ? data["error-codes"] : [],
+      raw: data,
+      status: resp.status,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      errorCodes: ["turnstile-request-failed"],
+      raw: { message: error?.message || "request failed" },
+      status: 0,
+    };
+  }
 };
 
 export const PhoneAuthController = {
@@ -59,14 +86,31 @@ export const PhoneAuthController = {
         });
       }
 
-      const captchaOk = await verifyTurnstile({
+      const clientIp =
+        req.headers["cf-connecting-ip"] ||
+        req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+        req.ip;
+
+      const captchaResult = await verifyTurnstile({
         token: captchaToken,
-        ip: req.ip,
+        ip: clientIp,
       });
-      if (!captchaOk) {
+      if (!captchaResult.ok) {
+        console.error("Turnstile verification failed (phone sendOtp):", {
+          nodeEnv: env.NODE_ENV,
+          secret: maskSecret(env.TURNSTILE_SECRET_KEY),
+          hasCaptchaToken: Boolean(captchaToken),
+          captchaTokenLength: String(captchaToken || "").length,
+          clientIp,
+          status: captchaResult.status ?? null,
+          success: captchaResult.raw?.success ?? false,
+          errorCodes: captchaResult.errorCodes || [],
+          response: captchaResult.raw || null,
+        });
         return res.status(400).json({
           success: false,
           message: "Captcha verification failed",
+          errorCodes: captchaResult.errorCodes || [],
         });
       }
 
@@ -222,14 +266,31 @@ export const PhoneAuthController = {
         });
       }
 
-      const captchaOk = await verifyTurnstile({
+      const clientIp =
+        req.headers["cf-connecting-ip"] ||
+        req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+        req.ip;
+
+      const captchaResult = await verifyTurnstile({
         token: captchaToken,
-        ip: req.ip,
+        ip: clientIp,
       });
-      if (!captchaOk) {
+      if (!captchaResult.ok) {
+        console.error("Turnstile verification failed (phone changeOtp):", {
+          nodeEnv: env.NODE_ENV,
+          secret: maskSecret(env.TURNSTILE_SECRET_KEY),
+          hasCaptchaToken: Boolean(captchaToken),
+          captchaTokenLength: String(captchaToken || "").length,
+          clientIp,
+          status: captchaResult.status ?? null,
+          success: captchaResult.raw?.success ?? false,
+          errorCodes: captchaResult.errorCodes || [],
+          response: captchaResult.raw || null,
+        });
         return res.status(400).json({
           success: false,
           message: "Captcha verification failed",
+          errorCodes: captchaResult.errorCodes || [],
         });
       }
 

@@ -60,6 +60,7 @@ const Login = () => {
     digitsCandidate.length > 0 &&
     /^[0-9+\s()-]+$/.test(identifier.trim());
   const showCaptcha = isProd && TURNSTILE_SITE_KEY && !isEmail;
+  const requiresCaptchaForPhone = isProd && !isEmail;
 
   useEffect(() => {
     if (resendSeconds <= 0) return;
@@ -122,6 +123,11 @@ const Login = () => {
       identifierForApi = `+265${digitsOnly}`;
     }
 
+    if (requiresCaptchaForPhone && !TURNSTILE_SITE_KEY) {
+      setError("Captcha is not configured. Please contact support.");
+      return;
+    }
+
     if (showCaptcha && !captchaToken) {
       setError("Please complete the captcha first.");
       return;
@@ -129,6 +135,16 @@ const Login = () => {
 
     setLoading(true);
     try {
+      console.debug("Turnstile login payload debug:", {
+        isProd,
+        isEmail,
+        showCaptcha,
+        hasSiteKey: Boolean(TURNSTILE_SITE_KEY),
+        hasCaptchaToken: Boolean(captchaToken),
+        captchaTokenLength: String(captchaToken || "").length,
+        identifierField: "identifier",
+      });
+
       const res = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
