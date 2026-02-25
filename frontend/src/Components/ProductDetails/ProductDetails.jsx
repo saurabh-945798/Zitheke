@@ -44,21 +44,16 @@ const normalizePhone = (number) => {
   return cleaned;
 };
 
-const buildWhatsappMessage = ({ title, price, link }) => {
+const buildWhatsappMessage = ({ link }) => {
   const lines = [
     "ZITHEKE Marketplace",
     "",
-    "Hello",
-    "",
-    "I'm interested in your listing on ZITHEKE:",
-    "",
-    title ? `Product: ${title}` : "",
-    price ? `Price: MK ${price}` : "",
+    "Hello, I'm interested",
     "",
     link ? "View Ad:" : "",
     link || "",
     "",
-    "Hello, I'm interested",
+   
   ].filter(Boolean);
 
   return lines.join("\n");
@@ -497,15 +492,9 @@ const ProductDetails = () => {
   const openWhatsAppChat = () => {
     if (!isWhatsappAvailable) return;
 
-    const priceText =
-      ad?.price !== null && ad?.price !== undefined && ad?.price !== ""
-        ? Number(ad.price).toLocaleString()
-        : "";
     const productLink = typeof window !== "undefined" ? window.location.href : "";
 
     const message = buildWhatsappMessage({
-      title: ad?.title || "",
-      price: priceText,
       link: productLink,
     });
 
