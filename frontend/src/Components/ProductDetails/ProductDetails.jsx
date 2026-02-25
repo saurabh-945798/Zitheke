@@ -46,21 +46,19 @@ const normalizePhone = (number) => {
 
 const buildWhatsappMessage = ({ title, price, link }) => {
   const lines = [
-    "🟦 ZITHEKE Marketplace",
+    "ZITHEKE Marketplace",
     "",
-    "Hello 👋",
+    "Hello",
     "",
-    "I’m interested in your listing on ZITHEKE:",
+    "I'm interested in your listing on ZITHEKE:",
     "",
-    title ? `📦 Product: ${title}` : "",
-    price ? `💰 Price: MK ${price}` : "",
+    title ? `Product: ${title}` : "",
+    price ? `Price: MK ${price}` : "",
     "",
-    link ? "🔗 View Ad:" : "",
+    link ? "View Ad:" : "",
     link || "",
     "",
-    "Is this item still available?",
-    "",
-    "— Sent via ZITHEKE Marketplace",
+    "Hello, I'm interested",
   ].filter(Boolean);
 
   return lines.join("\n");
