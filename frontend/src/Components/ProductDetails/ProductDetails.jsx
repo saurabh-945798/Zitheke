@@ -44,16 +44,15 @@ const normalizePhone = (number) => {
   return cleaned;
 };
 
-const buildWhatsappMessage = ({ link }) => {
+const buildWhatsappMessage = ({ shareUrl }) => {
   const lines = [
+    "Hello",
+    "",
+    "I\u2019m interested",
+    "",
+    shareUrl || "",
+    "",
     "ZITHEKE Marketplace",
-    "",
-    "Hello, I'm interested",
-    "",
-    link ? "View Ad:" : "",
-    link || "",
-    "",
-   
   ].filter(Boolean);
 
   return lines.join("\n");
@@ -495,7 +494,7 @@ const ProductDetails = () => {
     const productLink = typeof window !== "undefined" ? window.location.href : "";
 
     const message = buildWhatsappMessage({
-      link: productLink,
+      shareUrl: productLink,
     });
 
     const waUrl = `https://wa.me/${sellerWhatsappNumber}?text=${encodeURIComponent(
