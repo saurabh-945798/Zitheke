@@ -14,6 +14,7 @@ const item = {
 };
 
 const KitchenwarePromo = () => {
+  const MAX_PROMO_ADS = 10;
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const [products, setProducts] = useState([]);
@@ -29,7 +30,9 @@ const KitchenwarePromo = () => {
           const ads = Array.isArray(data?.ads) ? data.ads : [];
           const selected = [];
           const seenCategories = new Set();
+          const selectedIds = new Set();
 
+          // Prefer category-diverse ads first.
           for (const ad of ads) {
             if (!ad?._id) continue;
 
@@ -39,8 +42,21 @@ const KitchenwarePromo = () => {
             if (seenCategories.has(categoryKey)) continue;
 
             selected.push(ad);
+            selectedIds.add(String(ad._id));
             seenCategories.add(categoryKey);
-            if (selected.length >= 5) break;
+            if (selected.length >= MAX_PROMO_ADS) break;
+          }
+
+          // Fill remaining slots (if needed) from same filtered pool.
+          for (const ad of ads) {
+            if (selected.length >= MAX_PROMO_ADS) break;
+            if (!ad?._id) continue;
+            const categoryKey = String(ad?.category || "").trim().toLowerCase();
+            if (!categoryKey) continue;
+            if (categoryKey === "jobs" || categoryKey === "services") continue;
+            if (selectedIds.has(String(ad._id))) continue;
+            selected.push(ad);
+            selectedIds.add(String(ad._id));
           }
 
           setProducts(selected);

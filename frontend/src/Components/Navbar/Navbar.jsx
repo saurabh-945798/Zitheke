@@ -292,6 +292,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import SearchBar from "../SearchBar/SearchBar.jsx";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -315,14 +316,65 @@ const Navbar = () => {
      LOGOUT
   ========================= */
   const handleLogout = async () => {
-    await logout();
-    navigate("/");
+    const result = await Swal.fire({
+      title: "Log out?",
+      text: "Are you sure you want to log out?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, log out",
+      cancelButtonText: "Keep me logged in",
+      confirmButtonColor: "#2E3192",
+      cancelButtonColor: "#9CA3AF",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await logout();
+      await Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Logged out successfully",
+        showConfirmButton: false,
+        timer: 1300,
+        timerProgressBar: true,
+      });
+      window.location.href = "/";
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        title: "Logout failed",
+        text: "Please try again.",
+        confirmButtonColor: "#2E3192",
+      });
+    }
   };
+
+  const navigateFromSidebar = (path) => {
+    setSidebarOpen(false);
+    navigate(path);
+  };
+
+  const displayName =
+    user?.displayName ||
+    user?.name ||
+    (user?.email ? user.email.split("@")[0] : "") ||
+    "";
 
   /* =========================
      AVATAR
   ========================= */
   const getAvatar = () => {
+    if (!user) {
+      return (
+        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 shadow-sm">
+          <User size={18} />
+        </div>
+      );
+    }
+
     if (user?.photoURL)
       return (
         <img
@@ -331,7 +383,7 @@ const Navbar = () => {
           className="w-10 h-10 rounded-full object-cover border border-[#2E3192]/30 shadow-sm"
         />
       );
-    const letter = (user?.displayName || user?.email || "U").charAt(0);
+    const letter = (displayName || user?.email || "U").charAt(0);
     return (
       <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2E3192] text-white font-semibold shadow-sm">
         {letter}
@@ -352,7 +404,7 @@ const Navbar = () => {
             : "bg-[#2E3192]"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           {/* LOGO */}
           <div
             onClick={() => navigate("/")}
@@ -367,10 +419,10 @@ const Navbar = () => {
               <path d="M21 11l-9-9H3v9l9 9 9-9zM7 7a2 2 0 110-4 2 2 0 010 4z" />
             </svg>
             <div className="flex flex-col leading-tight">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
               Zitheke
             </h1>
-            <p className="text-sm font-semibold text-[#F4B400] ml-[6px] mt-[-2px]">
+            <p className="hidden sm:block text-sm font-semibold text-[#F4B400] ml-[6px] mt-[-2px]">
               Buy. Sell. Connect.
             </p>
             </div>
@@ -463,7 +515,7 @@ const Navbar = () => {
           </div>
 
           {/* MOBILE ICONS */}
-          <div className="md:hidden flex items-center gap-4">
+          <div className="md:hidden flex items-center gap-3">
             <Search
               size={22}
               className="text-white"
@@ -533,25 +585,25 @@ const Navbar = () => {
                   {getAvatar()}
                   <div>
                     <p className="font-semibold text-[#2E3192]">
-                      {user?.displayName || "Guest User"}
+                      {user ? displayName || "User" : "Guest User"}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {user ? user.email : "Not logged in"}
+                      {user ? user.email || user.phone || "Logged in" : "Not logged in"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-4 text-gray-700">
-                  <button onClick={() => navigate("/")} className="flex gap-2">
+                  <button onClick={() => navigateFromSidebar("/")} className="flex gap-2">
                     <Home size={18} /> Home
                   </button>
-                  <button onClick={() => navigate("/all-ads")} className="flex gap-2">
+                  <button onClick={() => navigateFromSidebar("/browse-listings")} className="flex gap-2">
                     <Layers size={18} /> Categories
                   </button>
-                  <button onClick={() => navigate("/about")} className="flex gap-2">
+                  <button onClick={() => navigateFromSidebar("/about")} className="flex gap-2">
                     <Info size={18} /> About
                   </button>
-                  <button onClick={() => navigate("/contact")} className="flex gap-2">
+                  <button onClick={() => navigateFromSidebar("/contact")} className="flex gap-2">
                     <Phone size={18} /> Contact
                   </button>
                 </div>
@@ -561,13 +613,13 @@ const Navbar = () => {
                 {user ? (
                   <>
                     <button
-                      onClick={() => navigate("/dashboard")}
+                      onClick={() => navigateFromSidebar("/dashboard")}
                       className="w-full bg-[#2E3192]/10 text-[#2E3192] py-2 rounded-full"
                     >
                       Dashboard
                     </button>
                     <button
-                      onClick={() => navigate("/dashboard/createAd")}
+                      onClick={() => navigateFromSidebar("/dashboard/createAd")}
                       className="w-full bg-[#2E3192] text-white py-2 rounded-full mt-2"
                     >
                       + Sell Item
@@ -581,7 +633,7 @@ const Navbar = () => {
                   </>
                 ) : (
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={() => navigateFromSidebar("/login")}
                     className="w-full bg-[#2E3192] text-white py-2 rounded-full"
                   >
                     Login / Signup
@@ -593,33 +645,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* ================= BOTTOM MOBILE NAV ================= */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t shadow-lg z-50 px-4 py-2">
-        <div className="flex justify-between">
-          <button onClick={() => navigate("/")} className="flex flex-col items-center text-[#2E3192]">
-            <Home size={22} />
-            <span className="text-xs">Home</span>
-          </button>
-          <button onClick={() => navigate("/all-ads")} className="flex flex-col items-center">
-            <Layers size={22} />
-            <span className="text-xs">Categories</span>
-          </button>
-          <button
-            onClick={() => navigate("/dashboard/createAd")}
-            className="flex flex-col items-center bg-[#2E3192] text-white px-4 py-2 rounded-full -mt-6 shadow-lg"
-          >
-            <PlusCircle size={24} />
-          </button>
-          <button onClick={() => navigate("/chats")} className="flex flex-col items-center">
-            <MessageSquare size={22} />
-            <span className="text-xs">Chat</span>
-          </button>
-          <button onClick={() => navigate(user ? "/dashboard" : "/login")} className="flex flex-col items-center">
-            <User size={22} />
-            <span className="text-xs">Profile</span>
-          </button>
-        </div>
-      </div>
+      {/* Bottom mobile nav removed intentionally. Mobile auth/actions are inside sidebar. */}
     </>
   );
 };
