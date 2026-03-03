@@ -489,6 +489,11 @@ const ProductDetails = () => {
   const isWhatsappAvailable = Boolean(sellerWhatsappNumber);
 
   const openWhatsAppChat = () => {
+    if (!user) {
+      Swal.fire("Login required", "Please login to start WhatsApp chat", "info");
+      return;
+    }
+
     if (!isWhatsappAvailable) return;
 
     const productLink = typeof window !== "undefined" ? window.location.href : "";
