@@ -270,4 +270,4 @@ router.get("/ad/:id", async (req, res, next) => {
   }
 
 });
- 
+ export default router;
