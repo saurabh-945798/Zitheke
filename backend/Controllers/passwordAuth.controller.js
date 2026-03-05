@@ -302,6 +302,33 @@ export const PasswordAuthController = {
         });
       }
 
+      const localDigits = String(normalizedPhone).replace(/^\+?265/, "");
+
+      // 8-series: password-only login (no OTP)
+      if (localDigits.startsWith("8")) {
+        user.lastLogin = new Date();
+        await user.save();
+
+        const { accessToken, refreshToken, sessionId } =
+          await createSessionAndTokens(user, req);
+
+        return res.status(200).json({
+          success: true,
+          user: sanitizeUser(user),
+          token: accessToken,
+          refreshToken,
+          sessionId,
+        });
+      }
+
+      // 9-series: keep password + OTP flow
+      if (!localDigits.startsWith("9")) {
+        return res.status(400).json({
+          success: false,
+          message: "Unsupported mobile series for login",
+        });
+      }
+
       const issued = await issueOtpRecord({
         phone: normalizedPhone,
         purpose: "login_password",
@@ -327,7 +354,10 @@ export const PasswordAuthController = {
           providerGroup: msg?.status?.groupName || "",
         });
       } catch (smsErr) {
-        await markOtpSendFailed(issued.record?._id, smsErr?.message || "SMS send failed");
+        await markOtpSendFailed(
+          issued.record?._id,
+          smsErr?.message || "SMS send failed"
+        );
         throw smsErr;
       }
 
