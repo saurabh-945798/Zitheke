@@ -1,4 +1,3 @@
-```javascript
 import express from "express";
 import mongoose from "mongoose";
 import Ad from "../models/Ad.js";
@@ -271,6 +270,4 @@ router.get("/ad/:id", async (req, res, next) => {
   }
 
 });
-
-export default router;
-```
+ 
