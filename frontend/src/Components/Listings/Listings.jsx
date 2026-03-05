@@ -4,6 +4,7 @@ import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import { Search, Filter, Loader2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getThumbOrFallback } from "../../utils/imageVariants";
 
 const BASE_URL = "/api";
 
@@ -103,17 +104,11 @@ const Listings = () => {
                 {/* Image */}
                 <div className="relative h-48 w-full bg-gray-100">
                   <img
-                    src={
-                      ad.images?.[0]?.startsWith("http")
-                        ? ad.images[0]
-                        : `${BASE_URL}${ad.images?.[0]}`
-                    }
+                    src={getThumbOrFallback(ad.images)}
                     alt={ad.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://cdn-icons-png.flaticon.com/512/4076/4076500.png";
-                    }}
                   />
                   <span
                     className={`absolute top-2 left-2 px-2 py-1 text-xs rounded-full font-medium ${

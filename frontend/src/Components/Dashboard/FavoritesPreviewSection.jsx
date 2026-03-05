@@ -6,6 +6,7 @@ import { Card } from "../ui/card.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getThumbOrFallback } from "../../utils/imageVariants.js";
 
 const FavoritesPreviewSection = () => {
   const { user } = useAuth();
@@ -92,11 +93,10 @@ const FavoritesPreviewSection = () => {
               {/* Image */}
               <div className="relative h-24">
                 <img
-                  src={
-                    item.images?.[0] ||
-                    "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-                  }
+                  src={getThumbOrFallback(item.images)}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
 

@@ -11,8 +11,8 @@ import {
   CheckCircle,
   Sparkles,
 } from "lucide-react";
-import { getImageUrl } from "../../utils/getImageUrl.js";
 import { categoryMap } from "../../utils/categoryMap.js";
+import { getThumbOrFallback } from "../../utils/imageVariants.js";
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -485,8 +485,10 @@ const CategoryPage = () => {
                 >
                   <div className="relative h-56">
                     <img
-                      src={getImageUrl(item.images?.[0])}
+                      src={getThumbOrFallback(item.images)}
                       alt={item.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
 
@@ -699,8 +701,10 @@ const CategoryPage = () => {
             {/* LISTING PREVIEW */}
             <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-sm mb-5">
               <img
-                src={getImageUrl(shareModalAd.images?.[0])}
+                src={getThumbOrFallback(shareModalAd?.images)}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="w-14 h-14 rounded-xl object-cover"
               />
               <div className="flex-1 min-w-0">

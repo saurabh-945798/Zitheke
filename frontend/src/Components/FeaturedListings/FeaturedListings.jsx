@@ -5,6 +5,7 @@ import { Eye, MapPin, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import { getThumbOrFallback } from "../../utils/imageVariants";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -114,14 +115,10 @@ const FeaturedListings = () => {
                   {/* IMAGE */}
                   <div className="relative h-52 overflow-hidden">
                     <motion.img
-                      src={
-                        ad.images?.[0]
-                          ? ad.images[0].startsWith("http")
-                            ? ad.images[0]
-                            : `${BASE_URL}${ad.images[0]}`
-                          : "https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
-                      }
+                      src={getThumbOrFallback(ad.images)}
                       alt={ad.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                       whileHover={{
                         scale: reduceMotion ? 1 : 1.08,

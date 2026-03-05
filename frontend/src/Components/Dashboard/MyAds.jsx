@@ -27,6 +27,7 @@ import {
 } from "../ui/dialog.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Separator } from "../ui/separator.jsx";
+import { toThumb } from "../../utils/imageVariants.js";
 
 const HIDE_CONDITION_CATEGORIES = new Set(["Agriculture", "Jobs", "Services"]);
 
@@ -50,15 +51,7 @@ const MyAds = () => {
   const resolveImageSrc = (image) => {
     if (!image) return "/no-image.svg";
 
-    // Cloudinary / remote URLs
-    if (/^https?:\/\//i.test(image)) return image;
-
-    // Local uploaded assets served by backend static middleware
-    if (image.startsWith("/uploads/")) return image;
-    if (image.startsWith("uploads/")) return `/${image}`;
-
-    // Fallback for any relative path
-    return image.startsWith("/") ? image : `/${image}`;
+    return toThumb(image);
   };
 
   const fetchAds = async ({ nextPage = 1, append = false } = {}) => {
@@ -351,6 +344,8 @@ const MyAds = () => {
                     <img
                       src={resolveImageSrc(ad.images?.[0])}
                       alt={ad.title}
+                      loading="lazy"
+                      decoding="async"
                       className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <Badge
@@ -567,6 +562,8 @@ const MyAds = () => {
                               <img
                                 src={resolveImageSrc(img)}
                                 alt={`Ad ${index + 1}`}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                               />
                               <button

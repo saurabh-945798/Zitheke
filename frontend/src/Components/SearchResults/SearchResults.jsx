@@ -9,6 +9,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { getThumbOrFallback } from "../../utils/imageVariants";
 
 const BASE_URL = "/api";
 
@@ -185,14 +186,10 @@ const SearchResults = () => {
                 {/* IMAGE */}
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={
-                      ad.images?.[0]
-                        ? ad.images[0].startsWith("http")
-                          ? ad.images[0]
-                          : `${BASE_URL}${ad.images[0]}`
-                        : "https://via.placeholder.com/640x360?text=No+Image"
-                    }
+                    src={getThumbOrFallback(ad.images)}
                     alt={ad.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
 

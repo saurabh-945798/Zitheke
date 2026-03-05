@@ -63,6 +63,8 @@ const RecentAdsPanel = ({
                     transition={{ duration: 0.35 }}
                     src={getAdImage(ad)}
                     alt={ad.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
 
@@ -146,4 +148,3 @@ const RecentAdsPanel = ({
 };
 
 export default RecentAdsPanel;
-

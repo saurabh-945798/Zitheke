@@ -15,6 +15,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { formatPrice } from "../../utils/formatPrice";
+import { toThumb } from "../../utils/imageVariants.js";
 
 const BaseCategorySlider = ({ categoryTitle, category }) => {
   const [ads, setAds] = useState([]);
@@ -70,10 +71,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
   /* -----------------------------
      ✅ Helpers
   ------------------------------ */
-  const getImageSrc = (img) =>
-    img?.startsWith("http")
-      ? img
-      : `${BASE_URL}${String(img).replace(/\\/g, "/")}`;
+  const getImageSrc = (img) => toThumb(img);
 
   const timeAgo = (dateString) => {
     if (!dateString) return "Just now";
@@ -456,10 +454,12 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
                                 <img
                                   src={getImageSrc(img)}
                                   alt={item.title || "Ad Image"}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="alinafe-parallax w-full h-full object-cover object-center"
                                   onError={(e) =>
                                     (e.target.src =
-                                      "https://cdn-icons-png.flaticon.com/512/4076/4076500.png")
+                                      "/no-image.svg")
                                   }
                                 />
                               </SwiperSlide>
@@ -467,8 +467,10 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
                           </Swiper>
                         ) : (
                           <img
-                            src="https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
+                            src="/no-image.svg"
                             alt="Placeholder"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-contain bg-gray-100"
                           />
                         )}

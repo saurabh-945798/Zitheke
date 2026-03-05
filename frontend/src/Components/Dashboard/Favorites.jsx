@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import { Heart, MapPin, Trash2, FolderOpen } from "lucide-react";
 import api from "../../api/axios"; // âœ… interceptor
 import { useAuth } from "../../context/AuthContext";
-import { getImageUrl } from "../../utils/getImageUrl";
+import { getThumbOrFallback } from "../../utils/imageVariants";
 import { motion } from "framer-motion";
 
 const Favorites = () => {
@@ -143,8 +143,10 @@ const Favorites = () => {
               >
                 <div className="relative h-52">
                   <img
-                    src={getImageUrl(item.images?.[0])}
+                    src={getThumbOrFallback(item.images)}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                   <button

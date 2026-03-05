@@ -6,6 +6,7 @@ import axios from "axios"; // sirf public APIs ke liye
 import { motion } from "framer-motion";
 import { formatPrice } from "../../utils/formatPrice";
 import CATEGORY_FIELDS from "../Dashboard/CategoryFields.js";
+import { toMedium, toThumb } from "../../utils/imageVariants.js";
 
 import {
   MapPin,
@@ -121,10 +122,8 @@ const ProductDetails = () => {
         setAd(res.data);
         setActiveImage(
           res.data?.images?.length
-            ? res.data.images[0].startsWith("http")
-              ? res.data.images[0]
-              : `${BASE_URL}${res.data.images[0]}`
-            : "https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
+            ? toMedium(res.data.images[0])
+            : "/no-image.svg"
         );
 
         setActiveMediaType("image");
@@ -362,7 +361,7 @@ const ProductDetails = () => {
   const mediaList = [
     ...(ad?.images || []).map((img) => ({
       type: "image",
-      src: img.startsWith("http") ? img : `${BASE_URL}${img}`,
+      src: toMedium(img),
     })),
     ...(ad?.video?.url
       ? [
@@ -541,6 +540,8 @@ const ProductDetails = () => {
                 src={activeImage}
                 alt={ad.title}
                 onClick={() => setShowFullImage(true)}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover cursor-pointer"
               />
             ) : (
@@ -580,18 +581,19 @@ const ProductDetails = () => {
 
             {ad.images?.length ? (
               ad.images.map((img, i) => {
-                const src = img.startsWith("http") ? img : `${BASE_URL}${img}`;
                 return (
                   <img
                     key={i}
-                    src={src}
+                    src={toThumb(img)}
                     alt={`thumb-${i}`}
                     onClick={() => {
                       setActiveMediaType("image");
-                      setActiveImage(src);
+                      setActiveImage(toMedium(img));
                       setFullImageIndex(i);
                       setShowFullImage(true);
                     }}
+                    loading="lazy"
+                    decoding="async"
                     className={`w-20 h-20 rounded-lg border cursor-pointer object-cover transition ${
                       i === fullImageIndex
                         ? "border-[#2E3192] border-2"
@@ -602,7 +604,7 @@ const ProductDetails = () => {
               })
             ) : (
               <img
-                src="https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
+                src="/no-image.svg"
                 alt="default"
                 className="w-20 h-20 rounded-lg border object-contain"
               />
@@ -1135,13 +1137,11 @@ const ProductDetails = () => {
                 <div className="relative">
                   <img
                     src={
-                      item.images?.[0]
-                        ? item.images[0].startsWith("http")
-                          ? item.images[0]
-                          : `${BASE_URL}${item.images[0].replace(/\\/g, "/")}`
-                        : "https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
+                      item.images?.[0] ? toThumb(item.images[0]) : "/no-image.svg"
                     }
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
 
