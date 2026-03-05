@@ -178,9 +178,12 @@ router.get("/ad/:id", async (req, res, next) => {
   |--------------------------------------------------------------------------
   */
 
-  if (!isCrawler) {
-    return res.redirect(`${FRONTEND_BASE_URL}/ad/${id}`);
-  }
+ if (!isCrawler) {
+  return res.sendFile(
+    "index.html",
+    { root: "/var/www/Zitheke/frontend/dist" }
+  );
+}
 
   /*
   |--------------------------------------------------------------------------
