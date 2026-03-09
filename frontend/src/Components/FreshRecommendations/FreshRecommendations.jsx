@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { INDIA_LOCATIONS } from "../../Data/indiaCities";
 import { Share2 } from "lucide-react";
 import {
+  getCardImageOrFallback,
   getPrimaryImage,
-  getThumbOrFallback,
   handleImageFallback,
 } from "../../utils/imageVariants";
 
@@ -386,12 +386,12 @@ const FreshRecommendations = () => {
            {/* IMAGE */}
 <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
   <img
-    src={getThumbOrFallback(item.images)}
+    src={getCardImageOrFallback(item)}
     alt={item.title}
     loading="lazy"
     decoding="async"
     onError={(e) =>
-      handleImageFallback(e, getPrimaryImage(item.images), "thumb")
+      handleImageFallback(e, getPrimaryImage(item), "medium")
     }
     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
   />
@@ -603,12 +603,12 @@ const FreshRecommendations = () => {
       {/* LISTING PREVIEW */}
       <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-sm mb-5">
         <img
-          src={getThumbOrFallback(shareModalAd?.images)}
+          src={getCardImageOrFallback(shareModalAd)}
           alt=""
           loading="lazy"
           decoding="async"
           onError={(e) =>
-            handleImageFallback(e, getPrimaryImage(shareModalAd?.images), "thumb")
+            handleImageFallback(e, getPrimaryImage(shareModalAd), "medium")
           }
           className="w-14 h-14 rounded-xl object-cover"
         />

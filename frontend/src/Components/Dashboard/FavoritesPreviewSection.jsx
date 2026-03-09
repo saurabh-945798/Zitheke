@@ -6,7 +6,11 @@ import { Card } from "../ui/card.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { getThumbOrFallback } from "../../utils/imageVariants.js";
+import {
+  getCardImageOrFallback,
+  getPrimaryImage,
+  handleImageFallback,
+} from "../../utils/imageVariants.js";
 
 const FavoritesPreviewSection = () => {
   const { user } = useAuth();
@@ -93,10 +97,13 @@ const FavoritesPreviewSection = () => {
               {/* Image */}
               <div className="relative h-24">
                 <img
-                  src={getThumbOrFallback(item.images)}
+                  src={getCardImageOrFallback(item)}
                   alt={item.title}
                   loading="lazy"
                   decoding="async"
+                  onError={(e) =>
+                    handleImageFallback(e, getPrimaryImage(item), "medium")
+                  }
                   className="w-full h-full object-cover"
                 />
 

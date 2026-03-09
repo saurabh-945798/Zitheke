@@ -23,7 +23,7 @@ import DashboardStats from "./DashboardStats.jsx";
 import RecentAdsPanel from "./RecentAdsPanel.jsx";
 import useDashboardData from "./hooks/useDashboardData.js";
 import useAdsFilters from "./hooks/useAdsFilters.js";
-import { toThumb } from "../../utils/imageVariants.js";
+import { toMedium } from "../../utils/imageVariants.js";
 
 
 import { Button } from "../ui/button.jsx";
@@ -71,7 +71,7 @@ const Dashboard = () => {
   const getAdImage = (ad) => {
     const image = ad?.images?.[0];
     if (!image || typeof image !== "string") return FALLBACK_AD_IMAGE;
-    return toThumb(image);
+    return toMedium(image);
   };
 
   const stats = useMemo(

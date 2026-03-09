@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import {
+  getCardImageOrFallback,
   getPrimaryImage,
-  getThumbOrFallback,
   handleImageFallback,
 } from "../../utils/imageVariants";
 
@@ -119,12 +119,12 @@ const FeaturedListings = () => {
                   {/* IMAGE */}
                   <div className="relative h-52 overflow-hidden">
                     <motion.img
-                      src={getThumbOrFallback(ad.images)}
+                      src={getCardImageOrFallback(ad)}
                       alt={ad.title}
                       loading="lazy"
                       decoding="async"
                       onError={(e) =>
-                        handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                        handleImageFallback(e, getPrimaryImage(ad), "medium")
                       }
                       className="w-full h-full object-cover"
                       whileHover={{

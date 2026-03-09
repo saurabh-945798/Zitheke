@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LayoutGrid, List, Loader2, MapPin, Search } from "lucide-react";
 import {
+  getCardImageOrFallback,
   getPrimaryImage,
-  getThumbOrFallback,
   handleImageFallback,
 } from "../../utils/imageVariants";
 
@@ -166,12 +166,12 @@ const BoostedPage = () => {
                     }`}
                   >
                     <img
-                      src={getThumbOrFallback(ad?.images, FALLBACK_IMAGE)}
+                      src={getCardImageOrFallback(ad, FALLBACK_IMAGE)}
                       alt={ad?.title}
                       loading="lazy"
                       decoding="async"
                       onError={(e) =>
-                        handleImageFallback(e, getPrimaryImage(ad?.images), "thumb")
+                        handleImageFallback(e, getPrimaryImage(ad), "medium")
                       }
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

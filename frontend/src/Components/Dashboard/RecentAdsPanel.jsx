@@ -4,6 +4,7 @@ import { ArrowUpRight, Eye, PlusCircle } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../ui/card.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Button } from "../ui/button.jsx";
+import { handleImageFallback } from "../../utils/imageVariants.js";
 
 const RecentAdsPanel = ({
   recentAds,
@@ -65,6 +66,7 @@ const RecentAdsPanel = ({
                     alt={ad.title}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => handleImageFallback(e, ad?.images?.[0] || ad?.image || "", "medium")}
                     className="w-full h-full object-cover"
                   />
 

@@ -4,7 +4,11 @@ import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import { Heart, MapPin, Trash2, FolderOpen } from "lucide-react";
 import api from "../../api/axios"; // âœ… interceptor
 import { useAuth } from "../../context/AuthContext";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getCardImageOrFallback,
+  getPrimaryImage,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 import { motion } from "framer-motion";
 
 const Favorites = () => {
@@ -143,10 +147,13 @@ const Favorites = () => {
               >
                 <div className="relative h-52">
                   <img
-                    src={getThumbOrFallback(item.images)}
+                    src={getCardImageOrFallback(item)}
                     alt={item.title}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) =>
+                      handleImageFallback(e, getPrimaryImage(item), "medium")
+                    }
                     className="w-full h-full object-cover"
                   />
                   <button

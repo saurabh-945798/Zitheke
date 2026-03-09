@@ -25,8 +25,20 @@ export const toMedium = (url) => {
 
 export const toOriginal = (url) => normalizeSource(url) || FALLBACK_IMAGE;
 
-export const getPrimaryImage = (images) =>
-  Array.isArray(images) && images.length > 0 ? images[0] : "";
+export const getPrimaryImage = (imagesOrProduct) => {
+  if (Array.isArray(imagesOrProduct)) {
+    return imagesOrProduct.length > 0 ? imagesOrProduct[0] : "";
+  }
+  if (imagesOrProduct && typeof imagesOrProduct === "object") {
+    if (Array.isArray(imagesOrProduct.images) && imagesOrProduct.images.length > 0) {
+      return imagesOrProduct.images[0];
+    }
+    if (typeof imagesOrProduct.image === "string") {
+      return imagesOrProduct.image;
+    }
+  }
+  return "";
+};
 
 export const getThumbOrFallback = (images, fallback = FALLBACK_IMAGE) => {
   const source = getPrimaryImage(images);
@@ -66,4 +78,11 @@ export const handleImageFallback = (event, sourceUrl, primary = "thumb") => {
 
   el.dataset.fallbackStep = String(nextStep);
   el.src = chain[nextStep];
+};
+
+// Recommended for product cards:
+// medium -> original -> thumb -> placeholder
+export const getCardImageOrFallback = (imagesOrProduct, fallback = FALLBACK_IMAGE) => {
+  const source = getPrimaryImage(imagesOrProduct);
+  return source ? toMedium(source) : fallback;
 };

@@ -16,7 +16,11 @@ import {
   Mail,
   Eye,
 } from "lucide-react";
-import { getThumbOrFallback } from "../../utils/imageVariants.js";
+import {
+  getCardImageOrFallback,
+  getPrimaryImage,
+  handleImageFallback,
+} from "../../utils/imageVariants.js";
 
 const SellerProfile = () => {
   const { sellerId } = useParams();
@@ -556,10 +560,13 @@ const SellerProfile = () => {
                     >
                       <div className="relative">
                         <img
-                          src={getThumbOrFallback(ad.images, fallbackAvatar)}
+                          src={getCardImageOrFallback(ad, fallbackAvatar)}
                           alt={ad.title}
                           loading="lazy"
                           decoding="async"
+                          onError={(e) =>
+                            handleImageFallback(e, getPrimaryImage(ad), "medium")
+                          }
                           className="w-full h-44 object-cover"
                         />
 

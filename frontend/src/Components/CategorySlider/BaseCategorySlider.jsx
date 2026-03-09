@@ -15,7 +15,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { formatPrice } from "../../utils/formatPrice";
-import { toThumb } from "../../utils/imageVariants.js";
+import { handleImageFallback, toMedium } from "../../utils/imageVariants.js";
 
 const BaseCategorySlider = ({ categoryTitle, category }) => {
   const [ads, setAds] = useState([]);
@@ -71,7 +71,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
   /* -----------------------------
      ✅ Helpers
   ------------------------------ */
-  const getImageSrc = (img) => toThumb(img);
+  const getImageSrc = (img) => toMedium(img);
 
   const timeAgo = (dateString) => {
     if (!dateString) return "Just now";
@@ -457,10 +457,7 @@ const BaseCategorySlider = ({ categoryTitle, category }) => {
                                   loading="lazy"
                                   decoding="async"
                                   className="alinafe-parallax w-full h-full object-cover object-center"
-                                  onError={(e) =>
-                                    (e.target.src =
-                                      "/no-image.svg")
-                                  }
+                                  onError={(e) => handleImageFallback(e, img, "medium")}
                                 />
                               </SwiperSlide>
                             ))}

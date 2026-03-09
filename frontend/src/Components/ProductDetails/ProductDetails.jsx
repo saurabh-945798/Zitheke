@@ -1146,13 +1146,13 @@ const ProductDetails = () => {
                 <div className="relative">
                   <img
                     src={
-                      item.images?.[0] ? toThumb(item.images[0]) : "/no-image.svg"
+                      item.images?.[0] ? toMedium(item.images[0]) : "/no-image.svg"
                     }
                     alt={item.title}
                     loading="lazy"
                     decoding="async"
                     onError={(e) =>
-                      handleImageFallback(e, getPrimaryImage(item.images), "thumb")
+                      handleImageFallback(e, getPrimaryImage(item), "medium")
                     }
                     className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                   />

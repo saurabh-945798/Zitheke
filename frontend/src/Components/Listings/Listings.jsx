@@ -5,8 +5,8 @@ import { Search, Filter, Loader2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  getCardImageOrFallback,
   getPrimaryImage,
-  getThumbOrFallback,
   handleImageFallback,
 } from "../../utils/imageVariants";
 
@@ -108,12 +108,12 @@ const Listings = () => {
                 {/* Image */}
                 <div className="relative h-48 w-full bg-gray-100">
                   <img
-                    src={getThumbOrFallback(ad.images)}
+                    src={getCardImageOrFallback(ad)}
                     alt={ad.title}
                     loading="lazy"
                     decoding="async"
                     onError={(e) =>
-                      handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                      handleImageFallback(e, getPrimaryImage(ad), "medium")
                     }
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
                   />

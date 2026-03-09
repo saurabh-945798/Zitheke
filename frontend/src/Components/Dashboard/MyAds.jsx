@@ -27,7 +27,7 @@ import {
 } from "../ui/dialog.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { Separator } from "../ui/separator.jsx";
-import { toThumb } from "../../utils/imageVariants.js";
+import { handleImageFallback, toMedium } from "../../utils/imageVariants.js";
 
 const HIDE_CONDITION_CATEGORIES = new Set(["Agriculture", "Jobs", "Services"]);
 
@@ -51,7 +51,7 @@ const MyAds = () => {
   const resolveImageSrc = (image) => {
     if (!image) return "/no-image.svg";
 
-    return toThumb(image);
+    return toMedium(image);
   };
 
   const fetchAds = async ({ nextPage = 1, append = false } = {}) => {
@@ -346,6 +346,9 @@ const MyAds = () => {
                       alt={ad.title}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) =>
+                        handleImageFallback(e, ad?.images?.[0] || ad?.image || "", "medium")
+                      }
                       className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <Badge
@@ -564,6 +567,7 @@ const MyAds = () => {
                                 alt={`Ad ${index + 1}`}
                                 loading="lazy"
                                 decoding="async"
+                                onError={(e) => handleImageFallback(e, img, "medium")}
                                 className="w-full h-full object-cover"
                               />
                               <button

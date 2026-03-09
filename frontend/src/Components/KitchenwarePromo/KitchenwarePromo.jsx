@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, Star } from "lucide-react";
-import { toThumb } from "../../utils/imageVariants";
+import { handleImageFallback, toMedium } from "../../utils/imageVariants";
 
 const container = {
   hidden: {},
@@ -84,9 +84,9 @@ const KitchenwarePromo = () => {
   const activeItem = products[activeIndex];
   const activeImage = (() => {
     const raw = activeItem?.images?.[0];
-    if (typeof raw === "string" && raw.trim()) return toThumb(raw.trim());
+    if (typeof raw === "string" && raw.trim()) return toMedium(raw.trim());
     if (raw && typeof raw === "object" && typeof raw.url === "string" && raw.url.trim()) {
-      return toThumb(raw.url.trim());
+      return toMedium(raw.url.trim());
     }
     return "/no-image.svg";
   })();
@@ -171,9 +171,13 @@ const KitchenwarePromo = () => {
               alt={activeItem?.category || "Boosted ad"}
               loading="lazy"
               decoding="async"
-              onError={(e) => {
-                e.currentTarget.src = "/no-image.svg";
-              }}
+              onError={(e) =>
+                handleImageFallback(
+                  e,
+                  activeItem?.images?.[0] || activeItem?.image || "",
+                  "medium"
+                )
+              }
               className="w-full h-[440px] object-cover cursor-pointer"
               onClick={() => activeItem?._id && navigate(`/ad/${activeItem._id}`)}
               initial={{ opacity: 0, scale: 1.02 }}

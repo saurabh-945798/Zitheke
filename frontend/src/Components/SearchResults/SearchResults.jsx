@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
+  getCardImageOrFallback,
   getPrimaryImage,
-  getThumbOrFallback,
   handleImageFallback,
 } from "../../utils/imageVariants";
 
@@ -190,12 +190,12 @@ const SearchResults = () => {
                 {/* IMAGE */}
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={getThumbOrFallback(ad.images)}
+                    src={getCardImageOrFallback(ad)}
                     alt={ad.title}
                     loading="lazy"
                     decoding="async"
                     onError={(e) =>
-                      handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                      handleImageFallback(e, getPrimaryImage(ad), "medium")
                     }
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
