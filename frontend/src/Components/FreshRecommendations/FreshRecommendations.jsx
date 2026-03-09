@@ -4,7 +4,11 @@ import { MapPin, LocateFixed, Loader2, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { INDIA_LOCATIONS } from "../../Data/indiaCities";
 import { Share2 } from "lucide-react";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 
 
 const BASE_URL = "/api";
@@ -386,6 +390,9 @@ const FreshRecommendations = () => {
     alt={item.title}
     loading="lazy"
     decoding="async"
+    onError={(e) =>
+      handleImageFallback(e, getPrimaryImage(item.images), "thumb")
+    }
     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
   />
 
@@ -600,6 +607,9 @@ const FreshRecommendations = () => {
           alt=""
           loading="lazy"
           decoding="async"
+          onError={(e) =>
+            handleImageFallback(e, getPrimaryImage(shareModalAd?.images), "thumb")
+          }
           className="w-14 h-14 rounded-xl object-cover"
         />
         <div className="flex-1 min-w-0">

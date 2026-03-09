@@ -4,7 +4,11 @@ import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import { Search, Filter, Loader2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 
 const BASE_URL = "/api";
 
@@ -108,6 +112,9 @@ const Listings = () => {
                     alt={ad.title}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) =>
+                      handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                    }
                     className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                   <span

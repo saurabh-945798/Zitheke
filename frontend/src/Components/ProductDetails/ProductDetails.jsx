@@ -6,7 +6,12 @@ import axios from "axios"; // sirf public APIs ke liye
 import { motion } from "framer-motion";
 import { formatPrice } from "../../utils/formatPrice";
 import CATEGORY_FIELDS from "../Dashboard/CategoryFields.js";
-import { toMedium, toThumb } from "../../utils/imageVariants.js";
+import {
+  getPrimaryImage,
+  handleImageFallback,
+  toMedium,
+  toThumb,
+} from "../../utils/imageVariants.js";
 
 import {
   MapPin,
@@ -542,6 +547,9 @@ const ProductDetails = () => {
                 onClick={() => setShowFullImage(true)}
                 loading="lazy"
                 decoding="async"
+                onError={(e) =>
+                  handleImageFallback(e, getPrimaryImage(ad?.images), "medium")
+                }
                 className="w-full h-full object-cover cursor-pointer"
               />
             ) : (
@@ -594,6 +602,7 @@ const ProductDetails = () => {
                     }}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => handleImageFallback(e, img, "thumb")}
                     className={`w-20 h-20 rounded-lg border cursor-pointer object-cover transition ${
                       i === fullImageIndex
                         ? "border-[#2E3192] border-2"
@@ -1142,6 +1151,9 @@ const ProductDetails = () => {
                     alt={item.title}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) =>
+                      handleImageFallback(e, getPrimaryImage(item.images), "thumb")
+                    }
                     className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
                   />
 

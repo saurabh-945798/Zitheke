@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import fs from "fs/promises";
+import path from "path";
 import Ad from "../models/Ad.js";
 import User from "../models/User.js";
 import Conversation from "../models/Conversation.js";
@@ -622,7 +623,16 @@ export const deleteAd = async (req, res) => {
         if (isCloudinaryUrl(imgUrl)) continue;
         if (isLocalUploadUrl(imgUrl)) {
           const localPath = localAbsolutePathFromUrl(imgUrl);
-          if (localPath) await fs.unlink(localPath).catch(() => {});
+          if (localPath) {
+            const dir = path.dirname(localPath);
+            const file = path.basename(localPath);
+            const mediumPath = path.join(dir, "medium", file);
+            const thumbPath = path.join(dir, "thumb", file);
+
+            await fs.unlink(localPath).catch(() => {});
+            await fs.unlink(mediumPath).catch(() => {});
+            await fs.unlink(thumbPath).catch(() => {});
+          }
         }
       }
     }

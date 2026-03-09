@@ -5,7 +5,11 @@ import { Eye, MapPin, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -119,6 +123,9 @@ const FeaturedListings = () => {
                       alt={ad.title}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) =>
+                        handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                      }
                       className="w-full h-full object-cover"
                       whileHover={{
                         scale: reduceMotion ? 1 : 1.08,

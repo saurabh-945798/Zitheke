@@ -2,7 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LayoutGrid, List, Loader2, MapPin, Search } from "lucide-react";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 
 const FALLBACK_IMAGE =
   "https://cdn-icons-png.flaticon.com/512/4076/4076500.png";
@@ -166,6 +170,9 @@ const BoostedPage = () => {
                       alt={ad?.title}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) =>
+                        handleImageFallback(e, getPrimaryImage(ad?.images), "thumb")
+                      }
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
 

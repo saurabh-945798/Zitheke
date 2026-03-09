@@ -12,7 +12,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { categoryMap } from "../../utils/categoryMap.js";
-import { getThumbOrFallback } from "../../utils/imageVariants.js";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants.js";
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -489,6 +493,9 @@ const CategoryPage = () => {
                       alt={item.title}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) =>
+                        handleImageFallback(e, getPrimaryImage(item.images), "thumb")
+                      }
                       className="w-full h-full object-cover"
                     />
 
@@ -705,6 +712,13 @@ const CategoryPage = () => {
                 alt=""
                 loading="lazy"
                 decoding="async"
+                onError={(e) =>
+                  handleImageFallback(
+                    e,
+                    getPrimaryImage(shareModalAd?.images),
+                    "thumb"
+                  )
+                }
                 className="w-14 h-14 rounded-xl object-cover"
               />
               <div className="flex-1 min-w-0">

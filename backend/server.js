@@ -130,6 +130,45 @@ const __dirname = path.dirname(__filename);
 const uploadsPath = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath);
 
+// Variant fallback protection:
+// medium -> original -> thumb
+// thumb  -> original
+app.get("/uploads/images/:variant/:filename", (req, res, next) => {
+  const { variant, filename } = req.params;
+  const safeFile = path.basename(String(filename || ""));
+  const safeVariant = String(variant || "").toLowerCase();
+
+  if (!safeFile || safeFile !== filename) {
+    return res.status(400).json({ message: "Invalid image path" });
+  }
+
+  const originalPath = path.join(uploadsPath, "images", safeFile);
+  const mediumPath = path.join(uploadsPath, "images", "medium", safeFile);
+  const thumbPath = path.join(uploadsPath, "images", "thumb", safeFile);
+
+  const trySend = (filePath) => {
+    if (!fs.existsSync(filePath)) return false;
+    res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+    res.sendFile(filePath);
+    return true;
+  };
+
+  if (safeVariant === "medium") {
+    if (trySend(mediumPath)) return;
+    if (trySend(originalPath)) return;
+    if (trySend(thumbPath)) return;
+    return next();
+  }
+
+  if (safeVariant === "thumb") {
+    if (trySend(thumbPath)) return;
+    if (trySend(originalPath)) return;
+    return next();
+  }
+
+  return next();
+});
+
 // STATIC FILES
 app.use("/uploads", express.static(uploadsPath));
 

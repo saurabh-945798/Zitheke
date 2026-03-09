@@ -45,13 +45,40 @@ export const optimizeImageFile = async (filePath, mimeType = "") => {
     dir,
     `${baseName}.tmp-${crypto.randomBytes(6).toString("hex")}.jpg`
   );
+  const mediumDir = path.join(dir, "medium");
+  const thumbDir = path.join(dir, "thumb");
+  const mediumPath = path.join(mediumDir, `${baseName}.jpg`);
+  const thumbPath = path.join(thumbDir, `${baseName}.jpg`);
+  const mediumTempPath = path.join(
+    mediumDir,
+    `${baseName}.tmp-${crypto.randomBytes(6).toString("hex")}.jpg`
+  );
+  const thumbTempPath = path.join(
+    thumbDir,
+    `${baseName}.tmp-${crypto.randomBytes(6).toString("hex")}.jpg`
+  );
 
   try {
+    await fs.mkdir(mediumDir, { recursive: true });
+    await fs.mkdir(thumbDir, { recursive: true });
+
     await sharp(filePath)
       .rotate()
       .resize({ width: 1400, withoutEnlargement: true })
       .jpeg({ quality: 75, mozjpeg: true })
       .toFile(tempPath);
+
+    await sharp(filePath)
+      .rotate()
+      .resize({ width: 900, withoutEnlargement: true })
+      .jpeg({ quality: 72, mozjpeg: true })
+      .toFile(mediumTempPath);
+
+    await sharp(filePath)
+      .rotate()
+      .resize({ width: 420, withoutEnlargement: true })
+      .jpeg({ quality: 68, mozjpeg: true })
+      .toFile(thumbTempPath);
 
     await fs.unlink(filePath).catch(() => {});
 
@@ -60,10 +87,16 @@ export const optimizeImageFile = async (filePath, mimeType = "") => {
       await fs.unlink(finalPath).catch(() => {});
       await fs.rename(tempPath, finalPath);
     }
+    await fs.unlink(mediumPath).catch(() => {});
+    await fs.rename(mediumTempPath, mediumPath);
+    await fs.unlink(thumbPath).catch(() => {});
+    await fs.rename(thumbTempPath, thumbPath);
 
     return finalPath;
   } catch (err) {
     await fs.unlink(tempPath).catch(() => {});
+    await fs.unlink(mediumTempPath).catch(() => {});
+    await fs.unlink(thumbTempPath).catch(() => {});
     throw err;
   }
 };

@@ -9,7 +9,11 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { getThumbOrFallback } from "../../utils/imageVariants";
+import {
+  getPrimaryImage,
+  getThumbOrFallback,
+  handleImageFallback,
+} from "../../utils/imageVariants";
 
 const BASE_URL = "/api";
 
@@ -190,6 +194,9 @@ const SearchResults = () => {
                     alt={ad.title}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) =>
+                      handleImageFallback(e, getPrimaryImage(ad.images), "thumb")
+                    }
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
 

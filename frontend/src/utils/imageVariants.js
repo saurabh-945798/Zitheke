@@ -23,6 +23,8 @@ export const toMedium = (url) => {
     : normalized;
 };
 
+export const toOriginal = (url) => normalizeSource(url) || FALLBACK_IMAGE;
+
 export const getPrimaryImage = (images) =>
   Array.isArray(images) && images.length > 0 ? images[0] : "";
 
@@ -34,4 +36,34 @@ export const getThumbOrFallback = (images, fallback = FALLBACK_IMAGE) => {
 export const getMediumOrFallback = (images, fallback = FALLBACK_IMAGE) => {
   const source = getPrimaryImage(images);
   return source ? toMedium(source) : fallback;
+};
+
+export const buildVariantChain = (sourceUrl, primary = "thumb") => {
+  const normalized = normalizeSource(sourceUrl);
+  if (!normalized) return [FALLBACK_IMAGE];
+
+  const chain =
+    primary === "medium"
+      ? [toMedium(normalized), toOriginal(normalized), toThumb(normalized)]
+      : [toThumb(normalized), toOriginal(normalized), toMedium(normalized)];
+
+  return [...new Set(chain.filter(Boolean)), FALLBACK_IMAGE];
+};
+
+export const handleImageFallback = (event, sourceUrl, primary = "thumb") => {
+  const el = event?.currentTarget;
+  if (!el) return;
+
+  const chain = buildVariantChain(sourceUrl, primary);
+  const currentStep = Number(el.dataset.fallbackStep || "0");
+  const nextStep = currentStep + 1;
+
+  if (nextStep >= chain.length) {
+    el.onerror = null;
+    el.src = FALLBACK_IMAGE;
+    return;
+  }
+
+  el.dataset.fallbackStep = String(nextStep);
+  el.src = chain[nextStep];
 };
