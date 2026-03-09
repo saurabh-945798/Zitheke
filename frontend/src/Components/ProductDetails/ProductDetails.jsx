@@ -367,6 +367,7 @@ const ProductDetails = () => {
     ...(ad?.images || []).map((img) => ({
       type: "image",
       src: toMedium(img),
+      originalSrc: img,
     })),
     ...(ad?.video?.url
       ? [
@@ -377,6 +378,21 @@ const ProductDetails = () => {
         ]
       : []),
   ];
+  const currentLightboxMedia =
+    mediaList[fullImageIndex] ||
+    (activeImage
+      ? {
+          type: "image",
+          src: activeImage,
+        }
+      : null);
+  const openLightboxFromActiveImage = () => {
+    const activeIndex = mediaList.findIndex(
+      (media) => media?.type === "image" && media?.src === activeImage
+    );
+    setFullImageIndex(activeIndex >= 0 ? activeIndex : 0);
+    setShowFullImage(true);
+  };
 
   const hidePriceAndDetails = ["Jobs", "Services"].includes(ad?.category);
 
@@ -544,7 +560,7 @@ const ProductDetails = () => {
               <img
                 src={activeImage}
                 alt={ad.title}
-                onClick={() => setShowFullImage(true)}
+                onClick={openLightboxFromActiveImage}
                 loading="lazy"
                 decoding="async"
                 onError={(e) =>
@@ -641,16 +657,27 @@ const ProductDetails = () => {
             </button>
 
             {/* FULL IMAGE */}
-            {mediaList[fullImageIndex]?.type === "image" ? (
+            {!currentLightboxMedia ? (
+              <div className="max-w-[90%] max-h-[90%] rounded-2xl bg-white text-gray-600 px-6 py-4">
+                No media available
+              </div>
+            ) : currentLightboxMedia.type === "image" ? (
               <img
-                src={mediaList[fullImageIndex].src}
+                src={currentLightboxMedia.src}
                 alt="Full View"
                 className="max-w-[90%] max-h-[90%] rounded-2xl shadow-xl pointer-events-auto"
                 onClick={(e) => e.stopPropagation()}
+                onError={(e) =>
+                  handleImageFallback(
+                    e,
+                    currentLightboxMedia?.originalSrc || currentLightboxMedia?.src || "",
+                    "medium"
+                  )
+                }
               />
             ) : (
               <video
-                src={mediaList[fullImageIndex].src}
+                src={currentLightboxMedia?.src || ""}
                 controls
                 autoPlay
                 playsInline
