@@ -11,16 +11,24 @@ const isStandaloneMode = () => {
 
 const getPlatform = () => {
   if (typeof navigator === "undefined") {
-    return { isIOS: false, isSafari: false };
+    return {
+      isIOS: false,
+      isSafari: false,
+      isAndroid: false,
+      isChromium: false,
+    };
   }
 
   const ua = navigator.userAgent || "";
   const isIOS = /iphone|ipad|ipod/i.test(ua);
+  const isAndroid = /android/i.test(ua);
   const isSafari =
     /safari/i.test(ua) &&
     !/crios|fxios|edgios|chrome|android/i.test(ua);
+  const isChromium =
+    /chrome|crios|edg|edgios/i.test(ua) && !/opr|opera/i.test(ua);
 
-  return { isIOS, isSafari };
+  return { isIOS, isSafari, isAndroid, isChromium };
 };
 
 const InstallAppModal = () => {
@@ -28,8 +36,12 @@ const InstallAppModal = () => {
   const [visible, setVisible] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [showIosHelp, setShowIosHelp] = useState(false);
+  const [showManualHelp, setShowManualHelp] = useState(false);
 
-  const { isIOS, isSafari } = useMemo(() => getPlatform(), []);
+  const { isIOS, isSafari, isAndroid, isChromium } = useMemo(
+    () => getPlatform(),
+    []
+  );
   const shouldShowIosGuide = isIOS && isSafari && !isStandaloneMode();
 
   useEffect(() => {
@@ -49,6 +61,7 @@ const InstallAppModal = () => {
       setDeferredPrompt(null);
       setVisible(false);
       setShowIosHelp(false);
+      setShowManualHelp(false);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -66,11 +79,16 @@ const InstallAppModal = () => {
 
   const handleInstall = async () => {
     if (shouldShowIosGuide) {
+      setShowManualHelp(false);
       setShowIosHelp((prev) => !prev);
       return;
     }
 
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      setShowIosHelp(false);
+      setShowManualHelp((prev) => !prev);
+      return;
+    }
 
     setInstalling(true);
     try {
@@ -114,13 +132,45 @@ const InstallAppModal = () => {
                 </p>
               </div>
             )}
+
+            {showManualHelp && (
+              <div className="mt-3 rounded-2xl border border-white/12 bg-white/8 px-3 py-3 text-sm text-white/86">
+                <p className="font-medium text-white">
+                  Install from your browser
+                </p>
+                {isChromium ? (
+                  <p className="mt-2">
+                    Use the install icon in the address bar, or open the browser
+                    menu and choose{" "}
+                    <span className="font-semibold text-white">
+                      Install app
+                    </span>
+                    .
+                  </p>
+                ) : isAndroid ? (
+                  <p className="mt-2">
+                    Open the browser menu and choose{" "}
+                    <span className="font-semibold text-white">
+                      Add to Home screen
+                    </span>
+                    .
+                  </p>
+                ) : (
+                  <p className="mt-2">
+                    Your browser has not exposed the install prompt yet. If an
+                    install option is available, use your browser menu or address
+                    bar install icon.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
               onClick={handleInstall}
-              disabled={installing || (!deferredPrompt && !shouldShowIosGuide)}
+              disabled={installing}
               className="inline-flex items-center gap-2 rounded-full bg-[#F4900C] px-4 py-2.5 text-sm font-semibold text-[#111B58] transition hover:bg-[#ffb84f] disabled:cursor-not-allowed disabled:opacity-70"
             >
               <Download size={16} />
