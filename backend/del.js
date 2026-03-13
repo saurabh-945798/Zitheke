@@ -1157,43 +1157,98 @@
 // run();
 
 
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import Ad from "./models/Ad.js";
+// import mongoose from "mongoose";
+// import dotenv from "dotenv";
+// import Ad from "./models/Ad.js";
 
-dotenv.config();
+// dotenv.config();
+
+// async function run() {
+
+//   const categoryName = "Kitchenware & Cookware";
+
+//   const newPhone = "265991755902";
+
+//   try {
+
+//     if (!process.env.MONGO_URI) {
+//       throw new Error("MONGO_URI missing in .env");
+//     }
+
+//     await mongoose.connect(process.env.MONGO_URI);
+//     console.log("✅ MongoDB connected");
+
+//     // Update phone for all ads in this category
+//     const res = await Ad.updateMany(
+//       { category: categoryName },
+//       { $set: { ownerPhone: newPhone } }
+//     );
+
+//     console.log(
+//       `✅ Ads updated → matched=${res.matchedCount}, modified=${res.modifiedCount}`
+//     );
+
+//   } catch (err) {
+//     console.error("❌ Error:", err.message);
+//   } finally {
+//     await mongoose.disconnect();
+//     console.log("🔌 MongoDB disconnected");
+//   }
+// }
+
+// run();
+
+import { MongoClient } from "mongodb"
+
+const uri = "mongodb+srv://alinafe:dfHC2WiE7NUavDjQ@alinafe.lxc6cvj.mongodb.net/ecommerceDB?retryWrites=true&w=majority"
+
+const client = new MongoClient(uri)
+
+const data = [
+{ title: "OMEGA IRON TS-1224", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_arh7wsyma9dvqwpzhqur.mp4" },
+{ title: "ROYAL LUNCH BOX", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b52eorxhjlnnbx1mrxhs.mp4" },
+{ title: "HOMEZEST COFFEE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b8lmxwh1dekkgnhveaoi.mp4" },
+{ title: "DESSIN PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_baor1e8ngtycccvovrwa.mp4" },
+{ title: "HEAT PRESERVATION PORTABLE POT 1.0L", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bvtqcixjdilxkxy9jcef.mp4" },
+{ title: "10 PC GRANITE COOKWARE SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bz2yioeu0ahyz7n45gxr.mp4" },
+{ title: "2 SLICE BREAD TOASTER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_c6k9gqu0bs5zcufovenq.mp4" },
+{ title: "BRAVO DRY IRON", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cj2ptfktitdd88cgs7jx.mp4" },
+{ title: "ALWAYS VACUUM JUG", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cleb5wb5rdn77zith1kg.mp4" },
+{ title: "STAINLESS STEAMER POT 30 CM", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cv7xu63ffwfxoamrcucu.mp4" },
+{ title: "Electronic Kitchen scale SF-400", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cx8tw6k6zxqmajyburcs.mp4" },
+{ title: "MINI WAFFLE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dkv0rcq5qkcbbg0djqvq.mp4" },
+{ title: "RUSSEL HOBBS AIR FRYER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dllwilpx4f8ws2g05kff.mp4" },
+{ title: "SILVER CREST PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_drl4xtmxyn29gwpa7nx0.mp4" },
+{ title: "FOOD STORAGE CONTAINER SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dz8doyplfuutgho5mask.mp4" },
+{ title: "RODYRISR TOASTER OVEN 13 LITRES", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e2llzsxnct2ken4vqc0a.mp4" },
+{ title: "STRIDE INSULATED HOT POT", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e6nshwgvwkbyvjhivdg8.mp4" },
+{ title: "FAIRLADY RICE COOKER MA-501", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e8n1siwkkupwxk5qso8c.mp4" },
+{ title: "STAINLESS CHAFFING DISH", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eacn7dhpgjq84dsgk9hq.mp4" },
+{ title: "ALWAYS VACUUM CUP", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_enibcyp9n7cv0ewbo9pp.mp4" },
+{ title: "BROOK INSULATED CASSEROLE", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eu5uvhthrsledye3b4vm.mp4" },
+{ title: "SILVER CREST RICE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_fgyiwuvy91jo5yzzdnaf.mp4" }
+]
 
 async function run() {
 
-  const categoryName = "Kitchenware & Cookware";
+    await client.connect()
 
-  const newPhone = "265991755902";
+    const db = client.db("ecommerceDB")
+    const ads = db.collection("ads")
 
-  try {
+    for (const item of data) {
 
-    if (!process.env.MONGO_URI) {
-      throw new Error("MONGO_URI missing in .env");
+        const result = await ads.updateOne(
+            { title: item.title },
+            { $set: { video: item.video } }
+        )
+
+        console.log(item.title, "→ updated:", result.modifiedCount)
     }
 
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ MongoDB connected");
+    await client.close()
 
-    // Update phone for all ads in this category
-    const res = await Ad.updateMany(
-      { category: categoryName },
-      { $set: { ownerPhone: newPhone } }
-    );
-
-    console.log(
-      `✅ Ads updated → matched=${res.matchedCount}, modified=${res.modifiedCount}`
-    );
-
-  } catch (err) {
-    console.error("❌ Error:", err.message);
-  } finally {
-    await mongoose.disconnect();
-    console.log("🔌 MongoDB disconnected");
-  }
+    console.log("✅ Done updating videos")
 }
 
-run();
+run()
