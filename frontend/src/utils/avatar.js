@@ -1,4 +1,6 @@
-export const DEFAULT_AVATAR_SRC = "/default-avatar.svg";
+import defaultAvatarPng from "../images/—Pngtree—user profile avatar_13369988.png";
+
+export const DEFAULT_AVATAR_SRC = defaultAvatarPng;
 
 const isNonEmptyString = (value) =>
   typeof value === "string" && value.trim().length > 0;
