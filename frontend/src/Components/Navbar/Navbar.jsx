@@ -297,6 +297,7 @@ import {
   getUserAvatarSrc,
   handleAvatarFallback,
 } from "../../utils/avatar.js";
+import { usePwaInstall } from "../../hooks/usePwaInstall.js";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -306,6 +307,13 @@ const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [installingApp, setInstallingApp] = useState(false);
+  const {
+    canPromptInstall,
+    shouldShowIosGuide,
+    isStandalone,
+    promptInstall,
+  } = usePwaInstall();
 
   /* =========================
      SCROLL EFFECT
@@ -367,6 +375,44 @@ const Navbar = () => {
     (user?.email ? user.email.split("@")[0] : "") ||
     "";
 
+  const handleInstallApp = async () => {
+    if (isStandalone) {
+      await Swal.fire({
+        icon: "success",
+        title: "Zitheke is already installed",
+        confirmButtonColor: "#2E3192",
+      });
+      return;
+    }
+
+    if (shouldShowIosGuide) {
+      await Swal.fire({
+        title: "Install on iPhone",
+        html: "Tap <strong>Share</strong> and then <strong>Add to Home Screen</strong>.",
+        icon: "info",
+        confirmButtonColor: "#2E3192",
+      });
+      return;
+    }
+
+    if (!canPromptInstall) {
+      await Swal.fire({
+        title: "Install from browser",
+        html: "Use the browser install icon in the address bar, or open the browser menu and choose <strong>Install app</strong>.",
+        icon: "info",
+        confirmButtonColor: "#2E3192",
+      });
+      return;
+    }
+
+    setInstallingApp(true);
+    try {
+      await promptInstall();
+    } finally {
+      setInstallingApp(false);
+    }
+  };
+
   /* =========================
      AVATAR
   ========================= */
@@ -425,6 +471,15 @@ const Navbar = () => {
 
           {/* DESKTOP RIGHT */}
           <div className="hidden md:flex items-center gap-3">
+            {!isStandalone && (
+              <button
+                onClick={handleInstallApp}
+                disabled={installingApp}
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/18 disabled:opacity-70"
+              >
+                {installingApp ? "Preparing..." : "Install App"}
+              </button>
+            )}
             {!user ? (
               <>
                 <button
@@ -470,6 +525,14 @@ const Navbar = () => {
                         className="absolute right-0 top-12 bg-white rounded-xl shadow-xl w-48 overflow-hidden"
                       >
                         <ul className="text-sm">
+                          {!isStandalone && (
+                            <li
+                              onClick={handleInstallApp}
+                              className="px-4 py-3 hover:bg-[#2E3192]/10 cursor-pointer flex gap-2"
+                            >
+                              <Download size={16} /> Install App
+                            </li>
+                          )}
                           <li
                             onClick={() => navigate("/dashboard")}
                             className="px-4 py-3 hover:bg-[#2E3192]/10 cursor-pointer flex gap-2"
@@ -597,6 +660,11 @@ const Navbar = () => {
                   <button onClick={() => navigateFromSidebar("/contact")} className="flex gap-2">
                     <Phone size={18} /> Contact
                   </button>
+                  {!isStandalone && (
+                    <button onClick={handleInstallApp} className="flex gap-2">
+                      <Download size={18} /> Install App
+                    </button>
+                  )}
                 </div>
               </div>
 

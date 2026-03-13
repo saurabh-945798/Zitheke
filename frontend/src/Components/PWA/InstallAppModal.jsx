@@ -1,81 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Download, Share2, Smartphone, X } from "lucide-react";
-
-const isStandaloneMode = () => {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia?.("(display-mode: standalone)")?.matches ||
-    window.navigator.standalone === true
-  );
-};
-
-const getPlatform = () => {
-  if (typeof navigator === "undefined") {
-    return {
-      isIOS: false,
-      isSafari: false,
-      isAndroid: false,
-      isChromium: false,
-    };
-  }
-
-  const ua = navigator.userAgent || "";
-  const isIOS = /iphone|ipad|ipod/i.test(ua);
-  const isAndroid = /android/i.test(ua);
-  const isSafari =
-    /safari/i.test(ua) &&
-    !/crios|fxios|edgios|chrome|android/i.test(ua);
-  const isChromium =
-    /chrome|crios|edg|edgios/i.test(ua) && !/opr|opera/i.test(ua);
-
-  return { isIOS, isSafari, isAndroid, isChromium };
-};
+import { usePwaInstall } from "../../hooks/usePwaInstall.js";
 
 const InstallAppModal = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [showIosHelp, setShowIosHelp] = useState(false);
   const [showManualHelp, setShowManualHelp] = useState(false);
-
-  const { isIOS, isSafari, isAndroid, isChromium } = useMemo(
-    () => getPlatform(),
-    []
-  );
-  const shouldShowIosGuide = isIOS && isSafari && !isStandaloneMode();
+  const { canPromptInstall, isStandalone, shouldShowIosGuide, platform, promptInstall } =
+    usePwaInstall();
+  const { isAndroid, isChromium } = platform;
 
   useEffect(() => {
-    if (isStandaloneMode()) return undefined;
+    if (isStandalone) return undefined;
 
     const timer = window.setTimeout(() => {
       setVisible(true);
     }, 1400);
 
-    const handleBeforeInstallPrompt = (event) => {
-      event.preventDefault();
-      setDeferredPrompt(event);
-      setVisible(true);
-    };
-
-    const handleAppInstalled = () => {
-      setDeferredPrompt(null);
-      setVisible(false);
-      setShowIosHelp(false);
-      setShowManualHelp(false);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
-
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-      window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, []);
+  }, [isStandalone]);
 
   const handleInstall = async () => {
     if (shouldShowIosGuide) {
@@ -84,7 +30,7 @@ const InstallAppModal = () => {
       return;
     }
 
-    if (!deferredPrompt) {
+    if (!canPromptInstall) {
       setShowIosHelp(false);
       setShowManualHelp((prev) => !prev);
       return;
@@ -92,18 +38,16 @@ const InstallAppModal = () => {
 
     setInstalling(true);
     try {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
+      const result = await promptInstall();
+      if (result.status === "accepted") {
         setVisible(false);
       }
     } finally {
-      setDeferredPrompt(null);
       setInstalling(false);
     }
   };
 
-  if (!visible || isStandaloneMode()) return null;
+  if (!visible || isStandalone) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-4 z-[120] px-3 sm:px-4">
