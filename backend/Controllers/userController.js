@@ -5,6 +5,9 @@ import axios from "axios";
 import streamifier from "streamifier";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 import { EmailService } from "../Services/email.service.js";
 import { env } from "../config/env.js";
 import { firebaseAdmin } from "../config/firebaseAdmin.js";
@@ -15,9 +18,86 @@ import Message from "../models/Message.js";
 import Report from "../models/Report.js";
 import { createSessionAndTokens } from "../Services/authTokens.service.js";
 import PhoneSignupToken from "../models/PhoneSignupToken.js";
+import { optimizeImageFile } from "../utils/optimizeImage.js";
+import { isLocalUploadUrl, localAbsolutePathFromUrl, toPublicUrl } from "../utils/uploadPath.js";
 
 const normalizePhone = (raw = "") => normalizeMalawiPhone(raw);
 const isValidPhone = (phone) => isValidMalawiPhone(phone);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.resolve(__dirname, "..", "uploads");
+const avatarDir = path.join(uploadsDir, "avatars");
+const ALLOWED_PROFILE_IMAGE_MIMES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+]);
+
+const sanitizeBaseName = (name = "") =>
+  String(name)
+    .replace(/\.[^/.]+$/, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60) || "avatar";
+
+const cleanupLocalAvatarVariants = async (photoUrl = "") => {
+  if (!isLocalUploadUrl(photoUrl) || !String(photoUrl).includes("/uploads/avatars/")) {
+    return;
+  }
+
+  const originalPath = localAbsolutePathFromUrl(photoUrl);
+  if (!originalPath) return;
+
+  const dir = path.dirname(originalPath);
+  const fileName = path.basename(originalPath);
+  const variantPaths = [
+    originalPath,
+    path.join(dir, "medium", fileName),
+    path.join(dir, "thumb", fileName),
+  ];
+
+  await Promise.all(variantPaths.map((filePath) => fs.unlink(filePath).catch(() => {})));
+};
+
+const saveProfilePhotoData = async (req, uid, photoData) => {
+  const match = String(photoData || "").match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+  if (!match) {
+    throw new Error("Invalid profile image payload");
+  }
+
+  const mimeType = match[1].toLowerCase();
+  const base64Payload = match[2];
+
+  if (!ALLOWED_PROFILE_IMAGE_MIMES.has(mimeType)) {
+    throw new Error("Unsupported profile image type");
+  }
+
+  const buffer = Buffer.from(base64Payload, "base64");
+  if (!buffer.length) {
+    throw new Error("Empty profile image payload");
+  }
+
+  await fs.mkdir(avatarDir, { recursive: true });
+
+  const ext =
+    mimeType === "image/png"
+      ? ".png"
+      : mimeType === "image/webp"
+      ? ".webp"
+      : ".jpg";
+  const fileName = `${sanitizeBaseName(uid)}-${Date.now()}-${crypto
+    .randomBytes(6)
+    .toString("hex")}${ext}`;
+  const tempPath = path.join(avatarDir, fileName);
+
+  await fs.writeFile(tempPath, buffer);
+  const optimizedPath = await optimizeImageFile(tempPath, mimeType);
+
+  return toPublicUrl(req, `/uploads/avatars/${path.basename(optimizedPath)}`);
+};
 
 const findUserByPhone = async (phone) => {
   const normalized = normalizePhone(phone);
@@ -380,12 +460,10 @@ export const updateUserProfile = async (req, res) => {
 
     if (photoData && typeof photoData === "string" && photoData.startsWith("data:")) {
       try {
-        const uploadResult = await cloudinary.uploader.upload(photoData, {
-          folder: "alinafe/users",
-        });
-        if (uploadResult?.secure_url) {
-          user.photoURL = uploadResult.secure_url;
-        }
+        const previousPhotoUrl = user.photoURL || "";
+        const savedPhotoUrl = await saveProfilePhotoData(req, uid, photoData);
+        user.photoURL = savedPhotoUrl;
+        await cleanupLocalAvatarVariants(previousPhotoUrl);
       } catch (imgErr) {
         console.error("Profile photo upload failed:", imgErr?.message || imgErr);
         return res.status(400).json({
@@ -484,7 +562,6 @@ export const logoutUser = async (req, res) => {
     });
   }
 };
-
 
 
 
