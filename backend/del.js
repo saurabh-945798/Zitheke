@@ -1198,57 +1198,206 @@
 
 // run();
 
-import { MongoClient } from "mongodb"
+// import { MongoClient } from "mongodb"
 
-const uri = "mongodb+srv://alinafe:dfHC2WiE7NUavDjQ@alinafe.lxc6cvj.mongodb.net/ecommerceDB?retryWrites=true&w=majority"
+// const uri = "mongodb+srv://alinafe:dfHC2WiE7NUavDjQ@alinafe.lxc6cvj.mongodb.net/ecommerceDB?retryWrites=true&w=majority"
 
-const client = new MongoClient(uri)
+// const client = new MongoClient(uri)
 
-const data = [
-{ title: "OMEGA IRON TS-1224", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_arh7wsyma9dvqwpzhqur.mp4" },
-{ title: "ROYAL LUNCH BOX", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b52eorxhjlnnbx1mrxhs.mp4" },
-{ title: "HOMEZEST COFFEE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b8lmxwh1dekkgnhveaoi.mp4" },
-{ title: "DESSIN PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_baor1e8ngtycccvovrwa.mp4" },
-{ title: "HEAT PRESERVATION PORTABLE POT 1.0L", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bvtqcixjdilxkxy9jcef.mp4" },
-{ title: "10 PC GRANITE COOKWARE SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bz2yioeu0ahyz7n45gxr.mp4" },
-{ title: "2 SLICE BREAD TOASTER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_c6k9gqu0bs5zcufovenq.mp4" },
-{ title: "BRAVO DRY IRON", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cj2ptfktitdd88cgs7jx.mp4" },
-{ title: "ALWAYS VACUUM JUG", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cleb5wb5rdn77zith1kg.mp4" },
-{ title: "STAINLESS STEAMER POT 30 CM", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cv7xu63ffwfxoamrcucu.mp4" },
-{ title: "Electronic Kitchen scale SF-400", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cx8tw6k6zxqmajyburcs.mp4" },
-{ title: "MINI WAFFLE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dkv0rcq5qkcbbg0djqvq.mp4" },
-{ title: "RUSSEL HOBBS AIR FRYER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dllwilpx4f8ws2g05kff.mp4" },
-{ title: "SILVER CREST PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_drl4xtmxyn29gwpa7nx0.mp4" },
-{ title: "FOOD STORAGE CONTAINER SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dz8doyplfuutgho5mask.mp4" },
-{ title: "RODYRISR TOASTER OVEN 13 LITRES", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e2llzsxnct2ken4vqc0a.mp4" },
-{ title: "STRIDE INSULATED HOT POT", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e6nshwgvwkbyvjhivdg8.mp4" },
-{ title: "FAIRLADY RICE COOKER MA-501", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e8n1siwkkupwxk5qso8c.mp4" },
-{ title: "STAINLESS CHAFFING DISH", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eacn7dhpgjq84dsgk9hq.mp4" },
-{ title: "ALWAYS VACUUM CUP", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_enibcyp9n7cv0ewbo9pp.mp4" },
-{ title: "BROOK INSULATED CASSEROLE", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eu5uvhthrsledye3b4vm.mp4" },
-{ title: "SILVER CREST RICE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_fgyiwuvy91jo5yzzdnaf.mp4" }
-]
+// const data = [
+// { title: "OMEGA IRON TS-1224", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_arh7wsyma9dvqwpzhqur.mp4" },
+// { title: "ROYAL LUNCH BOX", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b52eorxhjlnnbx1mrxhs.mp4" },
+// { title: "HOMEZEST COFFEE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_b8lmxwh1dekkgnhveaoi.mp4" },
+// { title: "DESSIN PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_baor1e8ngtycccvovrwa.mp4" },
+// { title: "HEAT PRESERVATION PORTABLE POT 1.0L", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bvtqcixjdilxkxy9jcef.mp4" },
+// { title: "10 PC GRANITE COOKWARE SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_bz2yioeu0ahyz7n45gxr.mp4" },
+// { title: "2 SLICE BREAD TOASTER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_c6k9gqu0bs5zcufovenq.mp4" },
+// { title: "BRAVO DRY IRON", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cj2ptfktitdd88cgs7jx.mp4" },
+// { title: "ALWAYS VACUUM JUG", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cleb5wb5rdn77zith1kg.mp4" },
+// { title: "STAINLESS STEAMER POT 30 CM", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cv7xu63ffwfxoamrcucu.mp4" },
+// { title: "Electronic Kitchen scale SF-400", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_cx8tw6k6zxqmajyburcs.mp4" },
+// { title: "MINI WAFFLE MAKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dkv0rcq5qkcbbg0djqvq.mp4" },
+// { title: "RUSSEL HOBBS AIR FRYER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dllwilpx4f8ws2g05kff.mp4" },
+// { title: "SILVER CREST PRESSURE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_drl4xtmxyn29gwpa7nx0.mp4" },
+// { title: "FOOD STORAGE CONTAINER SET", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_dz8doyplfuutgho5mask.mp4" },
+// { title: "RODYRISR TOASTER OVEN 13 LITRES", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e2llzsxnct2ken4vqc0a.mp4" },
+// { title: "STRIDE INSULATED HOT POT", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e6nshwgvwkbyvjhivdg8.mp4" },
+// { title: "FAIRLADY RICE COOKER MA-501", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_e8n1siwkkupwxk5qso8c.mp4" },
+// { title: "STAINLESS CHAFFING DISH", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eacn7dhpgjq84dsgk9hq.mp4" },
+// { title: "ALWAYS VACUUM CUP", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_enibcyp9n7cv0ewbo9pp.mp4" },
+// { title: "BROOK INSULATED CASSEROLE", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_eu5uvhthrsledye3b4vm.mp4" },
+// { title: "SILVER CREST RICE COOKER", video: "https://api.zitheke.com/uploads/videos/alinafe_videos_fgyiwuvy91jo5yzzdnaf.mp4" }
+// ]
 
-async function run() {
+// async function run() {
 
-    await client.connect()
+//     await client.connect()
 
-    const db = client.db("ecommerceDB")
-    const ads = db.collection("ads")
+//     const db = client.db("ecommerceDB")
+//     const ads = db.collection("ads")
 
-    for (const item of data) {
+//     for (const item of data) {
 
-        const result = await ads.updateOne(
-            { title: item.title },
-            { $set: { video: item.video } }
-        )
+//         const result = await ads.updateOne(
+//             { title: item.title },
+//             { $set: { video: item.video } }
+//         )
 
-        console.log(item.title, "→ updated:", result.modifiedCount)
-    }
+//         console.log(item.title, "→ updated:", result.modifiedCount)
+//     }
 
-    await client.close()
+//     await client.close()
 
-    console.log("✅ Done updating videos")
-}
+//     console.log("✅ Done updating videos")
+// }
 
-run()
+// run()
+
+
+
+
+
+// import { MongoClient } from "mongodb"
+
+// const uri = "mongodb+srv://alinafe:dfHC2WiE7NUavDjQ@alinafe.lxc6cvj.mongodb.net/ecommerceDB?retryWrites=true&w=majority"
+
+// const client = new MongoClient(uri)
+
+// const videos = [
+// {title:"WY DINNERWARE SET",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_fllwg47m4drgsjmekzyl.mp4"},
+// {title:"CONVECTION OVEN",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_gerj6ktl3nxlostahc6v.mp4"},
+// {title:"ALINAFE SOLAR",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_gf6usevfyncisavaasbo.mp4"},
+// {title:"ELECTRIC COFFE GRINDER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_gz2k9zdqsizwxsfmvq8g.mp4"},
+// {title:"IRONING AND TRIMMING MACHINE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hgimh4ubbjfz1yryr1iu.mp4"},
+// {title:"SHEKU CERAMIC SOUP SET",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hk2iob7j6yj6kzfyushb.mp4"},
+// {title:"STAINLESS MUG CUP",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hlaqlvxhgtyszkazynft.mp4"},
+// {title:"CAPSULE CUTTER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hlukd0un7fmtqdf0ulbf.mp4"},
+// {title:"HIGH QUALITY STAINLESS POT",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hnblc5vxwpsvjv4trseu.mp4"},
+// {title:"SET OF FRYING PANS",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hoo7gtlzbpqjd7zyldoj.mp4"},
+// {title:"KINGSTYLE MEAT GRINDER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_huitiqqxygjxcvtlubrd.mp4"},
+// {title:"SUPER FESTIVE INSULATED CASSEROLE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hxhaecsyazopi6vsyrxs.mp4"},
+// {title:"LINGYIFA LUNCH BOX",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hxisp7afbyfea3wymfzy.mp4"},
+// {title:"VITAPS MICROWAVE OVEN",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_hzcrdrbuz3llk0jmflx7.mp4"},
+// {title:"OIL FREE SNACK MAKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_ilk5kkmpw3bszp9lh2cb.mp4"},
+// {title:"POTATO CHIPPER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_imxp4riztp8uycgvtufe.mp4"},
+// {title:"SOUP POT",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_iwmyx48l902tqsqunnf0.mp4"},
+// {title:"SILVER CREST EXTRA LARGE CAPACTY AIRFRYER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_ixnr8hycsblxqxelt5hm.mp4"},
+// {title:"REFRESHING ICE PAIL",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_j2mehq6jewgog6u3dzcf.mp4"},
+// {title:"RINSE ROAST ONE POT",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_jjzxkynmligzfljqxezs.mp4"},
+// {title:"FAIRLADY RICE COOKER MA-501",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_jml91phm6h2paxz4kbbi.mp4"},
+// {title:"SOKANY COFFEE MAKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_johsmj5ojcfyfkvxbjzy.mp4"},
+// {title:"YATAELAIFU PRESSURE COOKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_jtyqw5rbacq0avi5qphu.mp4"},
+// {title:"FOOD STORAGE CONTAINER SET",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_keanoigxltxlylsruape.mp4"},
+// {title:"RED CHERRY BAIKAL JUG",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_kol7n2dkon0bg8hmqkji.mp4"},
+// {title:"SATHIYA ELECTRIC KETTLE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_kvwewtacj0x1dckie8iv.mp4"},
+// {title:"DEEP FRYER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_l8sqfx9iewf8emntjsur.mp4"},
+// {title:"ALWAYS VACUUM CUP",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_ljzpmvoucolrhu1lm7qm.mp4"},
+// {title:"RUSSEL HOBBS AIR FRYER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_lzaqlruaxkurt0zwmvtl.mp4"},
+// {title:"SLOW JUICER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_n7eur93p8qpirwsmgncp.mp4"},
+// {title:"CAKE MOULD",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_nxtz3rfrzlicxw9tv4ie.mp4"},
+// {title:"SCARLET SUPER HAND MIXER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_o2qdwod7ls5vzkbiet6a.mp4"},
+// {title:"COFFEE MACHINE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_qw6vhmkxrn1v70uaiusx.mp4"},
+// {title:"REDISSON FAN",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_qhcatl9gwiwarbikxade.mp4"},
+// {title:"PINE APPLE KNIFE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_sbtpl7tumibuqmta7nfu.mp4"},
+// {title:"KODTEC SANDWICH MAKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_tsd5klngrbsxsr3mb7zm.mp4"},
+// {title:"PROFFESSIONAL HAIR CLIPPER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_ubwja6mu6jpshdsrjajg.mp4"},
+// {title:"STAINLESS STEEL POTS",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_vly17kneblj2f9uieg91.mp4"},
+// {title:"ELECTRIC KETTLE",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_w3hdkojvqxj39vo08xuz.mp4"},
+// {title:"HOMEZEST COFFEE MAKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_wcwfj070yxlmnfzgswdz.mp4"},
+// {title:"KITCHENWARE SET",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_yqljt4godimb1dbboxdl.mp4"},
+// {title:"STRIDE INSULATED HOT POT",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_zklcrxeeynxhrpalp1gm.mp4"},
+// {title:"FLORINA ORIGINAL-BREAKFAST MAKER",video:"https://api.zitheke.com/uploads/videos/alinafe_videos_ztopwar5e3laowikbqya.mp4"}
+// ]
+
+// async function run(){
+
+// await client.connect()
+
+// const db = client.db("ecommerceDB")
+// const ads = db.collection("ads")
+
+// let updated = 0
+// let skipped = 0
+
+// for(const item of videos){
+
+// const ad = await ads.findOne({
+// title:{$regex:item.title,$options:"i"}
+// })
+
+// if(!ad){
+// console.log("❌ Not found:",item.title)
+// continue
+// }
+
+// if(ad.video === item.video){
+// skipped++
+// continue
+// }
+
+// await ads.updateOne(
+// {_id:ad._id},
+// {$set:{video:item.video}}
+// )
+
+// updated++
+
+// console.log("✅ Updated:",item.title)
+
+// }
+
+// console.log("-------------")
+// console.log("Updated:",updated)
+// console.log("Skipped:",skipped)
+
+// await client.close()
+
+// }
+
+// run()
+
+
+
+// import { MongoClient } from "mongodb"
+
+// const uri = "mongodb+srv://alinafe:dfHC2WiE7NUavDjQ@alinafe.lxc6cvj.mongodb.net/ecommerceDB"
+
+// const client = new MongoClient(uri)
+
+// async function fix(){
+
+// await client.connect()
+
+// const db = client.db("ecommerceDB")
+// const ads = db.collection("ads")
+
+// const cursor = ads.find({
+// video:{ $type:"string" }
+// })
+
+// for await (const ad of cursor){
+
+// await ads.updateOne(
+// {_id:ad._id},
+// {
+// $set:{
+// video:{
+// url:ad.video,
+// thumbnail:"",
+// duration:0,
+// size:0,
+// format:"mp4",
+// publicId:""
+// }
+// }
+// })
+
+// console.log("fixed:",ad.title)
+
+// }
+
+// console.log("done")
+
+// }
+
+// fix()

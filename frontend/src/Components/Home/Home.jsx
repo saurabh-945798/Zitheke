@@ -27,10 +27,12 @@ import SafetyTips from "../SafetyTips/SafetyTips.jsx";
 import KitchenwarePromo from "../KitchenwarePromo/KitchenwarePromo.jsx";
 import BoostAdSection from "../BoostAdSection/BoostAdSection.jsx";
 import Livestock from "../CategorySlider/Livestock.jsx";
+import InstallAppModal from "../PWA/InstallAppModal.jsx";
 
 const Home = () => {
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-[Poppins] flex flex-col">
+      <InstallAppModal />
       <HeroSection />
 
       <CategoryBar />
