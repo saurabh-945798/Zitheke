@@ -25,6 +25,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog.jsx";
+import {
+  getUserAvatarSrc,
+  handleAvatarFallback,
+} from "../../utils/avatar.js";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -34,9 +38,7 @@ const Profile = () => {
   const [showPhotoConfirm, setShowPhotoConfirm] = useState(false);
   const [pendingPhoto, setPendingPhoto] = useState("");
   const [pendingPhotoData, setPendingPhotoData] = useState("");
-  const [profilePhoto, setProfilePhoto] = useState(
-    localStorage.getItem("profilePhoto") || user?.photoURL || ""
-  );
+  const [profilePhoto, setProfilePhoto] = useState(getUserAvatarSrc(user));
   const BASE_URL = "/api";
   const [mergeNotice, setMergeNotice] = useState(
     localStorage.getItem("mergeNotice") || ""
@@ -47,6 +49,10 @@ const Profile = () => {
     phone: "",
     location: "",
   });
+
+  useEffect(() => {
+    setProfilePhoto(getUserAvatarSrc(user));
+  }, [user]);
 
   /* âœ… Fetch Profile */
   useEffect(() => {
@@ -123,7 +129,7 @@ await axios.post(
       );
 
       const updatedPhoto = res.data?.user?.photoURL || pendingPhoto;
-      setProfilePhoto(updatedPhoto);
+      setProfilePhoto(updatedPhoto || getUserAvatarSrc(user));
       localStorage.setItem("profilePhoto", updatedPhoto);
 
       const authUserRaw = localStorage.getItem("authUser");
@@ -260,17 +266,12 @@ const handleSave = async () => {
           {/* Avatar & Basic Info */}
           <div className="flex flex-col items-center text-center mb-8">
             <div className="relative">
-              {profilePhoto ? (
-                <img
-                  src={profilePhoto}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover shadow-lg border border-white"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#2E3192] to-[#1F2370] flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                  {form.name[0]}
-                </div>
-              )}
+              <img
+                src={profilePhoto}
+                alt="Profile"
+                onError={handleAvatarFallback}
+                className="w-24 h-24 rounded-full object-cover shadow-lg border border-white bg-white"
+              />
               <label
                 htmlFor="profilePhotoInput"
                 className="absolute -bottom-1 -right-1 bg-white shadow rounded-full border border-gray-200 hover:bg-[#E9EDFF] w-9 h-9 flex items-center justify-center cursor-pointer"

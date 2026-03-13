@@ -10,6 +10,7 @@ import { Card } from "../ui/card.jsx";
 import { Badge } from "../ui/badge.jsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getAvatarSrc, handleAvatarFallback } from "../../utils/avatar.js";
 
 /* ðŸ”¹ Time Ago Utility */
 const timeAgo = (date) => {
@@ -124,17 +125,12 @@ const ChatPreviewSection = () => {
 
                 {/* Avatar */}
                 <div className="relative">
-                  {chat.withUserPhoto ? (
-                    <img
-                      src={chat.withUserPhoto}
-                      alt={chat.withUserName}
-                      className="w-11 h-11 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#2E3192] to-[#1F2370] text-white flex items-center justify-center font-semibold">
-                      {chat.withUserName?.charAt(0) || "U"}
-                    </div>
-                  )}
+                  <img
+                    src={getAvatarSrc(chat?.withUserPhoto)}
+                    alt={chat.withUserName || "User"}
+                    onError={handleAvatarFallback}
+                    className="w-11 h-11 rounded-full object-cover bg-white"
+                  />
 
                   {/* Unread dot */}
                   {isUnread && (

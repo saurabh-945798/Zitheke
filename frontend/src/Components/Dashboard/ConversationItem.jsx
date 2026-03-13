@@ -1,4 +1,5 @@
 import React from "react";
+import { getAvatarSrc, handleAvatarFallback } from "../../utils/avatar.js";
 
 const ConversationItem = ({ chat, onClick, selected }) => {
   return (
@@ -9,8 +10,9 @@ const ConversationItem = ({ chat, onClick, selected }) => {
         ${selected ? "bg-[#E8EBFF]" : "hover:bg-gray-50"}`}
     >
       <img
-        src={chat.withUserPhoto}
+        src={getAvatarSrc(chat?.withUserPhoto)}
         alt={chat.withUserName || "User"}
+        onError={handleAvatarFallback}
         className="w-11 h-11 rounded-full object-cover border border-gray-200"
       />
 

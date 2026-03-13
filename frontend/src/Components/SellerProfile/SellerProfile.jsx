@@ -21,6 +21,7 @@ import {
   getPrimaryImage,
   handleImageFallback,
 } from "../../utils/imageVariants.js";
+import { getAvatarSrc, handleAvatarFallback } from "../../utils/avatar.js";
 
 const SellerProfile = () => {
   const { sellerId } = useParams();
@@ -125,9 +126,6 @@ const SellerProfile = () => {
   /* ----------------------------------
      Derived UI helpers
   ---------------------------------- */
-  const fallbackAvatar =
-    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-
   const trustBadges = useMemo(() => {
     if (!seller) return [];
     const badges = [];
@@ -311,8 +309,9 @@ const SellerProfile = () => {
                 <div className="rounded-2xl border border-white/40 bg-white/35 backdrop-blur-xl shadow-lg px-4 py-3">
                   <div className="flex items-center gap-3">
                     <img
-                      src={seller.image || fallbackAvatar}
+                      src={getAvatarSrc(seller.image)}
                       alt="seller"
+                      onError={handleAvatarFallback}
                       className="w-12 h-12 rounded-xl object-cover border border-white/50"
                     />
                     <div className="leading-tight">
@@ -333,8 +332,9 @@ const SellerProfile = () => {
               <div className="rounded-2xl border border-white/40 bg-white/35 backdrop-blur-xl shadow-lg px-4 py-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={seller.image || fallbackAvatar}
+                    src={getAvatarSrc(seller.image)}
                     alt="seller"
+                    onError={handleAvatarFallback}
                     className="w-14 h-14 rounded-2xl object-cover border border-white/50"
                   />
                   <div className="leading-tight">
@@ -371,8 +371,9 @@ const SellerProfile = () => {
 
                 <div className="mt-5 flex items-center gap-4">
                   <img
-                    src={seller.image || fallbackAvatar}
+                    src={getAvatarSrc(seller.image)}
                     alt="seller"
+                    onError={handleAvatarFallback}
                     className="w-16 h-16 rounded-2xl object-cover border"
                   />
                   <div className="min-w-0">
@@ -560,7 +561,7 @@ const SellerProfile = () => {
                     >
                       <div className="relative">
                         <img
-                          src={getCardImageOrFallback(ad, fallbackAvatar)}
+                          src={getCardImageOrFallback(ad)}
                           alt={ad.title}
                           loading="lazy"
                           decoding="async"

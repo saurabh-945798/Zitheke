@@ -293,6 +293,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import SearchBar from "../SearchBar/SearchBar.jsx";
 import Swal from "sweetalert2";
+import {
+  getUserAvatarSrc,
+  handleAvatarFallback,
+} from "../../utils/avatar.js";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -367,27 +371,14 @@ const Navbar = () => {
      AVATAR
   ========================= */
   const getAvatar = () => {
-    if (!user) {
-      return (
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 shadow-sm">
-          <User size={18} />
-        </div>
-      );
-    }
-
-    if (user?.photoURL)
-      return (
-        <img
-          src={user.photoURL}
-          alt="User"
-          className="w-10 h-10 rounded-full object-cover border border-[#2E3192]/30 shadow-sm"
-        />
-      );
-    const letter = (displayName || user?.email || "U").charAt(0);
+    const avatarSrc = getUserAvatarSrc(user);
     return (
-      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2E3192] text-white font-semibold shadow-sm">
-        {letter}
-      </div>
+      <img
+        src={avatarSrc}
+        alt={user ? displayName || "User" : "Guest User"}
+        onError={handleAvatarFallback}
+        className="w-10 h-10 rounded-full object-cover border border-[#2E3192]/30 shadow-sm bg-white"
+      />
     );
   };
 

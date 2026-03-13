@@ -12,6 +12,7 @@ import {
   toMedium,
   toThumb,
 } from "../../utils/imageVariants.js";
+import { getAvatarSrc, handleAvatarFallback } from "../../utils/avatar.js";
 
 import {
   MapPin,
@@ -895,11 +896,9 @@ const ProductDetails = () => {
                 >
                   <div className="relative">
                     <img
-                      src={
-                        ad.ownerImage ||
-                        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                      }
+                      src={getAvatarSrc(ad.ownerImage)}
                       alt="seller"
+                      onError={handleAvatarFallback}
                       className="w-16 h-16 rounded-full border-2 border-[#2E3192]/30 
             object-cover shadow-sm group-hover:scale-105 transition"
                     />

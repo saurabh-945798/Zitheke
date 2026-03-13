@@ -21,6 +21,7 @@ import MessageBubble from "../../Components/Dashboard/MessageBubble.jsx";
 import ChatInput from "../../Components/Dashboard/ChatInput.jsx";
 import { useChatSocket } from "../../hooks/useChatSocket.js";
 import { useChatMessages } from "../../hooks/useChatMessages.js";
+import { getAvatarSrc, handleAvatarFallback } from "../../utils/avatar.js";
 
 /* ------------------------------------------
   Utils
@@ -51,7 +52,7 @@ const formatMK = (n) => {
   return num.toLocaleString("en-MW", { maximumFractionDigits: 0 });
 };
 
-const avatarUrl = (photoUrl) => safe(photoUrl, "");
+const avatarUrl = (photoUrl) => getAvatarSrc(safe(photoUrl, ""));
 
 /* ------------------------------------------
   Empty State Illustration
@@ -472,6 +473,7 @@ const Chats = () => {
                             <img
                               src={avatarUrl(chat.withUserPhoto)}
                               alt={name}
+                              onError={handleAvatarFallback}
                               className="h-11 w-11 rounded-2xl object-cover border border-white/70 shadow-sm"
                               loading="lazy"
                             />
@@ -604,6 +606,7 @@ const Chats = () => {
                                   <img
                                     src={avatarUrl(chat.withUserPhoto)}
                                     alt={name}
+                                    onError={handleAvatarFallback}
                                     className="h-12 w-12 rounded-2xl object-cover border border-white/70 shadow-sm"
                                     loading="lazy"
                                   />
@@ -670,6 +673,7 @@ const Chats = () => {
                           <img
                             src={avatarUrl(selectedChat?.withUserPhoto)}
                             alt={headerName}
+                            onError={handleAvatarFallback}
                             className="h-11 w-11 rounded-2xl object-cover border border-white/70 shadow-sm"
                           />
                           <span
