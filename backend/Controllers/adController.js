@@ -680,22 +680,53 @@ export const incrementView = async (req, res) => {
       return res.status(400).json({ message: "Invalid Ad ID" });
     }
 
-    const ad = await Ad.findById(id);
+    const ad = await Ad.findById(id).select("ownerUid views viewedBy");
     if (!ad) return res.status(404).json({ message: "Ad not found" });
 
     if (userId && ad.ownerUid === userId) {
       return res.json({ message: "Owner viewed — no increment" });
     }
 
-    if (uniqueViewer && ad.viewedBy.includes(uniqueViewer)) {
-      return res.json({ message: "Already viewed", views: ad.views });
+    if (uniqueViewer) {
+      const updatedAd = await Ad.findOneAndUpdate(
+        { _id: id, viewedBy: { $ne: uniqueViewer } },
+        {
+          $inc: { views: 1 },
+          $addToSet: { viewedBy: uniqueViewer },
+        },
+        {
+          new: true,
+          projection: { views: 1 },
+        }
+      );
+
+      if (!updatedAd) {
+        const currentAd = await Ad.findById(id).select("views");
+        return res.json({
+          message: "Already viewed",
+          views: currentAd?.views ?? ad.views ?? 0,
+        });
+      }
+
+      return res.json({
+        message: "View incremented",
+        views: updatedAd.views,
+      });
     }
 
-    ad.views = (ad.views || 0) + 1;
-    if (uniqueViewer) ad.viewedBy.push(uniqueViewer);
+    const updatedAd = await Ad.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      {
+        new: true,
+        projection: { views: 1 },
+      }
+    );
 
-    await ad.save();
-    res.json({ message: "View incremented", views: ad.views });
+    return res.json({
+      message: "View incremented",
+      views: updatedAd?.views ?? (ad.views || 0) + 1,
+    });
   } catch (error) {
     console.error("❌ Error updating view count:", error);
     res.status(500).json({

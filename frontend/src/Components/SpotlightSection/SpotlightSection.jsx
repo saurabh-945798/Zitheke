@@ -6,60 +6,60 @@ import { useNavigate } from "react-router-dom";
 const spotlightData = [
   {
     category: "Mobiles",
-    title: "iPhone 12 Pro",
+    title: "Great Deal – Quality Item Available",
     offer: "25% OFF",
     image:
-      "https://www.perchtechnologies.com/wp-content/uploads/2021/06/iphone-12-Pro-Max-Gold.jpg",
+      "https://pictures-nigeria.jijistatic.net/191312169_MTIwMC0xNjAwLTY0YWQyY2Q5ZTk.webp",
   },
   {
     category: "Vehicles",
-    title: "Toyota Corolla 2014",
+    title: "Best Offers on Quality Products & Services",
     offer: "Hot Deal",
     image:
-      "https://images.unsplash.com/photo-1746056700923-a75df113b894?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://img.freepik.com/free-photo/handsome-african-american-man-driving-car_53876-97152.jpg?semt=ais_rp_progressive&w=740&q=80",
   },
   {
     category: "Electronics",
-    title: "Sony 55” 4K Smart TV – Like New",
+    title: "Well-maintained electronic item, perfect for everyday use.",
     offer: "Save 18%",
     image:
-      "https://images.unsplash.com/photo-1567690187548-f07b1d7bf5a9?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://api.zitheke.com/uploads/images/medium/cvvcaupahphjqdhgtecw.webp",
   },
   {
     category: "Furniture",
     title: "Premium Wooden Sofa Set",
     offer: "Best Price",
     image:
-      "https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?q=80&w=1109&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://gms.gumtree.co.za/v2/images/za_ads_100163233_260221_6999b3739d1790000a3f8fca?size=l",
   },
   {
     category: "Real Estate",
-    title: "2 BHK Furnished Apartment",
+    title: "Explore Top Listings at Great Prices",
     offer: "New Listing",
     image:
-      "https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://scontent.fdel32-1.fna.fbcdn.net/v/t39.30808-6/496936088_122248262630073185_6162265846963520374_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_ohc=1C1kRo9WsHsQ7kNvwFC4ex1&_nc_oc=Adk2fiK8ijE-4jo6Va2QUD57Q2Z7qg_44werV7jEUCs89dE5kh40uaXSrkYsRRc1I4k&_nc_zt=23&_nc_ht=scontent.fdel32-1.fna&_nc_gid=Cqq18oG6JEicW1B_DYopwA&_nc_ss=8&oh=00_AfxLETAuTBB1R-M-JC-WfXOGGlaRAo_brLa4_3JBJ-TtSQ&oe=69BAB26F",
   },
   {
     category: "Jobs",
     title: "Hiring: Office Assistant – Full Time",
     offer: "Apply Now",
     image:
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://african.land/oc-content/plugins/blog/img/blog/677.jpg",
   },
   {
     category: "Fashion",
-    title: "Men’s Summer Wear Combo – Trending",
+    title: "Find the Best Deals Near You",
     offer: "30% OFF",
     image:
-      "https://plus.unsplash.com/premium_photo-1695575576052-7c271876b075?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://api.zitheke.com/uploads/images/medium/1003180400-1772188575657-0f1435fd72b6.webp",
   },
   
   {
     category: "Services",
-    title: "Home Cleaning & Repair Services",
+    title: "Buy, Sell & Discover Great Deals",
     offer: "Book Now",
     image:
-      "https://images.unsplash.com/photo-1581578949510-fa7315c4c350?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://api.zitheke.com/uploads/images/medium/img_20250722_150453-1772028855021-d3856f115c4f.webp",
   },
 ];
 
