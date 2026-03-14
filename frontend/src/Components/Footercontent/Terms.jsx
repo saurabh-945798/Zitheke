@@ -172,7 +172,7 @@ Users shall confirm and warrant to ZITHEKE that all of the information they prov
           <li>If Users conduct transactions through the Service, ZITHEKE will not make any warranties, endorse, act as an agent, mediate, intercede, or conduct any canvassing regarding the transaction between the Users. </li>
          <li>If a User contacts a specified or unspecified Other Operator through the service and exchanges Messages or otherwise communicates with them, the User shall make judgments regarding whether or not to disclose information about the User themselves or the User’s assets etc. to the other party, or whether files provided by the other party contain harmful programs etc., at their own liability.</li>
           <li>Any disputes between the Users regarding transactions, communication etc. will be resolved at the expense and liability of the User.</li>
-        <li>4.	The User acknowledges and agrees that ZITHEKE, within the limitation of applicable law, monitors the Users’ communications for the purpose of ensuring Use’s compliance with its obligations under the Terms and Conditions, and that ZITHEKE may restrict, delete, or prohibit such communications, if ZITHEKE decides it is necessary to do so, based on its sole discretion.</li>
+        <li>The User acknowledges and agrees that ZITHEKE, within the limitation of applicable law, monitors the Users’ communications for the purpose of ensuring Use’s compliance with its obligations under the Terms and Conditions, and that ZITHEKE may restrict, delete, or prohibit such communications, if ZITHEKE decides it is necessary to do so, based on its sole discretion.</li>
           </ol>
 
         </div>
@@ -210,21 +210,21 @@ Users shall confirm and warrant to ZITHEKE that all of the information they prov
             Article 11: Prohibited Acts
           </h2>
           <ol className="list-decimal pl-6 space-y-3 text-gray-600">
-            <li>1.	reaching the copyrights, trademark rights, or other intellectual property rights, privacy rights, image rights, or other rights of another person, damaging the honor, credibility, or assets of another person, or actions that contribute to this;</li>
-            <li>.	exposing information, or know how etc. that is kept confidential by another person;</li>
-            <li>.	ations whereby the User behaves threateningly, provocatively, or insultingly to another party, or otherwise causes mental anguish;</li>
-            <li>	forcing another person to enter into an association, activity, or organization, or to furnish transactions, profits etc., or to provide a service, or actions that request such things even though the other person has refused;</li>
-            <li>	registering or posting information which is untrue, or that contains mistakes, or actions that could possibly cause another person to misunderstand the User’s identity, products, contents of the service, or transaction conditions;</li>
-            <li>	collecting, stockpiling, altering, or deleting another person’s information;</li>
-            <li>	using the Service under the guise of another person, having multiple people use the same account, or an individual establishing several accounts;</li>
-            <li>	unauthorized access or attempting to use unauthorized access, sending computer viruses, back-door or other unauthorized commands, programs, data, etc. to another person’s computer, or leaving harmful computer programs, etc. in a position whereby another person could receive them;</li>
-            <li>	actions that exceed the scope of normal use and place a burden on the server;</li>
-            <li>	using, gathering, or processing the information provided in the Service by a method other than the method provided by ZITHEKE, whether legal or illegal, and whether or not it infringes upon rights, or using the Service by a method other than the method provided by ZITHEKE, for profit or for commercial purposes;</li>
-            <li>	posting information considerably lacking in quality, information for which the meaning is unclear, or other Messages that deviate from the purpose of the Service, or repeatedly posting Messages with the same or similar content;</li>
+            <li>Reaching the copyrights, trademark rights, or other intellectual property rights, privacy rights, image rights, or other rights of another person, damaging the honor, credibility, or assets of another person, or actions that contribute to this;</li>
+            <li>exposing information, or know how etc. that is kept confidential by another person;</li>
+            <li>ations whereby the User behaves threateningly, provocatively, or insultingly to another party, or otherwise causes mental anguish;</li>
+            <li>forcing another person to enter into an association, activity, or organization, or to furnish transactions, profits etc., or to provide a service, or actions that request such things even though the other person has refused;</li>
+            <li>registering or posting information which is untrue, or that contains mistakes, or actions that could possibly cause another person to misunderstand the User’s identity, products, contents of the service, or transaction conditions;</li>
+            <li>collecting, stockpiling, altering, or deleting another person’s information;</li>
+            <li>using the Service under the guise of another person, having multiple people use the same account, or an individual establishing several accounts;</li>
+            <li>unauthorized access or attempting to use unauthorized access, sending computer viruses, back-door or other unauthorized commands, programs, data, etc. to another person’s computer, or leaving harmful computer programs, etc. in a position whereby another person could receive them;</li>
+            <li>actions that exceed the scope of normal use and place a burden on the server;</li>
+            <li>using, gathering, or processing the information provided in the Service by a method other than the method provided by ZITHEKE, whether legal or illegal, and whether or not it infringes upon rights, or using the Service by a method other than the method provided by ZITHEKE, for profit or for commercial purposes;</li>
+            <li>posting information considerably lacking in quality, information for which the meaning is unclear, or other Messages that deviate from the purpose of the Service, or repeatedly posting Messages with the same or similar content;</li>
             <li>actions that damage the credibility of ZITHEKE, the Site, or the Service, or actions that demean the reputation of ZITHEKE, the Site, or the Service;</li>
             <li>Actions other than the items set out above that violate laws and ordinances, public standards, or the Rules and Regulations, actions that impede the operation of the Service, and actions particularly provided by ZITHEKE and posted on the Site.</li>
             <li>ZITHEKE is not obliged to monitor whether or not the actions set out in the items in Article 11.1 are being conducted in respect of the Site or the Service. Further, ZITHEKE is not liable for any damage suffered by a User as a result of another User conducting the actions set out in the items in Article 11.1.</li>
-            <li>	ZITHEKE may request cooperation from Users regarding the submission of materials, or obtaining information in order to investigate whether or not the actions set out in the items in Article 11.1 have taken place and the details thereof, and Users shall cooperate with such requests; provided, however, that ZITHEKE is not obliged to conduct such investigations.</li>
+            <li>ZITHEKE may request cooperation from Users regarding the submission of materials, or obtaining information in order to investigate whether or not the actions set out in the items in Article 11.1 have taken place and the details thereof, and Users shall cooperate with such requests; provided, however, that ZITHEKE is not obliged to conduct such investigations.</li>
 
 
 
