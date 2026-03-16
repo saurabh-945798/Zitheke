@@ -18,14 +18,12 @@ import {
   Home,
   Flag,
   Settings,
-  Download,
 } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   getUserAvatarSrc,
   handleAvatarFallback,
 } from "../../utils/avatar.js";
-import { usePwaInstall } from "../../hooks/usePwaInstall.js";
 
 const SIDEBAR_WIDTH = 260;
 const COLLAPSED_WIDTH = 80;
@@ -39,13 +37,6 @@ const Sidebar = () => {
   const reduceMotion = useReducedMotion();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [installingApp, setInstallingApp] = useState(false);
-  const {
-    canPromptInstall,
-    shouldShowIosGuide,
-    isStandalone,
-    promptInstall,
-  } = usePwaInstall();
 
   const userName = user?.displayName || user?.email?.split("@")[0] || "User";
   const userImage = getUserAvatarSrc(user);
@@ -91,45 +82,6 @@ const Sidebar = () => {
       navigate("/", { replace: true });
     }
   };
-
-  const handleInstallApp = async () => {
-    if (isStandalone) {
-      await Swal.fire({
-        icon: "success",
-        title: "Zitheke is already installed",
-        confirmButtonColor: "#2E3192",
-      });
-      return;
-    }
-
-    if (shouldShowIosGuide) {
-      await Swal.fire({
-        title: "Install on iPhone",
-        html: "Tap <strong>Share</strong> and then <strong>Add to Home Screen</strong>.",
-        icon: "info",
-        confirmButtonColor: "#2E3192",
-      });
-      return;
-    }
-
-    if (!canPromptInstall) {
-      await Swal.fire({
-        title: "Install from browser",
-        html: "Use the browser install icon in the address bar, or open the browser menu and choose <strong>Install app</strong>.",
-        icon: "info",
-        confirmButtonColor: "#2E3192",
-      });
-      return;
-    }
-
-    setInstallingApp(true);
-    try {
-      await promptInstall();
-    } finally {
-      setInstallingApp(false);
-    }
-  };
-
 
   const menus = [
     { name: "Home", icon: Home, path: "/" },
@@ -321,17 +273,6 @@ const Sidebar = () => {
         {/* UTILITY ZONE */}
         {(open || isMobile) && (
           <div className="px-3 pb-4 border-t border-[var(--border)]">
-            {!isStandalone && (
-              <button
-                onClick={handleInstallApp}
-                className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#2E3192]/10"
-              >
-                <Download size={18} />
-                <span className="text-sm">
-                  {installingApp ? "Preparing..." : "Install App"}
-                </span>
-              </button>
-            )}
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#2E3192]/10"
