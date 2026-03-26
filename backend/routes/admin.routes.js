@@ -1,5 +1,7 @@
 import express from "express";
 import adminAuthMiddleware from "../middlewares/adminAuthMiddleware.js";
+import { adUpload } from "../middlewares/localUpload.js";
+import multerErrorHandler from "../middlewares/multerErrorHandler.js";
 
 import {
   // 👤 USERS
@@ -15,6 +17,7 @@ import {
   rejectAd,
   deleteAdByAdmin,
   getAdsStats,
+  updateAdByAdmin,
 } from "../Controllers/adminController.js";
 
 import { getAdminStats } from "../Controllers/adminOverview.controller.js";
@@ -41,6 +44,7 @@ router.get("/ads", adminAuthMiddleware, getAllAds);
 router.get("/ads/stats/summary", adminAuthMiddleware, getAdsStats);
 
 router.get("/ads/:id", adminAuthMiddleware, getAdById);
+router.put("/ads/:id", adminAuthMiddleware, adUpload, multerErrorHandler, updateAdByAdmin);
 router.patch("/ads/:id/approve", adminAuthMiddleware, approveAd);
 router.patch("/ads/:id/reject", adminAuthMiddleware, rejectAd);
 router.delete("/ads/:id", adminAuthMiddleware, deleteAdByAdmin);

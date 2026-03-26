@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
  import { useAuth } from "../../context/AuthContext.jsx";
 import api from "../../api/axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 import CreateAdForm from "./CreateAdForm";
+
+const CREATE_AD_DRAFT_KEY = "zitheke_create_ad_draft_v1";
 
 const CreateAd = () => {
   const { user } = useAuth();
@@ -108,6 +110,48 @@ const CreateAd = () => {
 
   });
 
+  useEffect(() => {
+    try {
+      const rawDraft = localStorage.getItem(CREATE_AD_DRAFT_KEY);
+      if (!rawDraft) return;
+
+      const parsedDraft = JSON.parse(rawDraft);
+      if (!parsedDraft?.form) return;
+
+      Swal.fire({
+        title: "Restore saved draft?",
+        text: "We found a saved ad draft on this device.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Restore",
+        cancelButtonText: "Discard",
+        confirmButtonColor: "#2E3192",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setForm((prev) => ({ ...prev, ...parsedDraft.form }));
+          setStep(
+            Number.isFinite(parsedDraft.step) && parsedDraft.step >= 1 && parsedDraft.step <= 3
+              ? parsedDraft.step
+              : 1
+          );
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Draft restored",
+            showConfirmButton: false,
+            timer: 1800,
+          });
+          return;
+        }
+
+        localStorage.removeItem(CREATE_AD_DRAFT_KEY);
+      });
+    } catch (error) {
+      localStorage.removeItem(CREATE_AD_DRAFT_KEY);
+    }
+  }, []);
+
   // ? Category list
   const subcategories = {
     Vehicles: [
@@ -185,13 +229,52 @@ Furniture: [
       "Indoor Games (Chess, Carrom, etc.)",
     ],
 
-    Fashion: ["Men", "Women", "Footwear", "Watches", "Bags", "Curtains", "Others"],
+    Fashion: [
+      "Shirts",
+      "Trouser",
+      "Shorts",
+      "Nightwear",
+      "Shoes",
+      "Undergarments",
+      "Men",
+      "Women",
+      "Footwear",
+      "Watches",
+      "Bags",
+      "Curtains",
+      "Others",
+    ],
 
     Stationary: ["Stationary"],
 
  
 
     "Kitchenware & Cookware": ["Kitchen utensils"],
+
+    "Food & Beverages": [
+      "Ice Cream",
+      "Spices",
+      "Fruits",
+      "Vegetables",
+      "Soft Drink",
+    ],
+
+    "Alcohol & Tobacco": ["Alcohol/Liquor"],
+
+    "Hobbies & Entertainment": ["Music Instruments"],
+
+    Music: [
+      "Musical Instruments",
+      "DJ Equipment",
+      "Studio Equipment",
+      "Sound Systems",
+      "Microphones",
+      "Keyboards & Pianos",
+      "Guitars",
+      "Drums & Percussion",
+      "Amplifiers",
+      "Accessories",
+    ],
 
  
     Services: [
@@ -541,6 +624,32 @@ Furniture: [
   const handleNext = () => validateStep(step) && setStep(step + 1);
   const handleBack = () => setStep(step - 1);
 
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(
+        CREATE_AD_DRAFT_KEY,
+        JSON.stringify({
+          step,
+          form,
+          savedAt: new Date().toISOString(),
+        })
+      );
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Draft saved",
+        text: "Product details were saved on this device. Images and video are not included.",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      Swal.fire("Error", "Could not save draft on this device.", "error");
+    }
+  };
+
   // ? Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -582,6 +691,7 @@ Furniture: [
 
     try {
       await api.post("/ads/create", formData);
+      localStorage.removeItem(CREATE_AD_DRAFT_KEY);
       
 
       Swal.fire({
@@ -628,6 +738,7 @@ Furniture: [
         handleRemoveImage={handleRemoveImage}
         handleNext={handleNext}
         handleBack={handleBack}
+        handleSaveDraft={handleSaveDraft}
         handleSubmit={handleSubmit}
         videoFile={videoFile}
         videoPreview={videoPreview}
@@ -640,5 +751,3 @@ Furniture: [
 };
 
 export default CreateAd;
-
-

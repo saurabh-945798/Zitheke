@@ -18,6 +18,20 @@ import {
 
 const normalizePhone = (raw = "") => normalizeMalawiPhone(raw);
 const isValidPhone = (phone) => isValidMalawiPhone(phone);
+const parseArrayField = (value) => {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+  } catch {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+};
+
 const normalizeConditionInput = (raw) => {
   if (raw === undefined || raw === null || raw === "") {
     return { ok: true, value: undefined };
@@ -533,14 +547,30 @@ export const updateAd = async (req, res) => {
       }
     }
 
-    if (imagePaths.length > 0) updates.images = imagePaths;
+    const keptImages = parseArrayField(updates.images);
 
-    // Enforce max 5 images for update flow (including JSON body updates)
-    if (Array.isArray(updates.images) && updates.images.length > MAX_IMAGES) {
+    // Combine kept images + newly uploaded images
+    const combinedImages = [...keptImages, ...imagePaths];
+
+    if (combinedImages.length > MAX_IMAGES) {
       return res.status(400).json({
         success: false,
-        message: "You have already uploaded 5 images.",
+        message: `You can upload up to ${MAX_IMAGES} images in total.`,
       });
+    }
+
+    if (combinedImages.length > 0) {
+      updates.images = combinedImages;
+    } else {
+      // If client explicitly sent empty images array, allow clearing images
+      if (
+        (Array.isArray(updates.images) && updates.images.length === 0) ||
+        updates.images === "[]"
+      ) {
+        updates.images = [];
+      } else {
+        delete updates.images;
+      }
     }
 
     /* ==================================================

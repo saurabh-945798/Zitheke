@@ -18,6 +18,7 @@ const CreateAdForm = ({
   handleRemoveImage,
   handleNext,
   handleBack,
+  handleSaveDraft,
   handleSubmit,
   videoFile,
   videoPreview,
@@ -935,22 +936,31 @@ const CreateAdForm = ({
 
           {/* ACTIONS */}
 
-          <div className="flex justify-between mt-12">
-            {step > 1 && (
+          <div className="mt-12 flex flex-col gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="rounded-xl border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                >
+                  Back
+                </button>
+              )}
               <button
                 type="button"
-                onClick={handleBack}
-                className="px-6 py-2 rounded-xl border"
+                onClick={handleSaveDraft}
+                className="rounded-xl border border-[#2E3192]/20 bg-[#EEF1FF] px-6 py-2.5 text-sm font-semibold text-[#2E3192] transition hover:bg-[#E0E7FF]"
               >
-                Back
+                Save Draft
               </button>
-            )}
+            </div>
 
             {step < 3 ? (
               <button
                 type="button"
                 onClick={handleNext}
-                className="ml-auto px-6 py-2 bg-[#2E3192] text-white rounded-xl"
+                className="rounded-xl bg-[#2E3192] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#242776] sm:ml-auto"
               >
                 Next
               </button>
@@ -958,7 +968,7 @@ const CreateAdForm = ({
               <button
                 type="submit"
                 disabled={uploading}
-                className="ml-auto px-6 py-2 bg-[#2E3192] text-white rounded-xl flex items-center gap-2"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2E3192] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#242776] disabled:opacity-70 sm:ml-auto"
               >
                 {uploading && <Loader2 className="animate-spin" size={18} />}
                 Publish Ad

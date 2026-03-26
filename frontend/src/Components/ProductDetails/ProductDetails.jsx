@@ -1,4 +1,4 @@
-﻿// src/pages/ProductDetails/ProductDetails.jsx
+// src/pages/ProductDetails/ProductDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../../api/axios";
@@ -18,6 +18,7 @@ import {
   MapPin,
   Heart,
   Eye,
+  Share2,
   ArrowLeft,
   CheckCircle2,
   ShieldCheck,
@@ -86,6 +87,8 @@ const ProductDetails = () => {
   const [sellerStats, setSellerStats] = useState(null);
   const [showCallbackModal, setShowCallbackModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareToast, setShareToast] = useState(false);
   const [callbackForm, setCallbackForm] = useState({
     name: "",
     phone: "",
@@ -529,6 +532,33 @@ const ProductDetails = () => {
     window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
+  const getShareUrl = () => {
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}/ad/${ad?._id || id}`;
+  };
+
+  const handleCopyProductLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setShareModalOpen(false);
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 1500);
+    } catch (error) {
+      Swal.fire("Error", "Could not copy link", "error");
+    }
+  };
+
+  const handleShareOnWhatsApp = () => {
+    const url = getShareUrl();
+    const text = `Check this on Zitheke 👇\n${url}`;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    setShareModalOpen(false);
+  };
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-white to-[#EEF0FF] px-4 sm:px-10 pt-28 pb-32 font-[Poppins]">
       {/* 🔙 Back */}
@@ -757,7 +787,7 @@ const ProductDetails = () => {
           </div>
 
           {/* ❤️ Favorite Button Section */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-3 mb-6 flex-wrap">
             <motion.button
               whileTap={{ scale: 0.95 }}
               whileHover={{ y: -2 }}
@@ -788,6 +818,17 @@ const ProductDetails = () => {
               <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[11px] text-gray-500 opacity-0 group-hover:opacity-100 transition-all duration-300">
                 {isFav ? "Remove from favorites" : "Save this ad"}
               </span>
+            </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ y: -2 }}
+              onClick={() => setShareModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#2E3192]/20 bg-white text-[#2E3192] text-sm font-semibold shadow-sm hover:bg-[#F2F4FF] transition-all duration-300"
+              aria-label="Share this product"
+            >
+              <Share2 size={17} />
+              Share
             </motion.button>
           </div>
 
@@ -1389,6 +1430,95 @@ const ProductDetails = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {shareModalOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4"
+          onClick={() => setShareModalOpen(false)}
+        >
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full sm:w-[420px] bg-gradient-to-br from-white via-[#F8FAFF] to-[#F2F4FF] rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-lg font-semibold text-[#2E3192]">
+                  Share this listing
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Choose how you want to share
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShareModalOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow hover:bg-gray-50 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-sm mb-5">
+              <img
+                src={ad.images?.[0] ? toThumb(ad.images[0]) : "/no-image.svg"}
+                alt={ad.title}
+                loading="lazy"
+                decoding="async"
+                onError={(e) => handleImageFallback(e, getPrimaryImage(ad), "thumb")}
+                className="w-14 h-14 rounded-xl object-cover"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">
+                  {ad.title}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {ad.city || "Malawi"}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={handleCopyProductLink}
+                className="flex flex-col items-center justify-center gap-2 py-4 rounded-2xl bg-white border hover:bg-[#F2F4FF] transition"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#EEF1FF] flex items-center justify-center text-[#2E3192]">
+                  🔗
+                </div>
+                <span className="text-xs font-medium text-gray-700">
+                  Copy link
+                </span>
+              </button>
+
+              <button
+                onClick={handleShareOnWhatsApp}
+                className="flex flex-col items-center justify-center gap-2 py-4 rounded-2xl bg-[#25D366]/10 hover:bg-[#25D366]/20 transition"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white">
+                  💬
+                </div>
+                <span className="text-xs font-medium text-gray-700">
+                  WhatsApp
+                </span>
+              </button>
+            </div>
+
+            <p className="text-[11px] text-gray-400 text-center mt-5">
+              Secure sharing by Zitheke
+            </p>
+          </motion.div>
+        </div>
+      )}
+
+      {shareToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] px-4 py-2 rounded-full bg-[#2E3192] text-white text-sm shadow-lg">
+          Link copied successfully
         </div>
       )}
     </section>

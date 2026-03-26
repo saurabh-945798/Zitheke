@@ -94,6 +94,45 @@ const CATEGORY_FIELDS = {
     // { name: "conditionNote", placeholder: "Condition Details" },
   ],
 
+  /* =========================
+       🍎 FOOD & BEVERAGES
+    ========================= */
+  "Food & Beverages": [
+    { name: "productType", placeholder: "Product Name" },
+    { name: "brand", placeholder: "Brand (Optional)" },
+    { name: "quantity", placeholder: "Quantity" },
+    {
+      name: "quantityUnit",
+      placeholder: "Unit",
+      type: "select",
+      options: ["Kg", "Gram", "Liter", "ML", "Piece", "Packet", "Bottle", "Box"],
+    },
+  ],
+
+  /* =========================
+       🍷 ALCOHOL & TOBACCO
+    ========================= */
+  "Alcohol & Tobacco": [
+    { name: "brand", placeholder: "Brand" },
+    { name: "quantity", placeholder: "Quantity" },
+    {
+      name: "quantityUnit",
+      placeholder: "Unit",
+      type: "select",
+      options: ["Bottle", "Can", "ML", "Liter", "Packet", "Piece"],
+    },
+  ],
+
+  /* =========================
+       🎵 HOBBIES & ENTERTAINMENT
+    ========================= */
+  "Hobbies & Entertainment": [
+    { name: "productType", placeholder: "Instrument / Item Name" },
+    { name: "brand", placeholder: "Brand" },
+    { name: "model", placeholder: "Model" },
+    { name: "conditionNote", placeholder: "Additional Info" },
+  ],
+
  
   /* =========================
        🌾 AGRICULTURE (NEW)

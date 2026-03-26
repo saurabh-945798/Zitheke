@@ -142,7 +142,7 @@ const AdminSidebar = () => {
         transition={{ duration: 0.35 }}
         className="h-screen fixed left-0 top-0 z-50 
           bg-gradient-to-br from-white via-[#E9EDFF] to-[#C7CDFB]
-          shadow-xl text-[#1A1D64] flex flex-col 
+          shadow-xl text-[#1A1D64] flex flex-col overflow-hidden
           border-r border-gray-200 font-[Poppins]"
       >
         {/* HEADER */}

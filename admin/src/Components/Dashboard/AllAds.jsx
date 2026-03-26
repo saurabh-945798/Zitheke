@@ -1,8 +1,6 @@
-﻿// ðŸ“ src/pages/AdminAds/AllAds.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import adminApi from "../../api/adminApi.js"; // path adjust karo
-// âš ï¸ path wahi rakho jo Dashboard.jsx & Users.jsx me hai
+import adminApi from "../../api/adminApi.js";
 import Swal from "sweetalert2";
 import {
   CheckCircle,
@@ -15,23 +13,92 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  PencilLine,
+  Search,
+  Save,
+  ImagePlus,
+  LayoutDashboard,
+  Clock3,
+  BadgeCheck,
+  ShieldAlert,
+  SlidersHorizontal,
 } from "lucide-react";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Navigation } from "swiper/modules";
 
+const EMPTY_STATS = { total: 0, approved: 0, pending: 0, rejected: 0 };
+const FALLBACK_MEDIA =
+  "https://cdn-icons-png.flaticon.com/512/4076/4076500.png";
+
+const statusBadgeClass = (status) => {
+  if (status === "Approved") return "bg-green-100 text-green-700";
+  if (status === "Pending") return "bg-slate-900 text-white";
+  return "bg-red-100 text-red-700";
+};
+
+const statusCardMeta = [
+  {
+    key: "total",
+    label: "Total Ads",
+    description: "All listings in the marketplace",
+    icon: LayoutDashboard,
+    tone: "bg-[#EEF1FF] text-[#2E3192]",
+  },
+  {
+    key: "approved",
+    label: "Approved",
+    description: "Live listings already visible",
+    icon: BadgeCheck,
+    tone: "bg-green-100 text-green-700",
+  },
+  {
+    key: "pending",
+    label: "Pending",
+    description: "Listings waiting for moderation",
+    icon: Clock3,
+    tone: "bg-slate-900 text-white",
+  },
+  {
+    key: "rejected",
+    label: "Rejected",
+    description: "Listings blocked by admin review",
+    icon: ShieldAlert,
+    tone: "bg-red-100 text-red-700",
+  },
+];
+
+const createEditForm = (ad) => ({
+  title: ad?.title || "",
+  description: ad?.description || "",
+  category: ad?.category || "",
+  subcategory: ad?.subcategory || "",
+  condition: ad?.condition || "Not Applicable",
+  price: ad?.price ?? "",
+  city: ad?.city || "",
+  location: ad?.location || "",
+  state: ad?.state || "",
+  ownerName: ad?.ownerName || "",
+  ownerEmail: ad?.ownerEmail || "",
+  ownerPhone: ad?.ownerPhone || "",
+  status: ad?.status || "Pending",
+  negotiable: Boolean(ad?.negotiable),
+  deliveryAvailable: Boolean(ad?.deliveryAvailable),
+  existingImages: Array.isArray(ad?.images) ? [...ad.images] : [],
+  removedImages: [],
+  newImages: [],
+});
+
 const AllAds = () => {
   const [ads, setAds] = useState([]);
-  const [stats, setStats] = useState({
-    total: 0,
-    approved: 0,
-    pending: 0,
-    rejected: 0,
-  });
+  const [stats, setStats] = useState(EMPTY_STATS);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedAd, setSelectedAd] = useState(null);
+  const [editAd, setEditAd] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
   const [modalSwiper, setModalSwiper] = useState(null);
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
@@ -40,109 +107,88 @@ const AllAds = () => {
     if (!dateString) return "Just now";
     const posted = new Date(dateString);
     if (Number.isNaN(posted.getTime())) return "Just now";
-
-    const now = new Date();
-    let diff = Math.floor((now.getTime() - posted.getTime()) / 1000);
-    if (diff < 0) diff = 0;
-
+    const diff = Math.max(0, Math.floor((Date.now() - posted.getTime()) / 1000));
     if (diff < 60) return "Just now";
     if (diff < 3600) return `${Math.floor(diff / 60)} mins ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
     return `${Math.floor(diff / 86400)} days ago`;
   };
 
-  // =====================================================
-  // FETCH ALL ADS + STATS
-  // =====================================================
+  const fetchAds = async () => {
+    try {
+      const [adsRes, statsRes] = await Promise.all([
+        adminApi.get("/ads"),
+        adminApi.get("/ads/stats/summary"),
+      ]);
+      setAds(adsRes.data?.ads ?? []);
+      setStats(statsRes.data?.stats ?? EMPTY_STATS);
+    } catch (err) {
+      console.error("❌ Error fetching ads:", err);
+      Swal.fire("Error", "Failed to load ads", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAds = async () => {
-      try {
-        const [adsRes, statsRes] = await Promise.all([
-          adminApi.get("/ads"),
-          adminApi.get("/ads/stats/summary"),
-        ]);
-  
-        // âœ… ADS
-        setAds(adsRes.data?.ads ?? []);
-  
-        // âœ… STATS (IMPORTANT FIX)
-        setStats(
-          statsRes.data?.stats ?? {
-            total: 0,
-            approved: 0,
-            pending: 0,
-            rejected: 0,
-          }
-        );
-  
-      } catch (err) {
-        console.error("âŒ Error fetching ads:", err);
-        Swal.fire("Error", "Failed to load ads", "error");
-      } finally {
-        setLoading(false);
-      }
-    };
-  
     fetchAds();
   }, []);
-  
-  
-  
-  
 
-  // =====================================================
-  // APPROVE AD
-  // =====================================================
+  const filteredAds = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return ads.filter((ad) => {
+      const statusMatch = statusFilter === "all" || ad.status === statusFilter;
+      const queryMatch =
+        !normalized ||
+        [ad.title, ad.category, ad.ownerName, ad.city, ad.location]
+          .filter(Boolean)
+          .some((value) => value.toLowerCase().includes(normalized));
+      return statusMatch && queryMatch;
+    });
+  }, [ads, query, statusFilter]);
+
   const handleApprove = async (id) => {
+    const currentAd = ads.find((ad) => ad._id === id);
+    if (currentAd?.status === "Approved") {
+      Swal.fire("Already approved", "This ad is already approved.", "warning");
+      return;
+    }
+
     const res = await Swal.fire({
-      title: "Approve this Ad?",
+      title: "Approve this ad?",
       text: "Once approved, it becomes visible to all users.",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Approve",
       confirmButtonColor: "#2ECC71",
     });
-
-    if (res.isConfirmed) {
-      await adminApi.patch(`/ads/${id}/approve`);
-      setAds((prev) => prev.map((a) => (a._id === id ? { ...a, status: "Approved" } : a)));
-      Swal.fire("Approved!", "The ad is now approved.", "success");
-    }
+    if (!res.isConfirmed) return;
+    await adminApi.patch(`/ads/${id}/approve`);
+    setAds((prev) => prev.map((ad) => (ad._id === id ? { ...ad, status: "Approved" } : ad)));
+    Swal.fire("Approved!", "The ad is now approved.", "success");
   };
 
-  // =====================================================
-  // REJECT AD
-  // =====================================================
   const handleReject = async (id) => {
     const res = await Swal.fire({
-      title: "Reject Ad?",
+      title: "Reject ad?",
       input: "text",
       inputPlaceholder: "Enter rejection reason...",
       showCancelButton: true,
       confirmButtonText: "Reject",
       confirmButtonColor: "#F1C40F",
-      inputValidator: (v) => !v && "Reason required!",
+      inputValidator: (value) => !value && "Reason required!",
     });
-  
     if (!res.isConfirmed) return;
-  
+
     try {
-      // âœ… WAIT for backend
-      await adminApi.patch(`/ads/${id}/reject`, {
-        reason: res.value,
-      });
-  
-      // âœ… Update UI after success
+      await adminApi.patch(`/ads/${id}/reject`, { reason: res.value });
       setAds((prev) =>
         prev.map((ad) =>
-          ad._id === id ? { ...ad, status: "Rejected" } : ad
+          ad._id === id ? { ...ad, status: "Rejected", reportReason: res.value } : ad
         )
       );
-  
       Swal.fire("Rejected", "The ad was rejected.", "error");
     } catch (error) {
-      console.error("Reject Ad Error:", error);
-  
       Swal.fire(
         "Error",
         error?.response?.data?.message || "Failed to reject ad",
@@ -150,14 +196,10 @@ const AllAds = () => {
       );
     }
   };
-  
 
-  // =====================================================
-  // DELETE AD
-  // =====================================================
   const handleDelete = async (id) => {
     const res = await Swal.fire({
-      title: "Delete Ad?",
+      title: "Delete ad?",
       text: "Please provide a reason for deletion.",
       icon: "warning",
       input: "text",
@@ -165,24 +207,17 @@ const AllAds = () => {
       showCancelButton: true,
       confirmButtonColor: "#E53935",
       confirmButtonText: "Delete",
-      inputValidator: (v) => !v && "Reason required!",
+      inputValidator: (value) => !value && "Reason required!",
     });
-  
     if (!res.isConfirmed) return;
-  
+
     try {
-      // âœ… WAIT for backend
-      await adminApi.delete(`/ads/${id}`, {
-        data: { note: res.value },
-      });
-  
-      // âœ… Remove from UI after success
+      await adminApi.delete(`/ads/${id}`, { data: { note: res.value } });
       setAds((prev) => prev.filter((ad) => ad._id !== id));
-  
+      setSelectedAd((prev) => (prev?._id === id ? null : prev));
+      setEditAd((prev) => (prev?._id === id ? null : prev));
       Swal.fire("Deleted!", "Ad deleted successfully.", "success");
     } catch (error) {
-      console.error("Delete Ad Error:", error);
-  
       Swal.fire(
         "Error",
         error?.response?.data?.message || "Failed to delete ad",
@@ -190,383 +225,574 @@ const AllAds = () => {
       );
     }
   };
-  
 
-  // =====================================================
-  // LOADING SCREEN
-  // =====================================================
+  const openEdit = (ad) => {
+    setEditAd(ad);
+    setEditForm(createEditForm(ad));
+  };
+
+  const closeEdit = () => {
+    setEditAd(null);
+    setEditForm(null);
+  };
+
+  const updateEditField = (event) => {
+    const { name, value, type, checked, files } = event.target;
+    setEditForm((prev) => {
+      if (!prev) return prev;
+      if (type === "file") {
+        const incomingFiles = Array.from(files || []);
+        const remainingSlots = Math.max(0, 5 - prev.existingImages.length - prev.newImages.length);
+        if (incomingFiles.length > remainingSlots) {
+          Swal.fire(
+            "Image limit reached",
+            `This ad can only keep 5 images in total. You can add ${remainingSlots} more.`,
+            "warning"
+          );
+        }
+        return {
+          ...prev,
+          newImages: [...prev.newImages, ...incomingFiles].slice(0, prev.newImages.length + remainingSlots),
+        };
+      }
+      return { ...prev, [name]: type === "checkbox" ? checked : value };
+    });
+    if (type === "file") {
+      event.target.value = "";
+    }
+  };
+
+  const removeExistingImage = (imageUrl) => {
+    setEditForm((prev) =>
+      prev
+        ? {
+            ...prev,
+            existingImages: prev.existingImages.filter((img) => img !== imageUrl),
+            removedImages: [...new Set([...prev.removedImages, imageUrl])],
+          }
+        : prev
+    );
+  };
+
+  const removeNewImage = (index) => {
+    setEditForm((prev) =>
+      prev
+        ? {
+            ...prev,
+            newImages: prev.newImages.filter((_, currentIndex) => currentIndex !== index),
+          }
+        : prev
+    );
+  };
+
+  const cardImage = (ad) => ad.images?.[0] || FALLBACK_MEDIA;
+
+  const saveEdit = async () => {
+    if (!editAd || !editForm) return;
+    if (!editForm.title.trim() || !editForm.description.trim()) {
+      Swal.fire("Missing fields", "Title and description are required.", "warning");
+      return;
+    }
+    if (editForm.existingImages.length + editForm.newImages.length === 0) {
+      Swal.fire("Images required", "Keep at least one image.", "warning");
+      return;
+    }
+
+    const formData = new FormData();
+    [
+      "title",
+      "description",
+      "category",
+      "subcategory",
+      "condition",
+      "price",
+      "city",
+      "location",
+      "state",
+      "ownerName",
+      "ownerEmail",
+      "ownerPhone",
+      "status",
+    ].forEach((field) => formData.append(field, editForm[field] ?? ""));
+
+    formData.append("negotiable", String(editForm.negotiable));
+    formData.append("deliveryAvailable", String(editForm.deliveryAvailable));
+    formData.append("existingImages", JSON.stringify(editForm.existingImages));
+    formData.append("removedImages", JSON.stringify(editForm.removedImages));
+    editForm.newImages.forEach((file) => formData.append("images", file));
+
+    setSavingEdit(true);
+    try {
+      const res = await adminApi.put(`/ads/${editAd._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const updatedAd = res.data?.ad;
+      if (updatedAd) {
+        setAds((prev) => prev.map((ad) => (ad._id === updatedAd._id ? updatedAd : ad)));
+        setSelectedAd((prev) => (prev?._id === updatedAd._id ? updatedAd : prev));
+      }
+      closeEdit();
+      Swal.fire("Saved", "Ad updated successfully.", "success");
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Failed to update ad",
+        "error"
+      );
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center text-xl text-[#1A1D64] font-semibold">
+      <div className="flex h-screen items-center justify-center text-xl font-semibold text-[#1A1D64]">
         Loading ads...
       </div>
     );
   }
 
-  const filteredAds = ads.filter((ad) => {
-    if (statusFilter === "all") return true;
-    return ad.status === statusFilter;
-  });
-
-  // =====================================================
-  // FINAL UI
-  // =====================================================
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E9EDFF] via-white to-[#F4F6FF] p-6 font-[Poppins]">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(46,49,146,0.14),_transparent_34%),linear-gradient(180deg,#f8faff_0%,#eef2ff_100%)] p-5 font-[Poppins] md:p-7">
+      <div className="mb-8 overflow-hidden rounded-[32px] border border-white/70 bg-gradient-to-r from-[#1A1D64] via-[#232780] to-[#2E3192] p-8 text-white shadow-[0_30px_80px_rgba(46,49,146,0.24)]">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/65">
+              Admin Moderation
+            </p>
+            <h1 className="mt-3 text-3xl font-bold md:text-4xl">
+              Review, approve, and refine every marketplace ad from one clean control room.
+            </h1>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/78 md:text-base">
+              Search listings fast, review pending inventory, and open the full preview to edit user-submitted ads with complete admin control.
+            </p>
+          </div>
 
-      {/* HEADER */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#2E3192] to-[#1A1D64] p-8 shadow-xl text-white mb-10">
-        <h1 className="text-3xl font-bold">Ads Management Dashboard</h1>
-        <p className="opacity-80 mt-1 text-sm">
-          Review, approve, reject or delete ads posted by users.
-        </p>
+          <div className="grid gap-3 rounded-[28px] border border-white/10 bg-white/10 p-5 backdrop-blur md:min-w-[320px]">
+            <div className="flex items-center justify-between text-sm text-white/75">
+              <span>Review Queue</span>
+              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+                {stats.pending} pending
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-2xl bg-white/10 p-4">
+                <p className="text-white/65">Approved Today View</p>
+                <p className="mt-2 text-2xl font-bold">{stats.approved}</p>
+              </div>
+              <div className="rounded-2xl bg-white/10 p-4">
+                <p className="text-white/65">Rejected Items</p>
+                <p className="mt-2 text-2xl font-bold">{stats.rejected}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
-        {[
-          { label: "Total Ads", value: stats.total, color: "from-[#2E3192] to-[#1A1D64]" },
-          { label: "Approved", value: stats.approved, color: "from-[#2E3192] to-[#1A1D64]" },
-          { label: "Pending", value: stats.pending, color: "from-[#2E3192] to-[#1A1D64]" },
-          { label: "Rejected", value: stats.rejected, color: "from-[#2E3192] to-[#1A1D64]" },
-        ].map((card, i) => (
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            key={i}
-            className={`p-6 rounded-3xl text-white shadow-xl bg-gradient-to-br ${card.color}`}
-          >
-            <h3 className="text-sm opacity-90">{card.label}</h3>
-            <p className="text-3xl font-bold mt-2">{card.value}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* STATUS FILTERS */}
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        {[
-          { key: "all", label: "All Ads", count: stats.total },
-          { key: "Approved", label: "Approved", count: stats.approved },
-          { key: "Pending", label: "Pending", count: stats.pending },
-          { key: "Rejected", label: "Rejected", count: stats.rejected },
-        ].map((item) => {
-          const isActive = statusFilter === item.key;
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {statusCardMeta.map((card) => {
+          const Icon = card.icon;
           return (
-            <button
-              key={item.key}
-              onClick={() => setStatusFilter(item.key)}
-              className={`group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                isActive
-                  ? "bg-[#2E3192] text-white border-[#2E3192] shadow-md shadow-[#2E3192]/30"
-                  : "bg-white text-[#1A1D64] border-[#2E3192]/20 hover:border-[#2E3192]/50 hover:bg-[#2E3192]/10"
+          <motion.div
+            key={card.key}
+            whileHover={{ y: -4 }}
+            className="rounded-[28px] border border-white/80 bg-white/90 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-500">{card.label}</h3>
+                <p className="mt-2 text-3xl font-bold text-[#1A1D64]">{stats[card.key]}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-500">{card.description}</p>
+              </div>
+              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${card.tone}`}>
+                <Icon size={22} />
+              </div>
+            </div>
+          </motion.div>
+        )})}
+      </div>
+
+      <div className="mb-6 rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF1FF] text-[#2E3192]">
+                <SlidersHorizontal size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[#1A1D64]">Moderation Filters</h2>
+                <p className="text-sm text-slate-500">Refine the queue and find ads fast.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative w-full lg:max-w-md">
+            <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search title, category, owner, location..."
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {[
+              { key: "all", label: "All Ads", count: stats.total },
+              { key: "Approved", label: "Approved", count: stats.approved },
+              { key: "Pending", label: "Pending", count: stats.pending },
+              { key: "Rejected", label: "Rejected", count: stats.rejected },
+            ].map((item) => {
+              const active = statusFilter === item.key;
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => setStatusFilter(item.key)}
+                  className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                    active
+                      ? "border-[#2E3192] bg-[#2E3192] text-white shadow-[0_10px_25px_rgba(46,49,146,0.22)]"
+                      : "border-slate-200 bg-white text-[#1A1D64] hover:bg-[#EEF1FF]"
+                  }`}
+                >
+                  {item.label} ({item.count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {filteredAds.length === 0 ? (
+          <div className="col-span-full rounded-[28px] border border-dashed border-slate-300 bg-white/80 p-14 text-center shadow-sm">
+            <p className="text-lg font-semibold text-[#1A1D64]">No ads match the current filters.</p>
+            <p className="mt-2 text-sm text-slate-500">Try switching status tabs or broadening the search query.</p>
+          </div>
+        ) : (
+          filteredAds.map((ad) => (
+            <motion.div
+              key={ad._id}
+              layout
+              whileHover={{ scale: 1.02 }}
+              className={`overflow-hidden rounded-3xl border shadow-xl transition ${
+                ad.status === "Pending"
+                  ? "border-slate-300 bg-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.08)]"
+                  : "border-white bg-white shadow-[0_18px_45px_rgba(15,23,42,0.08)]"
               }`}
             >
-              <span>{item.label}</span>
-              <span
-                className={`min-w-[28px] rounded-full px-2 py-0.5 text-xs font-bold ${
-                  isActive
-                    ? "bg-white/20 text-white"
-                    : "bg-[#2E3192]/10 text-[#2E3192]"
-                }`}
-              >
-                {item.count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              <div className={`relative ${ad.status === "Pending" ? "grayscale" : ""}`}>
+                <img
+                  src={cardImage(ad)}
+                  alt={ad.title}
+                  className="h-60 w-full object-cover"
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = FALLBACK_MEDIA;
+                  }}
+                />
+                <span
+                  className={`absolute left-4 top-4 rounded-full px-4 py-1 text-sm font-medium shadow ${statusBadgeClass(
+                    ad.status
+                  )}`}
+                >
+                  {ad.status}
+                </span>
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
+              </div>
 
-      {/* TITLE */}
-      <h2 className="text-2xl font-bold text-[#1A1D64] mb-6">
-        {statusFilter === "all" ? "All Advertisements" : `${statusFilter} Ads`}
-      </h2>
+              <div className="p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="truncate text-lg font-semibold text-[#1A1D64]">{ad.title}</h3>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                      {ad.category || "General"}{ad.subcategory ? ` • ${ad.subcategory}` : ""}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{ad.description}</p>
 
-      {/* ADS GRID */}
-      <AnimatePresence>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredAds.length === 0 ? (
-            <p className="text-center text-gray-600 col-span-full">No ads available.</p>
-          ) : (
-            filteredAds.map((ad) => (
-              <motion.div
-                key={ad._id}
-                layout
-                whileHover={{ scale: 1.02 }}
-                className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden hover:shadow-2xl transition-all"
-              >
-                {/* IMAGE */}
-                <div className="relative">
-                  <img
-                    src={ad.images?.[0] || "https://cdn-icons-png.flaticon.com/512/4076/4076500.png"}
-                    alt={ad.title}
-                    className={`h-60 w-full object-cover transition ${
-                      ad.status === "Pending" ? "opacity-70 grayscale" : ""
-                    }`}
-                  />
-                  <span
-                    className={`absolute top-4 left-4 px-4 py-1 rounded-full text-sm font-medium shadow ${
-                      ad.status === "Approved"
-                        ? "bg-green-100 text-green-700"
-                        : ad.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {ad.status}
+                <div className="mt-3 flex items-center justify-between gap-3 text-sm text-slate-500">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <MapPin size={16} />
+                    <span className="truncate">
+                      {[ad.city, ad.location].filter(Boolean).join(", ")}
+                    </span>
+                  </div>
+                  <span className="rounded-full bg-[#EEF1FF] px-3 py-1 text-xs font-semibold text-[#2E3192]">
+                    {timeAgo(ad.createdAt)}
                   </span>
                 </div>
 
-                {/* DETAILS */}
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg text-[#1A1D64] truncate">{ad.title}</h3>
-                  <p className="text-gray-600 text-sm mt-1 line-clamp-2">{ad.description}</p>
-
-                  <div className="flex items-center justify-between gap-3 mt-3 text-gray-600 text-sm">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <MapPin size={16} />
-                      <span className="truncate">
-                        {ad.city}, {ad.location}
-                      </span>
-                    </div>
-                    <span className="text-xs bg-[#2E3192]/10 text-[#2E3192] px-2 py-0.5 rounded-full whitespace-nowrap">
-                      {timeAgo(ad.createdAt)}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-4">
-                    {!["Jobs", "Services"].includes(ad.category) && (
-                      <p className="text-[#1A1D64] font-semibold">
-                        MK {ad.price?.toLocaleString()}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-3 text-gray-500 text-sm">
-                      <EyeIcon size={17} /> {ad.views || 0}
-                      <Heart size={17} className="text-red-500" /> {ad.favouritesCount || 0}
-                    </div>
-                  </div>
-
-                  {/* ACTION BUTTONS */}
-                  <div className="flex justify-between mt-5 pt-4 border-t">
-                    <button onClick={() => handleApprove(ad._id)} className="text-green-600 hover:text-green-800">
-                      <CheckCircle size={24} />
-                    </button>
-
-                    <button onClick={() => handleReject(ad._id)} className="text-yellow-600 hover:text-yellow-800">
-                      <XCircle size={24} />
-                    </button>
-
-                    <button onClick={() => handleDelete(ad._id)} className="text-red-600 hover:text-red-800">
-                      <Trash2 size={24} />
-                    </button>
-
-                    <button onClick={() => setSelectedAd(ad)} className="text-blue-600 hover:text-blue-800">
-                      <Eye size={24} />
-                    </button>
+                <div className="mt-4 flex items-center justify-between">
+                  {!["Jobs", "Services"].includes(ad.category) && (
+                    <p className="font-semibold text-[#1A1D64]">
+                      MK {ad.price?.toLocaleString()}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                    <span className="inline-flex items-center gap-1"><EyeIcon size={16} /> {ad.views || 0}</span>
+                    <span className="inline-flex items-center gap-1"><Heart size={16} className="text-rose-500" /> {ad.favouritesCount || 0}</span>
                   </div>
                 </div>
-              </motion.div>
-            ))
-          )}
-        </div>
-      </AnimatePresence>
 
-      {/* =====================================================
-          MODAL â€” AD DETAILS
-      ===================================================== */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {ad.ownerName || "Unknown Seller"}
+                  </span>
+                  <span className="rounded-full bg-[#EEF1FF] px-3 py-1 text-xs font-semibold text-[#2E3192]">
+                    {ad.currency || "MK"}
+                  </span>
+                </div>
+
+                <div className="mt-5 grid grid-cols-2 gap-3 border-t pt-4">
+                  <button onClick={() => handleApprove(ad._id)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-700 hover:bg-green-100">
+                    <CheckCircle size={18} /> Approve
+                  </button>
+                  <button onClick={() => handleReject(ad._id)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-semibold text-yellow-700 hover:bg-yellow-100">
+                    <XCircle size={18} /> Reject
+                  </button>
+                  <button onClick={() => setSelectedAd(ad)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#EEF1FF] px-4 py-3 text-sm font-semibold text-[#2E3192] hover:bg-[#E0E5FF]">
+                    <Eye size={18} /> View
+                  </button>
+                  <button onClick={() => handleDelete(ad._id)} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 hover:bg-red-100">
+                    <Trash2 size={18} /> Delete
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </div>
+
       <AnimatePresence>
         {selectedAd && (
-          <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-white rounded-[28px] w-[95%] md:w-[85%] lg:w-[72%] max-h-[90vh] overflow-y-auto shadow-2xl relative border border-white/40"
-            >
-              {/* MODAL HEADER */}
-              <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-100 px-6 md:px-8 py-5 flex items-center justify-between rounded-t-[28px]">
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="relative max-h-[90vh] w-[95%] overflow-y-auto rounded-[28px] bg-white shadow-2xl md:w-[82%] xl:w-[72%]">
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b bg-white/95 px-6 py-5 backdrop-blur">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wider text-gray-500">Ad Preview</p>
-                  <h2 className="text-2xl md:text-3xl font-bold text-[#1A1D64] truncate">
-                    {selectedAd.title}
-                  </h2>
+                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Ad Preview</p>
+                  <div className="mt-1 flex items-center gap-3">
+                    <h2 className="truncate text-2xl font-bold text-[#1A1D64]">{selectedAd.title}</h2>
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusBadgeClass(selectedAd.status)}`}>
+                      {selectedAd.status}
+                    </span>
+                  </div>
                 </div>
-                <button
-                  onClick={() => setSelectedAd(null)}
-                  className="h-10 w-10 rounded-full border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-50 flex items-center justify-center"
-                >
-                  <X size={20} />
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => openEdit(selectedAd)}
+                    className="inline-flex items-center gap-2 rounded-2xl bg-[#2E3192] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#242776]"
+                  >
+                    <PencilLine size={16} /> Edit Ad
+                  </button>
+                  <button onClick={() => setSelectedAd(null)} className="flex h-10 w-10 items-center justify-center rounded-full border text-slate-500 hover:bg-slate-50">
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
 
               <div className="p-6 md:p-8">
-                {/* IMAGE GALLERY */}
-                <div className="relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                  <Swiper
-                    slidesPerView={1}
-                    loop
-                    modules={[Navigation]}
-                    onSwiper={setModalSwiper}
-                    className="rounded-2xl"
-                  >
-                    {selectedAd.images?.length ? (
-                      selectedAd.images.map((img, i) => (
-                        <SwiperSlide key={`img-${i}`}>
-                          <img
-                            src={img}
-                            className="w-full h-[520px] object-cover cursor-zoom-in"
-                            onClick={() => {
-                              setFullscreenIndex(i);
-                              setShowFullscreen(true);
-                            }}
-                          />
-                        </SwiperSlide>
-                      ))
-                    ) : (
-                      <SwiperSlide>
+                <div className="relative overflow-hidden rounded-2xl border shadow-sm">
+                  <Swiper slidesPerView={1} loop modules={[Navigation]} onSwiper={setModalSwiper}>
+                    {selectedAd.images?.length ? selectedAd.images.map((img, index) => (
+                      <SwiperSlide key={img}>
                         <img
-                          src="https://cdn-icons-png.flaticon.com/512/4076/4076500.png"
-                          className="w-full h-[520px] object-contain bg-gray-100"
+                          src={img}
+                          className="h-[480px] w-full cursor-zoom-in object-cover"
+                          onClick={() => {
+                            setFullscreenIndex(index);
+                            setShowFullscreen(true);
+                          }}
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = FALLBACK_MEDIA;
+                          }}
+                          alt={selectedAd.title}
                         />
+                      </SwiperSlide>
+                    )) : (
+                      <SwiperSlide>
+                        <img src={FALLBACK_MEDIA} className="h-[480px] w-full object-contain bg-slate-100" alt="No media" />
                       </SwiperSlide>
                     )}
                     {selectedAd.video?.url && (
                       <SwiperSlide key="video">
-                        <video
-                          src={selectedAd.video.url}
-                          controls
-                          className="w-full h-[520px] object-contain bg-black"
-                        />
+                        <video src={selectedAd.video.url} controls className="h-[480px] w-full object-contain bg-black" />
                       </SwiperSlide>
                     )}
                   </Swiper>
-
-                  {/* NAV ARROWS */}
-                  <button
-                    type="button"
-                    onClick={() => modalSwiper?.slidePrev()}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/95 border border-gray-200 shadow-lg flex items-center justify-center text-[#1A1D64] hover:bg-white"
-                  >
+                  <button onClick={() => modalSwiper?.slidePrev()} className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 shadow-lg">
                     <ChevronLeft size={18} />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => modalSwiper?.slideNext()}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-11 w-11 rounded-full bg-white/95 border border-gray-200 shadow-lg flex items-center justify-center text-[#1A1D64] hover:bg-white"
-                  >
+                  <button onClick={() => modalSwiper?.slideNext()} className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/95 p-3 shadow-lg">
                     <ChevronRight size={18} />
                   </button>
                 </div>
 
-                {/* DETAILS SECTION */}
-                <div className="mt-6">
-                  <p className="text-gray-700">{selectedAd.description}</p>
-
-                  <div className="grid sm:grid-cols-2 gap-4 mt-6 text-sm">
-                    <p><b>Category:</b> {selectedAd.category}</p>
-                    {selectedAd.category !== "Agriculture" && (
-                      <p><b>Condition:</b> {selectedAd.condition}</p>
-                    )}
-                    <p><b>Price:</b> {selectedAd.currency} {selectedAd.price?.toLocaleString()}</p>
-                    <p><b>Location:</b> {selectedAd.city}, {selectedAd.location}</p>
-                    {selectedAd.category === "Agriculture" && (
-                      <>
-                        <p><b>Quantity:</b> {selectedAd.quantity || "N/A"}</p>
-                        <p><b>Unit:</b> {selectedAd.quantityUnit || "N/A"}</p>
-                      </>
-                    )}
-                    <p>
-                      <b>Status:</b>{" "}
-                      <span
-                        className={`font-semibold ${
-                          selectedAd.status === "Approved"
-                            ? "text-green-600"
-                            : selectedAd.status === "Pending"
-                            ? "text-yellow-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {selectedAd.status}
-                      </span>
-                    </p>
-                    {selectedAd.reportReason && (
-                      <p><b>Rejection Reason:</b> {selectedAd.reportReason}</p>
-                    )}
+                <div className="mt-6 grid gap-6 md:grid-cols-2">
+                  <div className="rounded-2xl bg-slate-50 p-5">
+                    <h3 className="text-lg font-semibold text-[#1A1D64]">Ad Details</h3>
+                    <p className="mt-4 text-sm text-slate-600">{selectedAd.description}</p>
+                    <div className="mt-5 grid gap-3 text-sm">
+                      <p><b>Category:</b> {selectedAd.category}</p>
+                      <p><b>Subcategory:</b> {selectedAd.subcategory || "N/A"}</p>
+                      <p><b>Condition:</b> {selectedAd.condition || "N/A"}</p>
+                      <p><b>Price:</b> {selectedAd.currency} {selectedAd.price?.toLocaleString() || "0"}</p>
+                    </div>
                   </div>
-                </div>
 
-                <hr className="my-6" />
-
-                {/* OWNER INFO */}
-                <h3 className="text-lg font-semibold text-[#1A1D64]">Owner Information</h3>
-                <div className="grid sm:grid-cols-2 gap-3 mt-2 text-sm">
-                  <p><b>Name:</b> {selectedAd.ownerName || "N/A"}</p>
-                  <p><b>Email:</b> {selectedAd.ownerEmail || "N/A"}</p>
-                  <p><b>Phone:</b> {selectedAd.ownerPhone || "N/A"}</p>
-                </div>
-
-                <hr className="my-6" />
-
-                {/* STATS */}
-                <div className="flex gap-8 text-gray-600 text-sm">
-                  <p>Views: {selectedAd.views || 0}</p>
-                  <p>Favorites: {selectedAd.favouritesCount || 0}</p>
+                  <div className="rounded-2xl bg-slate-50 p-5">
+                    <h3 className="text-lg font-semibold text-[#1A1D64]">Owner & Stats</h3>
+                    <div className="mt-4 grid gap-3 text-sm">
+                      <p><b>Name:</b> {selectedAd.ownerName || "N/A"}</p>
+                      <p><b>Email:</b> {selectedAd.ownerEmail || "N/A"}</p>
+                      <p><b>Phone:</b> {selectedAd.ownerPhone || "N/A"}</p>
+                      <p><b>State:</b> {selectedAd.state || "N/A"}</p>
+                      <p><b>Views:</b> {selectedAd.views || 0}</p>
+                      <p><b>Favorites:</b> {selectedAd.favouritesCount || 0}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
 
             {showFullscreen && (
-              <div
-                className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
-                onClick={() => setShowFullscreen(false)}
-              >
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4" onClick={() => setShowFullscreen(false)}>
                 <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFullscreenIndex((prev) =>
-                      prev === 0 ? (selectedAd.images?.length || 1) - 1 : prev - 1
-                    );
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setFullscreenIndex((prev) => prev === 0 ? (selectedAd.images?.length || 1) - 1 : prev - 1);
                   }}
-                  className="absolute left-5 text-white text-3xl p-3 rounded-full bg-white/10 hover:bg-white/20"
+                  className="absolute left-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
                 >
                   <ChevronLeft size={28} />
                 </button>
-
                 <img
-                  src={selectedAd.images?.[fullscreenIndex]}
-                  className="max-w-[92%] max-h-[92%] object-contain rounded-2xl shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                />
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFullscreenIndex((prev) =>
-                      prev === (selectedAd.images?.length || 1) - 1 ? 0 : prev + 1
-                    );
+                  src={selectedAd.images?.[fullscreenIndex] || FALLBACK_MEDIA}
+                  className="max-h-[92%] max-w-[92%] object-contain"
+                  onClick={(event) => event.stopPropagation()}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = FALLBACK_MEDIA;
                   }}
-                  className="absolute right-5 text-white text-3xl p-3 rounded-full bg-white/10 hover:bg-white/20"
+                  alt={selectedAd.title}
+                />
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setFullscreenIndex((prev) => prev === (selectedAd.images?.length || 1) - 1 ? 0 : prev + 1);
+                  }}
+                  className="absolute right-5 rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
                 >
                   <ChevronRight size={28} />
                 </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowFullscreen(false);
-                  }}
-                  className="absolute top-5 right-5 text-white text-2xl p-2 rounded-full bg-white/10 hover:bg-white/20"
-                >
+      <AnimatePresence>
+        {editAd && editForm && (
+          <motion.div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} className="flex h-[92vh] w-[96%] max-w-6xl flex-col overflow-hidden rounded-[30px] bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b px-6 py-5">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Admin Edit Mode</p>
+                  <h2 className="text-2xl font-bold text-[#1A1D64]">Edit Ad</h2>
+                </div>
+                <button onClick={closeEdit} className="flex h-10 w-10 items-center justify-center rounded-full border text-slate-500 hover:bg-slate-50">
                   <X size={20} />
                 </button>
               </div>
-            )}
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                  <div className="space-y-6">
+                    <div className="rounded-2xl bg-slate-50 p-5">
+                      <h3 className="text-lg font-semibold text-[#1A1D64]">Basic Information</h3>
+                      <div className="mt-5 grid gap-4 md:grid-cols-2">
+                        <label className="md:col-span-2"><span className="mb-2 block text-sm text-slate-600">Title</span><input name="title" value={editForm.title} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label className="md:col-span-2"><span className="mb-2 block text-sm text-slate-600">Description</span><textarea name="description" rows="5" value={editForm.description} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Category</span><input name="category" value={editForm.category} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Subcategory</span><input name="subcategory" value={editForm.subcategory} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-slate-50 p-5">
+                      <h3 className="text-lg font-semibold text-[#1A1D64]">Pricing & Owner</h3>
+                      <div className="mt-5 grid gap-4 md:grid-cols-2">
+                        <label><span className="mb-2 block text-sm text-slate-600">Price</span><input name="price" type="number" value={editForm.price} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Status</span><select name="status" value={editForm.status} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Sold">Sold</option></select></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Condition</span><select name="condition" value={editForm.condition} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="New">New</option><option value="Used">Used</option><option value="Not Applicable">Not Applicable</option></select></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">City</span><input name="city" value={editForm.city} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Location</span><input name="location" value={editForm.location} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">State</span><input name="state" value={editForm.state} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Owner Name</span><input name="ownerName" value={editForm.ownerName} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Owner Email</span><input name="ownerEmail" value={editForm.ownerEmail} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Owner Phone</span><input name="ownerPhone" value={editForm.ownerPhone} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-4 text-sm font-medium text-slate-700"><input name="negotiable" type="checkbox" checked={editForm.negotiable} onChange={updateEditField} className="h-4 w-4 rounded border-slate-300 text-[#2E3192] focus:ring-[#2E3192]" /> Negotiable</label>
+                        <label className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-4 text-sm font-medium text-slate-700"><input name="deliveryAvailable" type="checkbox" checked={editForm.deliveryAvailable} onChange={updateEditField} className="h-4 w-4 rounded border-slate-300 text-[#2E3192] focus:ring-[#2E3192]" /> Delivery Available</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="rounded-2xl bg-slate-50 p-5">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-lg font-semibold text-[#1A1D64]">Images</h3>
+                        <span className="rounded-full bg-[#EEF1FF] px-3 py-1 text-xs font-semibold text-[#2E3192]">{editForm.existingImages.length + editForm.newImages.length}/5</span>
+                      </div>
+
+                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {editForm.existingImages.map((imageUrl) => (
+                          <div key={imageUrl} className="overflow-hidden rounded-2xl border bg-white">
+                            <img src={imageUrl} alt="Existing ad" className="h-32 w-full object-cover" onError={(event) => {
+                              event.currentTarget.onerror = null;
+                              event.currentTarget.src = FALLBACK_MEDIA;
+                            }} />
+                            <button onClick={() => removeExistingImage(imageUrl)} className="flex w-full items-center justify-center gap-2 border-t px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50">
+                              <Trash2 size={16} /> Remove
+                            </button>
+                          </div>
+                        ))}
+
+                        {editForm.newImages.map((file, index) => (
+                          <div key={`${file.name}-${index}`} className="overflow-hidden rounded-2xl border bg-white">
+                            <img src={URL.createObjectURL(file)} alt={file.name} className="h-32 w-full object-cover" />
+                            <button onClick={() => removeNewImage(index)} className="flex w-full items-center justify-center gap-2 border-t px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50">
+                              <Trash2 size={16} /> Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+
+                      <label className="mt-5 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-[#2E3192]/25 bg-white px-5 py-4 text-sm font-semibold text-[#2E3192] hover:bg-[#F7F8FF]">
+                        <ImagePlus size={18} /> Add images
+                        <input type="file" name="images" accept="image/*" multiple className="hidden" onChange={updateEditField} />
+                      </label>
+                      <p className="mt-3 text-xs text-slate-500">
+                        Admin can remove current images and replace them with up to 5 images total.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl bg-[#F7F8FF] p-5">
+                      <p className="text-sm leading-6 text-slate-500">
+                        Admin can directly update ad content, location, and image set. Keep at least one image on the ad.
+                      </p>
+                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        <button onClick={closeEdit} className="rounded-2xl border bg-white px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                          Cancel
+                        </button>
+                        <button onClick={saveEdit} disabled={savingEdit} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2E3192] px-5 py-3 text-sm font-semibold text-white hover:bg-[#242776] disabled:opacity-70">
+                          <Save size={16} /> {savingEdit ? "Saving..." : "Save Changes"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

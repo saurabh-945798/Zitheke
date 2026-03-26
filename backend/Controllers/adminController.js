@@ -1,8 +1,63 @@
 import mongoose from "mongoose";
+import fs from "fs/promises";
+import path from "path";
 import User from "../models/User.js";
 import Ad from "../models/Ad.js";
 import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
+import { optimizeImageFile } from "../utils/optimizeImage.js";
+import {
+  isCloudinaryUrl,
+  isLocalUploadUrl,
+  localAbsolutePathFromUrl,
+  publicPathFromFile,
+  toPublicUrl,
+} from "../utils/uploadPath.js";
+
+const MAX_IMAGES = 5;
+
+const normalizeConditionInput = (raw) => {
+  if (raw === undefined || raw === null || raw === "") {
+    return { ok: true, value: undefined };
+  }
+
+  const normalized = String(raw).trim().toLowerCase();
+  if (normalized === "new") return { ok: true, value: "New" };
+  if (normalized === "used") return { ok: true, value: "Used" };
+  if (normalized === "not applicable") {
+    return { ok: true, value: "Not Applicable" };
+  }
+
+  return {
+    ok: false,
+    message: "Invalid condition. Allowed values are New, Used or Not Applicable.",
+  };
+};
+
+const parseArrayField = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const cleanupLocalImageVariants = async (url = "") => {
+  if (!isLocalUploadUrl(url)) return;
+  const localPath = localAbsolutePathFromUrl(url);
+  if (!localPath) return;
+  const dir = path.dirname(localPath);
+  const file = path.basename(localPath);
+
+  await Promise.all([
+    fs.unlink(localPath).catch(() => {}),
+    fs.unlink(path.join(dir, "medium", file)).catch(() => {}),
+    fs.unlink(path.join(dir, "thumb", file)).catch(() => {}),
+  ]);
+};
 
 /* ==========================================================
    👤 USER MANAGEMENT SECTION
@@ -316,6 +371,116 @@ export const deleteAdByAdmin = async (req, res) => {
     console.error("❌ Error deleting ad:", error);
     res.status(500).json({
       message: "Server error while deleting ad",
+    });
+  }
+};
+
+export const updateAdByAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ad ID" });
+    }
+
+    const ad = await Ad.findById(id);
+    if (!ad) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
+
+    const existingImages = parseArrayField(req.body.existingImages);
+    const removedImages = parseArrayField(req.body.removedImages);
+    const uploadedImages = [];
+
+    for (const file of req.files?.images || []) {
+      try {
+        const optimizedPath = await optimizeImageFile(file.path, file.mimetype);
+        if (optimizedPath !== file.path) {
+          file.path = optimizedPath;
+          file.filename = optimizedPath.split(/[/\\]/).pop();
+        }
+        uploadedImages.push(toPublicUrl(req, publicPathFromFile(file)));
+      } catch (imgErr) {
+        await fs.unlink(file.path).catch(() => {});
+        return res.status(400).json({
+          message: "Image optimization failed. Please upload a valid image.",
+        });
+      }
+    }
+
+    const finalImages = [...existingImages, ...uploadedImages].filter(Boolean);
+    if (finalImages.length === 0) {
+      return res.status(400).json({ message: "At least one image is required." });
+    }
+    if (finalImages.length > MAX_IMAGES) {
+      return res.status(400).json({ message: "Maximum 5 images are allowed." });
+    }
+
+    const normalizedCondition = normalizeConditionInput(req.body.condition);
+    if (!normalizedCondition.ok) {
+      return res.status(400).json({ message: normalizedCondition.message });
+    }
+
+    const updates = {
+      title: req.body.title?.trim() || ad.title,
+      description: req.body.description?.trim() || ad.description,
+      category: req.body.category?.trim() || ad.category,
+      subcategory: req.body.subcategory?.trim() || "",
+      city: req.body.city?.trim() || "",
+      location: req.body.location?.trim() || "",
+      state: req.body.state?.trim() || "",
+      ownerName: req.body.ownerName?.trim() || ad.ownerName,
+      ownerEmail: req.body.ownerEmail?.trim() || ad.ownerEmail,
+      ownerPhone: req.body.ownerPhone?.trim() || ad.ownerPhone,
+      status: req.body.status?.trim() || ad.status,
+      negotiable:
+        req.body.negotiable === undefined
+          ? ad.negotiable
+          : req.body.negotiable === "true" || req.body.negotiable === true,
+      deliveryAvailable:
+        req.body.deliveryAvailable === undefined
+          ? ad.deliveryAvailable
+          : req.body.deliveryAvailable === "true" ||
+            req.body.deliveryAvailable === true,
+      images: finalImages,
+    };
+
+    if (normalizedCondition.value) {
+      updates.condition = normalizedCondition.value;
+    } else {
+      updates.condition = "Not Applicable";
+    }
+
+    if (req.body.price !== undefined && req.body.price !== "") {
+      const parsedPrice = Number(req.body.price);
+      if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+        return res.status(400).json({ message: "Price must be a valid number." });
+      }
+      updates.price = parsedPrice;
+    } else {
+      updates.price = null;
+    }
+
+    const previousImages = Array.isArray(ad.images) ? ad.images : [];
+    const imagesToDelete = previousImages.filter(
+      (imgUrl) => removedImages.includes(imgUrl) || !finalImages.includes(imgUrl)
+    );
+
+    Object.assign(ad, updates);
+    await ad.save();
+
+    for (const imageUrl of imagesToDelete) {
+      if (isCloudinaryUrl(imageUrl)) continue;
+      await cleanupLocalImageVariants(imageUrl);
+    }
+
+    return res.status(200).json({
+      message: "Ad updated successfully",
+      ad,
+    });
+  } catch (error) {
+    console.error("❌ Error updating ad by admin:", error);
+    return res.status(500).json({
+      message: "Server error while updating ad",
     });
   }
 };
