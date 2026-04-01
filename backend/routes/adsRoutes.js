@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createAd,
+  optimizeListingDraft,
   getUserAds,
   getAllAds,
   getAdById,
@@ -39,6 +40,8 @@ router.post(
   multerErrorHandler,
   createAd
 );
+
+router.post("/optimize-listing", authMiddleware, optimizeListingDraft);
 
 /* =================================================
    👤 GET LOGGED-IN USER ADS

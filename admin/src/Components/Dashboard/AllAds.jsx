@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   PencilLine,
+  WandSparkles,
   Search,
   Save,
   ImagePlus,
@@ -30,12 +31,150 @@ import { Navigation } from "swiper/modules";
 const EMPTY_STATS = { total: 0, approved: 0, pending: 0, rejected: 0 };
 const FALLBACK_MEDIA =
   "https://cdn-icons-png.flaticon.com/512/4076/4076500.png";
+const CATEGORY_OPTIONS = {
+  Vehicles: [
+    "Cars",
+    "Motorcycles",
+    "Bikes",
+    "Scooters",
+    "Bicycles",
+    "Electric Bikes",
+    "Commercial Vehicles",
+    "Spare Parts",
+    "Vehicle Accessories",
+  ],
+  "Real Estate": [
+    "For Sale: Houses & Apartments",
+    "For Rent: Houses & Apartments",
+    "Lands & Plots",
+    "For Rent: Shops & Offices",
+    "For Sale: Shops & Offices",
+    "PG & Guest Houses",
+  ],
+  Mobiles: ["Mobile Phones", "Accessories", "Tablets"],
+  Electronics: [
+    "Computers & Laptops",
+    "Computer Accessories",
+    "Gaming Consoles & Accessories",
+    "TVs & Home Entertainment",
+    "Cameras & Lenses",
+    "Smart Watches & Wearables",
+    "Speakers & Headphones",
+    "Kitchen Appliances",
+    "Home Appliances",
+    "Refrigerators",
+    "Washing Machines",
+    "ACs & Coolers",
+    "Printers, Monitors & Hard Disks",
+    "Smart Home Devices",
+  ],
+  Furniture: [
+    "Beds",
+    "Sofas",
+    "Office Chairs",
+    "Dining Tables",
+    "Wardrobes",
+    "Study Tables",
+    "Office Tables",
+    "TV Units",
+    "Coffee Tables",
+    "Storage Cabinets",
+  ],
+  Sports: [
+    "Cricket Equipment",
+    "Football Gear",
+    "Badminton & Tennis",
+    "Gym & Fitness Equipment",
+    "Cycling",
+    "Skating & Skateboards",
+    "Swimming Gear",
+    "Sportswear & Jerseys",
+    "Yoga & Meditation Items",
+    "Boxing & Martial Arts",
+    "Camping & Trekking Gear",
+    "Indoor Games (Chess, Carrom, etc.)",
+  ],
+  Fashion: [
+    "Shirts",
+    "Trouser",
+    "Shorts",
+    "Nightwear",
+    "Shoes",
+    "Undergarments",
+    "Men",
+    "Women",
+    "Footwear",
+    "Watches",
+    "Bags",
+    "Curtains",
+    "Others",
+  ],
+  Stationary: ["Stationary"],
+  Music: [
+    "Musical Instruments",
+    "DJ Equipment",
+    "Studio Equipment",
+    "Sound Systems",
+    "Microphones",
+    "Keyboards & Pianos",
+    "Guitars",
+    "Drums & Percussion",
+    "Amplifiers",
+    "Accessories",
+  ],
+  "Kitchenware & Cookware": ["Kitchen utensils"],
+  "Food & Beverages": ["Ice Cream", "Spices", "Fruits", "Vegetables", "Soft Drink"],
+  "Alcohol & Tobacco": ["Alcohol/Liquor"],
+  "Hobbies & Entertainment": ["Music Instruments"],
+  Services: [
+    "Plumber",
+    "Electrician",
+    "Carpentry Services",
+    "AC Repair & Services",
+    "Refrigerator Repair",
+    "Washing Machine Repair",
+    "Painter",
+    "Home Cleaning",
+    "Pest Control",
+    "Packers & Movers",
+    "Driver Services",
+    "Computer & Laptop Repair",
+    "Mobile Repair",
+    "Tutoring & Classes",
+    "Fitness Trainer",
+    "Beauty & Salon Services",
+    "CCTV Installation & Repair",
+    "Interior Design & Renovation",
+    "Event & Wedding Services",
+    "Travel & Tour Services",
+  ],
+  Jobs: [
+    "Delivery Jobs",
+    "Driver Jobs",
+    "Data Entry Jobs",
+    "Office Assistant",
+    "Sales & Marketing",
+    "Retail / Store Staff",
+    "Hotel & Restaurant Jobs",
+    "Cook / Chef",
+    "Housekeeping",
+    "Telecaller / BPO",
+    "Teacher / Tutor",
+    "Accountant",
+  ],
+  "Beauty & Personal Care": ["Makeup", "Skin Care", "Hair Care", "Fragrance", "Personal Care"],
+  Agriculture: ["Seeds", "Fertilizers", "Pesticides", "Equipment", "Other Products"],
+  Livestock: ["Chicken", "Goat", "Beef", "Fish", "Eggs", "Cows", "Pork Meat"],
+};
 
 const statusBadgeClass = (status) => {
   if (status === "Approved") return "bg-green-100 text-green-700";
   if (status === "Pending") return "bg-slate-900 text-white";
   return "bg-red-100 text-red-700";
 };
+
+const hidesConditionCategory = (category = "") =>
+  ["Agriculture", "Jobs", "Services" , "Livestock" , "Alcohol & Tobacco"].includes(String(category || "").trim());
 
 const statusCardMeta = [
   {
@@ -99,6 +238,7 @@ const AllAds = () => {
   const [editAd, setEditAd] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [optimizingCopy, setOptimizingCopy] = useState(false);
   const [modalSwiper, setModalSwiper] = useState(null);
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
@@ -255,7 +395,16 @@ const AllAds = () => {
           newImages: [...prev.newImages, ...incomingFiles].slice(0, prev.newImages.length + remainingSlots),
         };
       }
-      return { ...prev, [name]: type === "checkbox" ? checked : value };
+      const nextValue = type === "checkbox" ? checked : value;
+      const nextForm = {
+        ...prev,
+        [name]: nextValue,
+        ...(name === "category" ? { subcategory: "" } : {}),
+      };
+      if (name === "category" && hidesConditionCategory(nextValue)) {
+        nextForm.condition = "Not Applicable";
+      }
+      return nextForm;
     });
     if (type === "file") {
       event.target.value = "";
@@ -285,6 +434,68 @@ const AllAds = () => {
     );
   };
 
+  const availableSubcategories = CATEGORY_OPTIONS[editForm?.category] || [];
+
+  const enhanceEditCopy = async () => {
+    if (!editForm) return;
+    const title = String(editForm.title || "").trim();
+    const description = String(editForm.description || "").trim();
+
+    if (title.length < 3) {
+      Swal.fire("Title required", "Please enter a stronger title first.", "warning");
+      return;
+    }
+
+    if (description.length < 10) {
+      Swal.fire(
+        "Description required",
+        "Please enter a more detailed description first.",
+        "warning"
+      );
+      return;
+    }
+
+    setOptimizingCopy(true);
+    try {
+      const res = await adminApi.post("/ads/optimize-copy", {
+        title,
+        description,
+        category: editForm.category || "",
+      });
+      const result = res.data?.result;
+      if (!result?.title || !result?.description) {
+        throw new Error("Incomplete optimizer response");
+      }
+
+      setEditForm((prev) =>
+        prev
+          ? {
+              ...prev,
+              title: result.title,
+              description: result.description,
+            }
+          : prev
+      );
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Ad copy enhanced",
+        showConfirmButton: false,
+        timer: 1800,
+      });
+    } catch (error) {
+      Swal.fire(
+        "Optimizer unavailable",
+        error?.response?.data?.message || "Failed to enhance ad copy.",
+        "error"
+      );
+    } finally {
+      setOptimizingCopy(false);
+    }
+  };
+
   const cardImage = (ad) => ad.images?.[0] || FALLBACK_MEDIA;
 
   const saveEdit = async () => {
@@ -304,7 +515,6 @@ const AllAds = () => {
       "description",
       "category",
       "subcategory",
-      "condition",
       "price",
       "city",
       "location",
@@ -314,6 +524,11 @@ const AllAds = () => {
       "ownerPhone",
       "status",
     ].forEach((field) => formData.append(field, editForm[field] ?? ""));
+
+    formData.append(
+      "condition",
+      hidesConditionCategory(editForm.category) ? "Not Applicable" : editForm.condition ?? ""
+    );
 
     formData.append("negotiable", String(editForm.negotiable));
     formData.append("deliveryAvailable", String(editForm.deliveryAvailable));
@@ -636,7 +851,9 @@ const AllAds = () => {
                     <div className="mt-5 grid gap-3 text-sm">
                       <p><b>Category:</b> {selectedAd.category}</p>
                       <p><b>Subcategory:</b> {selectedAd.subcategory || "N/A"}</p>
-                      <p><b>Condition:</b> {selectedAd.condition || "N/A"}</p>
+                      {!hidesConditionCategory(selectedAd.category) && (
+                        <p><b>Condition:</b> {selectedAd.condition || "N/A"}</p>
+                      )}
                       <p><b>Price:</b> {selectedAd.currency} {selectedAd.price?.toLocaleString() || "0"}</p>
                     </div>
                   </div>
@@ -710,12 +927,28 @@ const AllAds = () => {
                 <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
                   <div className="space-y-6">
                     <div className="rounded-2xl bg-slate-50 p-5">
-                      <h3 className="text-lg font-semibold text-[#1A1D64]">Basic Information</h3>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <h3 className="text-lg font-semibold text-[#1A1D64]">Basic Information</h3>
+                        <button
+                          type="button"
+                          onClick={enhanceEditCopy}
+                          disabled={optimizingCopy}
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2E3192] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#242776] disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                          {optimizingCopy ? (
+                            <>Enhancing...</>
+                          ) : (
+                            <>
+                              <WandSparkles size={16} /> Enhance with AI
+                            </>
+                          )}
+                        </button>
+                      </div>
                       <div className="mt-5 grid gap-4 md:grid-cols-2">
                         <label className="md:col-span-2"><span className="mb-2 block text-sm text-slate-600">Title</span><input name="title" value={editForm.title} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label className="md:col-span-2"><span className="mb-2 block text-sm text-slate-600">Description</span><textarea name="description" rows="5" value={editForm.description} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
-                        <label><span className="mb-2 block text-sm text-slate-600">Category</span><input name="category" value={editForm.category} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
-                        <label><span className="mb-2 block text-sm text-slate-600">Subcategory</span><input name="subcategory" value={editForm.subcategory} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Category</span><select name="category" value={editForm.category} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="">Select category</option>{Object.keys(CATEGORY_OPTIONS).map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
+                        <label><span className="mb-2 block text-sm text-slate-600">Subcategory</span><select name="subcategory" value={editForm.subcategory} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" disabled={!editForm.category}><option value="">Select subcategory</option>{availableSubcategories.map((subcategory) => <option key={subcategory} value={subcategory}>{subcategory}</option>)}</select></label>
                       </div>
                     </div>
 
@@ -724,7 +957,9 @@ const AllAds = () => {
                       <div className="mt-5 grid gap-4 md:grid-cols-2">
                         <label><span className="mb-2 block text-sm text-slate-600">Price</span><input name="price" type="number" value={editForm.price} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label><span className="mb-2 block text-sm text-slate-600">Status</span><select name="status" value={editForm.status} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Sold">Sold</option></select></label>
-                        <label><span className="mb-2 block text-sm text-slate-600">Condition</span><select name="condition" value={editForm.condition} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="New">New</option><option value="Used">Used</option><option value="Not Applicable">Not Applicable</option></select></label>
+                        {!hidesConditionCategory(editForm.category) && (
+                          <label><span className="mb-2 block text-sm text-slate-600">Condition</span><select name="condition" value={editForm.condition} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="New">New</option><option value="Used">Used</option><option value="Not Applicable">Not Applicable</option></select></label>
+                        )}
                         <label><span className="mb-2 block text-sm text-slate-600">City</span><input name="city" value={editForm.city} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label><span className="mb-2 block text-sm text-slate-600">Location</span><input name="location" value={editForm.location} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label><span className="mb-2 block text-sm text-slate-600">State</span><input name="state" value={editForm.state} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>

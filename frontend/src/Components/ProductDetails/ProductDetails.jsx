@@ -820,17 +820,17 @@ const ProductDetails = () => {
               </span>
             </motion.button>
 
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              whileHover={{ y: -2 }}
-              onClick={() => setShareModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#2E3192]/20 bg-white text-[#2E3192] text-sm font-semibold shadow-sm hover:bg-[#F2F4FF] transition-all duration-300"
-              aria-label="Share this product"
-            >
-              <Share2 size={17} />
-              Share
-            </motion.button>
-          </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -2 }}
+                onClick={() => setShareModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#2E3192]/20 bg-white text-[#2E3192] text-sm font-semibold shadow-sm hover:bg-[#F2F4FF] transition-all duration-300"
+                aria-label="Share this product"
+              >
+                <Share2 size={17} />
+                Share
+              </motion.button>
+            </div>
 
           {renderCategoryFields()}
           {/* 📝 Description Section */}

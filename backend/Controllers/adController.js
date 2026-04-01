@@ -47,6 +47,114 @@ const normalizeConditionInput = (raw) => {
   };
 };
 
+const CATEGORY_HINTS = {
+  Vehicles: ["vehicle", "car", "bike", "motorcycle", "pickup"],
+  Electronics: ["electronics", "device", "gadget", "appliance"],
+  Mobiles: ["mobile", "phone", "smartphone", "tablet"],
+  Furniture: ["furniture", "home item", "office item"],
+  Fashion: ["fashion item", "wear", "clothing"],
+  "Real Estate": ["property", "space", "listing"],
+  Agriculture: ["agriculture item", "farm product", "farm input"],
+  Services: ["service offer", "service"],
+  Jobs: ["job opening", "job listing"],
+  Music: ["music item", "audio gear", "instrument"],
+};
+
+const toSentenceCase = (value = "") => {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+};
+
+const normalizeWhitespace = (value = "") =>
+  String(value || "")
+    .replace(/\r/g, "\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+const cleanTitle = (title = "", category = "") => {
+  const normalized = normalizeWhitespace(title)
+    .replace(/[|]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s*[-–—]+\s*/g, " - ");
+
+  const words = normalized
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean);
+
+  const cappedWords = words.slice(0, 12);
+  let result = cappedWords.join(" ");
+
+  if (result && category && cappedWords.length < 4) {
+    const fallbackHint = CATEGORY_HINTS[category]?.[0];
+    if (fallbackHint && !result.toLowerCase().includes(fallbackHint)) {
+      result = `${result} ${fallbackHint}`;
+    }
+  }
+
+  return toSentenceCase(result.replace(/\s+-\s+/g, " - "));
+};
+
+const uniqueLines = (lines = []) => {
+  const seen = new Set();
+  return lines.filter((line) => {
+    const key = line.toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const splitDescriptionLines = (description = "") => {
+  const normalized = normalizeWhitespace(description);
+  return normalized
+    .split(/\n+/)
+    .flatMap((chunk) => chunk.split(/(?<=[.!?])\s+(?=[A-Z0-9*•\-])/))
+    .map((line) =>
+      line
+        .replace(/^[•*\-–—\s]+/, "")
+        .replace(/\s{2,}/g, " ")
+        .trim()
+    )
+    .filter(Boolean);
+};
+
+const formatDescription = ({ title, description, category = "" }) => {
+  const rawLines = splitDescriptionLines(description);
+  const lines = uniqueLines(rawLines);
+  const cleanedTitle = cleanTitle(title, category);
+  const intro =
+    cleanedTitle && !lines.some((line) => line.toLowerCase() === cleanedTitle.toLowerCase())
+      ? `${cleanedTitle}.`
+      : "";
+
+  const bulletLines = lines.slice(0, 8).map((line) => {
+    let cleaned = line.replace(/[*]+/g, "").trim();
+    cleaned = cleaned.replace(/\s*:\s*/g, ": ");
+    if (!/[.!?]$/.test(cleaned)) cleaned += ".";
+    return `• ${toSentenceCase(cleaned)}`;
+  });
+
+  const hint = category && CATEGORY_HINTS[category]?.[0]
+    ? `Category: ${CATEGORY_HINTS[category][0]}.`
+    : "";
+
+  return [intro, hint, ...bulletLines].filter(Boolean).join("\n");
+};
+
+const optimizeListingCopyLocal = async ({ title, description, category }) => {
+  return {
+    title: cleanTitle(title, category),
+    description: formatDescription({ title, description, category }),
+  };
+};
+
+const optimizeListingCopy = async ({ title, description, category }) => {
+  return optimizeListingCopyLocal({ title, description, category });
+};
+
 /* ================================
    🟢 CREATE AD (Pending by default)
 ================================ */
@@ -253,6 +361,48 @@ export const createAd = async (req, res) => {
       success: false,
       message: "Server error while creating ad",
       error: error.message,
+    });
+  }
+};
+
+export const optimizeListingDraft = async (req, res) => {
+  try {
+    const title = String(req.body?.title || "").trim();
+    const description = String(req.body?.description || "").trim();
+    const category = String(req.body?.category || "").trim();
+
+    if (title.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Title must be at least 3 characters long.",
+      });
+    }
+
+    if (description.length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Description must be at least 10 characters long.",
+      });
+    }
+
+    const result = await optimizeListingCopy({ title, description, category });
+
+    if (!result.title || !result.description) {
+      return res.status(502).json({
+        success: false,
+        message: "Optimizer returned an incomplete response.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    console.error("LISTING_OPTIMIZER_ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to optimize listing.",
     });
   }
 };

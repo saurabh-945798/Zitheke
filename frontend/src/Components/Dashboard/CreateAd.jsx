@@ -17,7 +17,7 @@ const CreateAd = () => {
   const [files, setFiles] = useState([]);
   const [preview, setPreview] = useState([]);
   // ?? VIDEO STATE
-  const [videoFile, setVideoFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null)  ;
   const [videoPreview, setVideoPreview] = useState("");
 
   const [form, setForm] = useState({
@@ -325,7 +325,7 @@ Furniture: [
 
     Agriculture: ["Seeds", "Fertilizers", "Pesticides", "Equipment", "Other Products"],
 
-    Livestock: ["Chicken", "Goat", "Beef", "Fish", "Eggs", "Cows"],
+    Livestock: ["Chicken", "Goat", "Beef", "Fish", "Eggs", "Cows", "Pork Meat"],
 
   };
 

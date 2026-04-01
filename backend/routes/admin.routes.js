@@ -18,6 +18,7 @@ import {
   deleteAdByAdmin,
   getAdsStats,
   updateAdByAdmin,
+  optimizeAdCopyByAdmin,
 } from "../Controllers/adminController.js";
 
 import { getAdminStats } from "../Controllers/adminOverview.controller.js";
@@ -44,6 +45,7 @@ router.get("/ads", adminAuthMiddleware, getAllAds);
 router.get("/ads/stats/summary", adminAuthMiddleware, getAdsStats);
 
 router.get("/ads/:id", adminAuthMiddleware, getAdById);
+router.post("/ads/optimize-copy", adminAuthMiddleware, optimizeAdCopyByAdmin);
 router.put("/ads/:id", adminAuthMiddleware, adUpload, multerErrorHandler, updateAdByAdmin);
 router.patch("/ads/:id/approve", adminAuthMiddleware, approveAd);
 router.patch("/ads/:id/reject", adminAuthMiddleware, rejectAd);
