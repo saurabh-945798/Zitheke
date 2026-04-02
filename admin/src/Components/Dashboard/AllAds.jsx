@@ -174,7 +174,7 @@ const statusBadgeClass = (status) => {
 };
 
 const hidesConditionCategory = (category = "") =>
-  ["Agriculture", "Jobs", "Services" , "Livestock" , "Alcohol & Tobacco"].includes(String(category || "").trim());
+  ["Agriculture", "Jobs", "Services" , "Livestock" , "Alcohol"].includes(String(category || "").trim());
 
 const statusCardMeta = [
   {

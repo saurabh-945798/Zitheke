@@ -112,7 +112,7 @@ const CATEGORY_FIELDS = {
   /* =========================
        🍷 ALCOHOL & TOBACCO
     ========================= */
-  "Alcohol & Tobacco": [
+  "Alcohol": [
     { name: "brand", placeholder: "Brand" },
     { name: "quantity", placeholder: "Quantity" },
     {

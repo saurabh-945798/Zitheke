@@ -259,7 +259,7 @@ Furniture: [
       "Soft Drink",
     ],
 
-    "Alcohol & Tobacco": ["Alcohol/Liquor"],
+    Alcohol: ["Alcohol/Liquor"],
 
     "Hobbies & Entertainment": ["Music Instruments"],
 
