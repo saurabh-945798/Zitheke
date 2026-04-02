@@ -123,7 +123,14 @@ const CATEGORY_OPTIONS = {
     "Accessories",
   ],
   "Kitchenware & Cookware": ["Kitchen utensils"],
-  "Food & Beverages": ["Ice Cream", "Spices", "Fruits", "Vegetables", "Soft Drink"],
+  "Food & Beverages": [
+    "Ice Cream",
+    "Spices",
+    "Fruits",
+    "Vegetables",
+    "Soft Drink",
+    "Cakes",
+  ],
   "Alcohol & Tobacco": ["Alcohol/Liquor"],
   "Hobbies & Entertainment": ["Music Instruments"],
   Services: [

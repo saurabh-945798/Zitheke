@@ -257,6 +257,7 @@ Furniture: [
       "Fruits",
       "Vegetables",
       "Soft Drink",
+      "Cakes",
     ],
 
     Alcohol: ["Alcohol/Liquor"],
