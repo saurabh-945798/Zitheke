@@ -110,6 +110,7 @@ const CATEGORY_OPTIONS = {
     "Others",
   ],
   Stationary: ["Stationary"],
+  Hardware: ["Other"],
   Music: [
     "Musical Instruments",
     "DJ Equipment",

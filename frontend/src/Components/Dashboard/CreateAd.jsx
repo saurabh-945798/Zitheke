@@ -246,6 +246,7 @@ Furniture: [
     ],
 
     Stationary: ["Stationary"],
+    Hardware: ["Other"],
 
  
 
