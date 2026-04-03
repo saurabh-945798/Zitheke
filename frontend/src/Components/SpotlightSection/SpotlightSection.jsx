@@ -37,7 +37,7 @@ const spotlightData = [
     title: "Explore Top Listings at Great Prices",
     offer: "New Listing",
     image:
-      "https://scontent.fdel32-1.fna.fbcdn.net/v/t39.30808-6/496936088_122248262630073185_6162265846963520374_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=7b2446&_nc_ohc=1C1kRo9WsHsQ7kNvwFC4ex1&_nc_oc=Adk2fiK8ijE-4jo6Va2QUD57Q2Z7qg_44werV7jEUCs89dE5kh40uaXSrkYsRRc1I4k&_nc_zt=23&_nc_ht=scontent.fdel32-1.fna&_nc_gid=Cqq18oG6JEicW1B_DYopwA&_nc_ss=8&oh=00_AfxLETAuTBB1R-M-JC-WfXOGGlaRAo_brLa4_3JBJ-TtSQ&oe=69BAB26F",
+      "https://african.land/oc-content/plugins/blog/img/blog/795.jpg",
   },
   {
     category: "Jobs",
