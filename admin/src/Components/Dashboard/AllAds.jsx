@@ -184,6 +184,9 @@ const statusBadgeClass = (status) => {
 const hidesConditionCategory = (category = "") =>
   ["Agriculture", "Jobs", "Services" , "Livestock" , "Alcohol"].includes(String(category || "").trim());
 
+const isConditionOff = (condition = "") =>
+  ["Not Applicable", "Condition Off"].includes(String(condition || "").trim());
+
 const statusCardMeta = [
   {
     key: "total",
@@ -859,7 +862,8 @@ const AllAds = () => {
                     <div className="mt-5 grid gap-3 text-sm">
                       <p><b>Category:</b> {selectedAd.category}</p>
                       <p><b>Subcategory:</b> {selectedAd.subcategory || "N/A"}</p>
-                      {!hidesConditionCategory(selectedAd.category) && (
+                      {!hidesConditionCategory(selectedAd.category) &&
+                        !isConditionOff(selectedAd.condition) && (
                         <p><b>Condition:</b> {selectedAd.condition || "N/A"}</p>
                       )}
                       <p><b>Price:</b> {selectedAd.currency} {selectedAd.price?.toLocaleString() || "0"}</p>
@@ -966,7 +970,7 @@ const AllAds = () => {
                         <label><span className="mb-2 block text-sm text-slate-600">Price</span><input name="price" type="number" value={editForm.price} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label><span className="mb-2 block text-sm text-slate-600">Status</span><select name="status" value={editForm.status} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Sold">Sold</option></select></label>
                         {!hidesConditionCategory(editForm.category) && (
-                          <label><span className="mb-2 block text-sm text-slate-600">Condition</span><select name="condition" value={editForm.condition} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="New">New</option><option value="Used">Used</option><option value="Not Applicable">Not Applicable</option></select></label>
+                          <label><span className="mb-2 block text-sm text-slate-600">Condition</span><select name="condition" value={editForm.condition} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"><option value="New">New</option><option value="Used">Used</option><option value="Not Applicable">Condition Off</option></select></label>
                         )}
                         <label><span className="mb-2 block text-sm text-slate-600">City</span><input name="city" value={editForm.city} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>
                         <label><span className="mb-2 block text-sm text-slate-600">Location</span><input name="location" value={editForm.location} onChange={updateEditField} className="w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10" /></label>

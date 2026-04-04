@@ -36,6 +36,7 @@ const spotlightData = [
     category: "Real Estate",
     title: "Explore Top Listings at Great Prices",
     offer: "New Listing",
+    
     image:
       "https://african.land/oc-content/plugins/blog/img/blog/795.jpg",
   },
