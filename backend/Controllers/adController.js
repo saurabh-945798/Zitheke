@@ -39,10 +39,13 @@ const normalizeConditionInput = (raw) => {
   const normalized = String(raw).trim().toLowerCase();
   if (normalized === "new") return { ok: true, value: "New" };
   if (normalized === "used") return { ok: true, value: "Used" };
+  if (normalized === "not applicable" || normalized === "condition off") {
+    return { ok: true, value: "Not Applicable" };
+  }
 
   return {
     ok: false,
-    message: "Invalid condition. Allowed values are New or Used.",
+    message: "Invalid condition. Allowed values are New, Used or Not Applicable.",
   };
 };
 
