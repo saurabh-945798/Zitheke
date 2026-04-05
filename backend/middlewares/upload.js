@@ -1,6 +1,6 @@
 import multer from "multer";
 
-const storage = multer.memoryStorage(); // ✅ Cloudinary ke liye best
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,

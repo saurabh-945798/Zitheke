@@ -47,11 +47,8 @@ export const publicPathFromFile = (file) => {
   return `/uploads/${folder}/${filename}`;
 };
 
-export const isCloudinaryUrl = (url = "") =>
-  String(url).includes("res.cloudinary.com");
-
 export const isLocalUploadUrl = (url = "") =>
-  /\/uploads\/(images|videos)\//.test(String(url));
+  /\/uploads\/(images|videos|avatars|reports)\//.test(String(url));
 
 export const localAbsolutePathFromUrl = (url = "") => {
   const raw = String(url || "");

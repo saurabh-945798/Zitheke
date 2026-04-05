@@ -1,10 +1,11 @@
 // controllers/messageController.js
 import mongoose from "mongoose";
+import fs from "fs/promises";
 import Message from "../models/Message.js";
 import Conversation from "../models/Conversation.js";
 import User from "../models/User.js";
-import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
+import { isLocalUploadUrl, localAbsolutePathFromUrl } from "../utils/uploadPath.js";
 
 /* =====================================================
    🔹 Helpers
@@ -382,18 +383,17 @@ export const deleteForEveryone = async (req, res) => {
 
     const convo = await requireConversationParticipant(msg.conversationId, authUid);
 
-    // cloudinary cleanup (best-effort)
+    // local media cleanup (best-effort)
     if (msg.mediaUrl) {
       try {
-        const file = msg.mediaUrl.split("/").pop();
-        const publicId = file?.split(".")[0];
-        if (publicId) {
-          await cloudinary.uploader.destroy(publicId, {
-            resource_type: msg.type === "video" ? "video" : "image",
-          });
+        if (isLocalUploadUrl(msg.mediaUrl)) {
+          const localPath = localAbsolutePathFromUrl(msg.mediaUrl);
+          if (localPath) {
+            await fs.unlink(localPath).catch(() => {});
+          }
         }
       } catch (e) {
-        console.warn("Cloudinary delete failed");
+        console.warn("Local media delete failed");
       }
     }
 

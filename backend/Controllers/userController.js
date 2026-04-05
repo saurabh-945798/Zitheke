@@ -1,8 +1,5 @@
 // Controllers/userController.js
 import User from "../models/User.js";
-import cloudinary from "../config/cloudinary.js";
-import axios from "axios";
-import streamifier from "streamifier";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import fs from "fs/promises";
@@ -243,39 +240,13 @@ export const registerUser = async (req, res) => {
     }
 
     let user = await User.findOne({ uid });
-    let cloudinaryUrl = "";
     let created = false;
     let linkedPhoneUser = false;
-
-    // ✅ Upload photo to Cloudinary (only once)
-    if (
-      photoURL &&
-      photoURL.startsWith("http") &&
-      (!user || !user.photoURL?.includes("res.cloudinary.com"))
-    ) {
-      try {
-        const response = await axios.get(photoURL, {
-          responseType: "arraybuffer",
-        });
-
-        const uploadResult = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            { folder: "alinafe/users" },
-            (error, result) => (error ? reject(error) : resolve(result))
-          );
-          streamifier.createReadStream(response.data).pipe(uploadStream);
-        });
-
-        cloudinaryUrl = uploadResult.secure_url;
-      } catch (imgErr) {
-        console.error("⚠️ Image upload skipped:", imgErr.message);
-      }
-    }
 
     // ✅ CREATE OR UPDATE USER
     const fallbackName = name || email.split("@")[0];
     const desiredPhoto =
-      cloudinaryUrl ||
+      user?.photoURL ||
       photoURL ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}`;
 
@@ -330,7 +301,7 @@ export const registerUser = async (req, res) => {
       if (!providers.includes("google")) providers.push("google");
       user.authProviders = providers;
       if (!user.passwordHash) user.passwordHash = "";
-      if (cloudinaryUrl) user.photoURL = cloudinaryUrl;
+      if (!user.photoURL && photoURL) user.photoURL = photoURL;
       user.verified = true;
       user.emailVerified = emailVerified;
       await user.save();
@@ -562,7 +533,6 @@ export const logoutUser = async (req, res) => {
     });
   }
 };
-
 
 
 

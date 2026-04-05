@@ -3,11 +3,9 @@ import fs from "fs/promises";
 import path from "path";
 import User from "../models/User.js";
 import Ad from "../models/Ad.js";
-import { v2 as cloudinary } from "cloudinary";
 import { EmailService } from "../Services/email.service.js";
 import { optimizeImageFile } from "../utils/optimizeImage.js";
 import {
-  isCloudinaryUrl,
   isLocalUploadUrl,
   localAbsolutePathFromUrl,
   publicPathFromFile,
@@ -421,7 +419,7 @@ export const rejectAd = async (req, res) => {
   }
 };
 
-// ✅ Delete Ad (with Cloudinary cleanup)
+// ✅ Delete Ad
 export const deleteAdByAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -434,18 +432,17 @@ export const deleteAdByAdmin = async (req, res) => {
     // 🧹 Delete images
     if (Array.isArray(ad.images)) {
       for (const img of ad.images) {
-        if (img?.includes("res.cloudinary.com")) {
-          const publicId = img.split("/").pop().split(".")[0];
-          await cloudinary.uploader.destroy(publicId);
-        }
+        if (!isLocalUploadUrl(img)) continue;
+        await cleanupLocalImageVariants(img);
       }
     }
 
     // 🧹 Delete video
-    if (ad.video?.publicId) {
-      await cloudinary.uploader.destroy(ad.video.publicId, {
-        resource_type: "video",
-      });
+    if (ad.video?.url && isLocalUploadUrl(ad.video.url)) {
+      const localVideoPath = localAbsolutePathFromUrl(ad.video.url);
+      if (localVideoPath) {
+        await fs.unlink(localVideoPath).catch(() => {});
+      }
     }
 
     await ad.deleteOne();
@@ -575,8 +572,9 @@ export const updateAdByAdmin = async (req, res) => {
     await ad.save();
 
     for (const imageUrl of imagesToDelete) {
-      if (isCloudinaryUrl(imageUrl)) continue;
-      await cleanupLocalImageVariants(imageUrl);
+      if (isLocalUploadUrl(imageUrl)) {
+        await cleanupLocalImageVariants(imageUrl);
+      }
     }
 
     return res.status(200).json({

@@ -3,6 +3,7 @@ import Report from "../models/Report.js";
 import Ad from "../models/Ad.js";
 import User from "../models/User.js";
 import { EmailService } from "../Services/email.service.js";
+import { publicPathFromFile, toPublicUrl } from "../utils/uploadPath.js";
 
 /* ---------------------------
    Helpers (Consistent Errors)
@@ -97,7 +98,7 @@ export const createReport = async (req, res) => {
       );
     }
 
-    const fileUrl = req.file?.path || "";
+    const fileUrl = req.file ? toPublicUrl(req, publicPathFromFile(req.file)) : "";
 
     const payload = {
       adId,

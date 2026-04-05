@@ -9,7 +9,6 @@ import { EmailService } from "../Services/email.service.js";
 import { normalizeMalawiPhone, isValidMalawiPhone } from "../utils/phone.js";
 import { optimizeImageFile } from "../utils/optimizeImage.js";
 import {
-  isCloudinaryUrl,
   isLocalUploadUrl,
   localAbsolutePathFromUrl,
   publicPathFromFile,
@@ -797,10 +796,9 @@ export const deleteAd = async (req, res) => {
     const ad = await Ad.findById(req.params.id);
     if (!ad) return res.status(404).json({ message: "Ad not found" });
 
-    // Best-effort local file cleanup (existing Cloudinary URLs are untouched)
+    // Best-effort local file cleanup for local uploads only.
     if (Array.isArray(ad.images)) {
       for (const imgUrl of ad.images) {
-        if (isCloudinaryUrl(imgUrl)) continue;
         if (isLocalUploadUrl(imgUrl)) {
           const localPath = localAbsolutePathFromUrl(imgUrl);
           if (localPath) {

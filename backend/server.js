@@ -8,7 +8,6 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import http from "http";
 import { Server } from "socket.io";
-import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
@@ -77,7 +76,8 @@ const allowedOrigins = [
 
   // Zitheke Production
   "https://zitheke.com",
-  "https://www.zitheke.com"
+  "https://www.zitheke.com",
+  "https://admin.zitheke.com",
 ];
 
 const isAllowedOrigin = (origin) => !origin || allowedOrigins.includes(origin);
@@ -240,6 +240,22 @@ app.get("/", (req, res) => {
 app.use((req, res) =>
   res.status(404).json({ message: "Route not found" })
 );
+
+app.use((err, req, res, next) => {
+  console.error("Unhandled express error:", err);
+  if (res.headersSent) return next(err);
+  return res.status(err?.statusCode || 500).json({
+    message: err?.message || "Internal server error",
+  });
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled promise rejection:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
+});
 
 
 // ===============================
