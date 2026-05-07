@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   Ban,
   Eye,
+  Download,
   CheckCircle,
   XCircle,
   MapPin,
@@ -96,9 +97,48 @@ const Users = () => {
       (user) =>
         user.name?.toLowerCase().includes(normalized) ||
         user.email?.toLowerCase().includes(normalized) ||
+        user.phone?.toLowerCase().includes(normalized) ||
         user.location?.toLowerCase().includes(normalized)
     );
   }, [search, users]);
+
+  const handleExportUsers = () => {
+    if (!filteredUsers.length) {
+      Swal.fire("No users", "There are no users to export right now.", "info");
+      return;
+    }
+
+    const escapeCsvValue = (value = "") =>
+      `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const rows = filteredUsers.map((user) => [
+      user.name || "",
+      user.email || "",
+      user.phone || "",
+      user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "",
+    ]);
+
+    const csv = [
+      ["User Name", "Email", "Phone Number", "Joined Date"],
+      ...rows,
+    ]
+      .map((row) => row.map(escapeCsvValue).join(","))
+      .join("\n");
+
+    const blob = new Blob(["\uFEFF" + csv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.setAttribute("download", `zitheke-users-${stamp}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleStatusChange = async (id, name, status) => {
     Swal.fire({
@@ -232,13 +272,22 @@ const Users = () => {
               <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
               <span>{users.length} total</span>
             </div>
+
+            <button
+              type="button"
+              onClick={handleExportUsers}
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#1A1D64] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#232780]"
+            >
+              <Download size={16} />
+              Export Excel
+            </button>
           </div>
 
           <div className="relative w-full xl:justify-self-end">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
               type="text"
-              placeholder="Search name, email, or location..."
+              placeholder="Search name, email, phone, or location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3.5 text-sm text-slate-700 outline-none transition focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
@@ -252,19 +301,20 @@ const Users = () => {
           <table className="w-full table-fixed text-left">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/90 text-slate-500">
-                <th className="w-[28%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">User</th>
-                <th className="w-[28%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Email</th>
-                <th className="w-[16%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Location</th>
+                <th className="w-[22%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">User</th>
+                <th className="w-[24%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Email</th>
+                <th className="w-[16%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Phone</th>
+                <th className="w-[14%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Location</th>
                 <th className="w-[12%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Joined</th>
-                <th className="w-[10%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Status</th>
-                <th className="w-[12%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Actions</th>
+                <th className="w-[8%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Status</th>
+                <th className="w-[10%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-14 text-center text-sm font-medium text-slate-500">
+                  <td colSpan="7" className="px-6 py-14 text-center text-sm font-medium text-slate-500">
                     Loading users...
                   </td>
                 </tr>
@@ -307,6 +357,9 @@ const Users = () => {
                       <span className="block max-w-[280px] truncate">{user.email || "—"}</span>
                     </td>
                     <td className="px-6 py-5 text-sm text-slate-600">
+                      <span className="block max-w-[180px] truncate">{user.phone || "—"}</span>
+                    </td>
+                    <td className="px-6 py-5 text-sm text-slate-600">
                       <span className="block max-w-[180px] truncate">{user.location || "—"}</span>
                     </td>
                     <td className="px-6 py-5 text-sm text-slate-500">
@@ -334,7 +387,7 @@ const Users = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-14 text-center">
+                  <td colSpan="7" className="px-6 py-14 text-center">
                     <p className="text-lg font-semibold text-[#1A1D64]">No users found.</p>
                     <p className="mt-2 text-sm text-slate-500">Try a broader search term to see more accounts.</p>
                   </td>
@@ -457,3 +510,4 @@ const Users = () => {
 };
 
 export default Users;
+

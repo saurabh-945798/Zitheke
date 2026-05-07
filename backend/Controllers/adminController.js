@@ -163,6 +163,39 @@ const cleanupLocalImageVariants = async (url = "") => {
   ]);
 };
 
+const attachFallbackPhones = async (users = []) => {
+  const missingPhoneUsers = users.filter(
+    (user) => !String(user?.phone || "").trim() && String(user?.uid || "").trim()
+  );
+
+  if (!missingPhoneUsers.length) return users;
+
+  const fallbackRows = await Ad.aggregate([
+    {
+      $match: {
+        ownerUid: { $in: missingPhoneUsers.map((user) => user.uid) },
+        ownerPhone: { $type: "string", $ne: "" },
+      },
+    },
+    { $sort: { createdAt: -1 } },
+    {
+      $group: {
+        _id: "$ownerUid",
+        phone: { $first: "$ownerPhone" },
+      },
+    },
+  ]);
+
+  const fallbackPhoneByUid = new Map(
+    fallbackRows.map((row) => [String(row._id), String(row.phone || "").trim()])
+  );
+
+  return users.map((user) => ({
+    ...user,
+    phone: String(user.phone || "").trim() || fallbackPhoneByUid.get(String(user.uid)) || "",
+  }));
+};
+
 /* ==========================================================
    👤 USER MANAGEMENT SECTION
 ========================================================== */
@@ -172,14 +205,16 @@ export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
       .select(
-        "name email photoURL location status adsPosted verified role createdAt"
+        "uid name email phone photoURL location status adsPosted verified role createdAt"
       )
       .sort({ createdAt: -1 })
       .lean();
 
+    const hydratedUsers = await attachFallbackPhones(users);
+
     return res.status(200).json({
       success: true,
-      users, // 🔥 FRONTEND EXPECTS THIS
+      users: hydratedUsers, // 🔥 FRONTEND EXPECTS THIS
     });
   } catch (error) {
     console.error("❌ Error fetching all users:", error);
@@ -209,7 +244,9 @@ export const getUserDetails = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user);
+    const [hydratedUser] = await attachFallbackPhones([user]);
+
+    res.status(200).json(hydratedUser);
   } catch (error) {
     console.error("❌ Error fetching user details:", error);
     res.status(500).json({
@@ -645,3 +682,4 @@ export const getAdsStats = async (req, res) => {
     });
   }
 };
+
