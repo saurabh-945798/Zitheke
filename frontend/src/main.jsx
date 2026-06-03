@@ -6,6 +6,7 @@ import "./index.css";
 
 // ✅ Import AuthProvider
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { MembershipAccessProvider } from "./context/MembershipAccessContext.jsx";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       {/* ✅ Wrap App inside AuthProvider */}
       <AuthProvider>
-        <App />
+        <MembershipAccessProvider>
+          <App />
+        </MembershipAccessProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

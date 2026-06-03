@@ -2,6 +2,19 @@ import express from "express";
 import adminAuthMiddleware from "../middlewares/adminAuthMiddleware.js";
 import { adUpload } from "../middlewares/localUpload.js";
 import multerErrorHandler from "../middlewares/multerErrorHandler.js";
+import { validate } from "../middlewares/validate.js";
+import {
+  createPlanSchema,
+  updatePlanSchema,
+  planIdParamSchema,
+} from "../schemas/plan.schema.js";
+import {
+  listPlansForAdmin,
+  createPlan,
+  updatePlan,
+  deletePlan,
+} from "../Controllers/planController.js";
+import { runSubscriptionExpirySync } from "../Controllers/subscriptionController.js";
 
 import {
   // 👤 USERS
@@ -29,6 +42,39 @@ const router = express.Router();
    ADMIN OVERVIEW
 ====================== */
 router.get("/overview", adminAuthMiddleware, getAdminStats);
+
+/* ======================
+   ADMIN PLANS
+====================== */
+router.get("/plans", adminAuthMiddleware, listPlansForAdmin);
+router.post(
+  "/plans",
+  adminAuthMiddleware,
+  validate(createPlanSchema, "body"),
+  createPlan
+);
+router.put(
+  "/plans/:id",
+  adminAuthMiddleware,
+  validate(planIdParamSchema, "params"),
+  validate(updatePlanSchema, "body"),
+  updatePlan
+);
+router.delete(
+  "/plans/:id",
+  adminAuthMiddleware,
+  validate(planIdParamSchema, "params"),
+  deletePlan
+);
+
+/* ======================
+   ADMIN SUBSCRIPTIONS
+====================== */
+router.post(
+  "/subscriptions/expiry-sync",
+  adminAuthMiddleware,
+  runSubscriptionExpirySync
+);
 
 /* ======================
    ADMIN USERS

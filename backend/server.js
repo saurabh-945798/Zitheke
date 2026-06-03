@@ -39,6 +39,9 @@ import authRoutes from "./routes/authRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import ogPreviewRoutes from "./routes/ogPreview.routes.js";
+import planRoutes from "./routes/planRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 
 
@@ -195,12 +198,15 @@ app.use("/api/trending", trendingRoutes);
 app.use("/api/public/sellers", publicSellerRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/plans", planRoutes);
 
 app.use("/api/email", emailRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth/phone", phoneAuthRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/payments", paymentRoutes);
 
 
 /* =========================

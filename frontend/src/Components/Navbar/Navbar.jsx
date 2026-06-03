@@ -281,6 +281,7 @@ import {
   Menu,
   X,
   Search,
+  Sparkles,
   PlusCircle,
   LogOut,
   User,
@@ -291,6 +292,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import useMembershipAccess from "../../hooks/useMembershipAccess.js";
 import SearchBar from "../SearchBar/SearchBar.jsx";
 import Swal from "sweetalert2";
 import {
@@ -300,6 +302,7 @@ import {
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { access } = useMembershipAccess();
   const navigate = useNavigate();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -366,6 +369,9 @@ const Navbar = () => {
     user?.name ||
     (user?.email ? user.email.split("@")[0] : "") ||
     "";
+
+  const membershipLabel = String(access?.plan?.name || "FREE").toUpperCase();
+  const showMembershipBadge = Boolean(user);
 
   /* =========================
      AVATAR
@@ -442,6 +448,20 @@ const Navbar = () => {
               </>
             ) : (
               <>
+                {showMembershipBadge && (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/pricing")}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+                      access?.isPremium
+                        ? "border-[#f6c96b]/40 bg-[#f6c96b]/12 text-[#f6c96b]"
+                        : "border-white/10 bg-white/8 text-slate-200 hover:bg-white/12"
+                    }`}
+                  >
+                    <Sparkles size={14} />
+                    {membershipLabel}
+                  </button>
+                )}
                 {[
                   { Icon: Bookmark, onClick: () => navigate("/dashboard/favorites") },
                   { Icon: MessageSquare, onClick: () => navigate("/chats") },
@@ -581,6 +601,11 @@ const Navbar = () => {
                     <p className="text-xs text-gray-500">
                       {user ? user.email || user.phone || "Logged in" : "Not logged in"}
                     </p>
+                    {user && (
+                      <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2E3192]/70">
+                        {membershipLabel}
+                      </p>
+                    )}
                   </div>
                 </div>
 

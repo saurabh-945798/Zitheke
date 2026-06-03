@@ -340,6 +340,7 @@ adSchema.index({
 adSchema.index({ city: 1, status: 1 });
 adSchema.index({ price: 1 });
 adSchema.index({ ownerUid: 1, createdAt: -1 });
+adSchema.index({ ownerUid: 1, featured: 1 });
 
 // ✅ GEO SEARCH
 adSchema.index({ geo: "2dsphere" });

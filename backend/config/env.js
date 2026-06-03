@@ -101,6 +101,13 @@ export const env = {
 
   // CAPTCHA (Turnstile)
   TURNSTILE_SECRET_KEY: optional("TURNSTILE_SECRET_KEY", ""),
+
+  // Airtel Money (Phase 2B initiation foundation)
+  AIRTEL_BASE_URL: optional("AIRTEL_BASE_URL", "https://openapiuat.airtel.mw").replace(/\/+$/, ""),
+  AIRTEL_CLIENT_ID: optional("AIRTEL_CLIENT_ID", ""),
+  AIRTEL_CLIENT_SECRET: optional("AIRTEL_CLIENT_SECRET", ""),
+  AIRTEL_COUNTRY: optional("AIRTEL_COUNTRY", "MW").toUpperCase(),
+  AIRTEL_CURRENCY: optional("AIRTEL_CURRENCY", "MWK").toUpperCase(),
 };
 
 /**

@@ -2,6 +2,8 @@
 import Sidebar from "../../Components/Sidebar/Sidebar.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import axios from "axios";
+import usePremiumAccess from "../../hooks/usePremiumAccess.js";
+import { featureAd, unfeatureAd } from "../../services/membership.service.js";
 import {
   PlusCircle,
   Edit3,
@@ -11,6 +13,8 @@ import {
   Loader2,
   ImagePlus,
   X,
+  Crown,
+  Sparkles,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +37,7 @@ const HIDE_CONDITION_CATEGORIES = new Set(["Agriculture", "Jobs", "Services"]);
 
 const MyAds = () => {
   const { user } = useAuth();
+  const { access, hasRequiredPlan, refreshAccess } = usePremiumAccess("basic");
   const navigate = useNavigate();
   const BASE_URL = "/api";
 
@@ -47,6 +52,7 @@ const MyAds = () => {
   const [hasMore, setHasMore] = useState(false);
   const [totalAds, setTotalAds] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [togglingFeatureId, setTogglingFeatureId] = useState("");
 
   const resolveImageSrc = (image) => {
     if (!image) return "/no-image.svg";
@@ -140,6 +146,61 @@ const MyAds = () => {
         Swal.fire("Error", "Failed to delete ad", "error");
       }
     } 
+  };
+
+  const handleFeatureToggle = async (ad) => {
+    if (!ad?._id) return;
+
+    if (!hasRequiredPlan && !ad.featured) {
+      const result = await Swal.fire({
+        title: "Upgrade required",
+        text: "Featuring ads requires at least the BASIC membership plan.",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "View plans",
+        cancelButtonText: "Not now",
+        confirmButtonColor: "#2E3192",
+      });
+
+      if (result.isConfirmed) {
+        navigate("/pricing");
+      }
+      return;
+    }
+
+    try {
+      setTogglingFeatureId(ad._id);
+      if (ad.featured) {
+        await unfeatureAd(ad._id);
+      } else {
+        await featureAd(ad._id);
+      }
+
+      setAds((prev) =>
+        prev.map((item) =>
+          item._id === ad._id ? { ...item, featured: !ad.featured } : item
+        )
+      );
+
+      await refreshAccess();
+
+      Swal.fire({
+        icon: "success",
+        title: ad.featured ? "Feature removed" : "Ad featured",
+        text: ad.featured
+          ? "This ad is no longer shown as boosted."
+          : "This ad is now part of your premium visibility.",
+        confirmButtonColor: "#2E3192",
+      });
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Failed to update featured status.",
+        "error"
+      );
+    } finally {
+      setTogglingFeatureId("");
+    }
   };
 
   const handleMarkSold = async (id) => {
@@ -301,6 +362,47 @@ const MyAds = () => {
 
         <Separator className="mb-6" />
 
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 rounded-3xl border border-[#DDE4FF] bg-white p-5 shadow-[0_18px_44px_-30px_rgba(46,49,146,0.18)]"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#2E3192]/70">
+                Membership Access
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#EEF2FF] px-3 py-1 text-sm font-semibold text-[#2E3192]">
+                  <Crown size={15} className="text-[#F4B400]" />
+                  {String(access?.plan?.name || "FREE").toUpperCase()}
+                </span>
+                {access?.isPremium && access?.subscription?.endDate && (
+                  <span className="text-xs text-gray-500">
+                    Active until{" "}
+                    {new Date(access.subscription.endDate).toLocaleDateString("en-MW", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {!hasRequiredPlan && (
+              <Button
+                type="button"
+                onClick={() => navigate("/pricing")}
+                className="rounded-full bg-gradient-to-r from-[#2E3192] to-[#1F2370] text-white shadow-[0_16px_32px_-18px_rgba(46,49,146,0.35)] transition hover:-translate-y-0.5"
+              >
+                <Sparkles size={16} />
+                Upgrade to feature ads
+              </Button>
+            )}
+          </div>
+        </motion.div>
+
         {/* EMPTY STATE */}
         {filteredAds.length === 0 ? (
           <motion.div
@@ -348,6 +450,7 @@ const MyAds = () => {
                       decoding="async"
                       onError={(e) =>
                         handleImageFallback(e, ad?.images?.[0] || ad?.image || "", "medium")
+                        
                       }
                       className="h-56 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
@@ -394,7 +497,15 @@ const MyAds = () => {
                       <span className="flex items-center gap-1">
                         <Eye size={14} /> {ad.views || 0} views
                       </span>
-                      <span className="capitalize">{ad.category}</span>
+                      <div className="flex items-center gap-2">
+                        {ad.featured && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#F4B400]/15 px-2 py-1 font-semibold text-[#7a5600]">
+                            <Crown size={12} />
+                            Featured
+                          </span>
+                        )}
+                        <span className="capitalize">{ad.category}</span>
+                      </div>
                     </div>
                   </CardContent>
 
@@ -416,6 +527,30 @@ const MyAds = () => {
                       onClick={() => handleMarkSold(ad._id)}
                     >
                       <CheckCircle size={16} /> Sold
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      disabled={togglingFeatureId === ad._id}
+                      className={`text-xs rounded-full px-3 ${
+                        ad.featured
+                          ? "border-[#F4B400] text-[#7a5600] hover:bg-[#fff8dd]"
+                          : hasRequiredPlan
+                          ? "border-[#2E3192] text-[#2E3192] hover:bg-[#E9EDFF]"
+                          : "border-[#2E3192]/30 text-[#2E3192]/60 hover:bg-[#E9EDFF]"
+                      }`}
+                      onClick={() => handleFeatureToggle(ad)}
+                    >
+                      {togglingFeatureId === ad._id ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <Crown size={16} />
+                      )}
+                      {ad.featured
+                        ? "Unfeature"
+                        : hasRequiredPlan
+                        ? "Feature"
+                        : "Upgrade"}
                     </Button>
 
                     <Button

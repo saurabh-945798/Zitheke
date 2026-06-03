@@ -8,6 +8,8 @@ import {
   updateAd,
   deleteAd,
   markAsSold,
+  enableFeaturedAd,
+  disableFeaturedAd,
   incrementView,
   updateFavoriteCount,
   searchAds,
@@ -16,6 +18,8 @@ import {
 
 // 🔐 AUTH MIDDLEWARE
 import authMiddleware from "../middlewares/authMiddleware.js";
+import requirePremiumAccess from "../middlewares/requirePremiumAccess.js";
+import { MEMBERSHIP_PLANS } from "../constants/membershipPlans.js";
 
 // 🔐 OWNER / ADMIN PERMISSION MIDDLEWARE
 import adPermissionMiddleware from "../middlewares/adPermissionMiddleware.js";
@@ -88,6 +92,24 @@ router.put(
   authMiddleware,
   adPermissionMiddleware,
   markAsSold
+);
+
+/* =================================================
+   ⭐ FEATURE AD (OWNER PREMIUM / ADMIN)
+================================================= */
+router.put(
+  "/:id/feature",
+  authMiddleware,
+  adPermissionMiddleware,
+  requirePremiumAccess(MEMBERSHIP_PLANS.BASIC),
+  enableFeaturedAd
+);
+
+router.delete(
+  "/:id/feature",
+  authMiddleware,
+  adPermissionMiddleware,
+  disableFeaturedAd
 );
 
 /* =================================================

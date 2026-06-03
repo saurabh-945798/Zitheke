@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:plans": "node scripts/seedPlans.js",
+    "sync:subscription-expiry": "node scripts/runSubscriptionExpirySync.js"
   },
   "dependencies": {
     "axios": "^1.13.2",

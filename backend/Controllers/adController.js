@@ -164,6 +164,7 @@ export const createAd = async (req, res) => {
   try {
     // 1️⃣ Clone body (DO NOT destructure)
     const body = { ...req.body };
+    delete body.featured;
 
     console.log("REQ BODY 🔥", body);
 
@@ -309,6 +310,7 @@ export const createAd = async (req, res) => {
       ...body,
       images: imagePaths,
       video: videoData,
+      featured: false,
       status: "Pending",
       reportReason: "",
     });
@@ -550,6 +552,7 @@ export const getPromoAds = async (req, res) => {
 
     const filters = {
       status: { $in: ["Approved", "Active"] },
+      featured: true,
     };
 
     if (category) {
@@ -557,7 +560,7 @@ export const getPromoAds = async (req, res) => {
     }
 
       const ads = await Ad.find(filters)
-        .sort({ createdAt: -1 }) // latest first
+        .sort({ createdAt: -1 }) // latest featured first
         .limit(Number(limit))
        .select(
     "_id title price images condition category city location ownerName negotiable"
@@ -658,6 +661,7 @@ export const getAllAds = async (req, res) => {
 export const updateAd = async (req, res) => {
   try {
     const updates = { ...req.body };
+    delete updates.featured;
     const MAX_IMAGES = 5;
     const existingAd = await Ad.findById(req.params.id);
     if (!existingAd) {
@@ -845,6 +849,80 @@ export const markAsSold = async (req, res) => {
   } catch (error) {
     console.error("Error marking ad as sold:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+/* ================================
+   ⭐ ENABLE FEATURED AD
+================================ */
+export const enableFeaturedAd = async (req, res) => {
+  try {
+    const ad = req.ad;
+    if (!ad) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
+
+    if (ad.featured) {
+      return res.status(200).json({
+        success: true,
+        message: "Ad is already featured",
+        ad,
+        access: req.membershipAccess || null,
+      });
+    }
+
+    ad.featured = true;
+    await ad.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Ad featured successfully",
+      ad,
+      access: req.membershipAccess || null,
+    });
+  } catch (error) {
+    console.error("Error enabling featured ad:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while enabling featured ad",
+      error: error.message,
+    });
+  }
+};
+
+/* ================================
+   ⭐ DISABLE FEATURED AD
+================================ */
+export const disableFeaturedAd = async (req, res) => {
+  try {
+    const ad = req.ad;
+    if (!ad) {
+      return res.status(404).json({ message: "Ad not found" });
+    }
+
+    if (!ad.featured) {
+      return res.status(200).json({
+        success: true,
+        message: "Ad is already not featured",
+        ad,
+      });
+    }
+
+    ad.featured = false;
+    await ad.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Ad removed from featured listings",
+      ad,
+    });
+  } catch (error) {
+    console.error("Error disabling featured ad:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while disabling featured ad",
+      error: error.message,
+    });
   }
 };
 
