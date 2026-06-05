@@ -9,6 +9,7 @@ import {
   Settings,
   AlertTriangle,
   BarChart3,
+  Wallet,
   ChevronDown,
   ChevronUp,
   Menu,
@@ -98,10 +99,11 @@ const AdminSidebar = () => {
     { name: "Messages", icon: <MessageCircle size={20} />, path: "/admin/messages" },
     {
       name: "Analytics",
-      icon: <BarChart3 size={20} />,
+      icon: <Wallet size={20} />,
       dropdown: true,
       sub: [
         { name: "Overview", path: "/admin/overview" },
+        { name: "Revenue & Subscriptions", path: "/admin/revenue-subscriptions" },
         { name: "Category Insights", path: "/admin/category-insight" },
         { name: "User Growth", path: "/admin/user-growth" },
       ],

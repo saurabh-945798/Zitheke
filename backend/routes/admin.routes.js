@@ -15,6 +15,12 @@ import {
   deletePlan,
 } from "../Controllers/planController.js";
 import { runSubscriptionExpirySync } from "../Controllers/subscriptionController.js";
+import {
+  getSubscriptionAnalyticsSummary,
+  getSubscriptionAnalyticsPlans,
+  getSubscriptionAnalyticsSubscriptions,
+  getSubscriptionAnalyticsPayments,
+} from "../Controllers/adminSubscriptionAnalyticsController.js";
 
 import {
   // 👤 USERS
@@ -65,6 +71,30 @@ router.delete(
   adminAuthMiddleware,
   validate(planIdParamSchema, "params"),
   deletePlan
+);
+
+/* ======================
+   ADMIN SUBSCRIPTION ANALYTICS
+====================== */
+router.get(
+  "/subscription-analytics/summary",
+  adminAuthMiddleware,
+  getSubscriptionAnalyticsSummary
+);
+router.get(
+  "/subscription-analytics/plans",
+  adminAuthMiddleware,
+  getSubscriptionAnalyticsPlans
+);
+router.get(
+  "/subscription-analytics/subscriptions",
+  adminAuthMiddleware,
+  getSubscriptionAnalyticsSubscriptions
+);
+router.get(
+  "/subscription-analytics/payments",
+  adminAuthMiddleware,
+  getSubscriptionAnalyticsPayments
 );
 
 /* ======================

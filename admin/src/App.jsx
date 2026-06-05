@@ -22,6 +22,7 @@ import CategoryInsight from "./Components/Dashboard/CategoryInsight";
 import UserGrowth from "./Components/Dashboard/UserGrowth";
 import AdminSettings from "./Components/Dashboard/AdminSettings";
 import AdminContactInbox from "./Components/Dashboard/AdminContactInbox";
+import RevenueSubscriptions from "./Components/Dashboard/RevenueSubscriptions";
 
 
 /* 🔹 ADMIN LAYOUT */
@@ -43,6 +44,7 @@ const AdminLayout = () => {
           <Route path="reports" element={<AdminReports />} />
           <Route path="reports/:id" element={<AdminReportDetail />} />
           <Route path="overview" element={<AdminOverview />} />
+          <Route path="revenue-subscriptions" element={<RevenueSubscriptions />} />
           <Route path="category-insight" element={<CategoryInsight />} />
           <Route path="user-growth" element={<UserGrowth />} />
           <Route path="settings" element={<AdminSettings />} />

@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
- 
+
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext.jsx";
 import {
@@ -13,7 +13,6 @@ import {
   LogOut,
   ChevronDown,
   ChevronUp,
-  PlusCircle,
   FolderOpen,
   Home,
   Flag,
@@ -41,9 +40,6 @@ const Sidebar = () => {
   const userName = user?.displayName || user?.email?.split("@")[0] || "User";
   const userImage = getUserAvatarSrc(user);
 
-  /* ======================
-     SCREEN SIZE DETECT
-  ====================== */
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth < 1024;
@@ -64,9 +60,6 @@ const Sidebar = () => {
     if (isMobile) setMobileOpen(false);
   };
 
-  /* ======================
-     LOGOUT
-  ====================== */
   const handleLogout = async () => {
     const confirm = await Swal.fire({
       title: "Logout?",
@@ -96,7 +89,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* MOBILE HAMBURGER */}
       {isMobile && (
         <button
           onClick={() => setMobileOpen(true)}
@@ -106,7 +98,6 @@ const Sidebar = () => {
         </button>
       )}
 
-      {/* MOBILE OVERLAY */}
       <AnimatePresence>
         {mobileOpen && isMobile && (
           <motion.div
@@ -119,7 +110,6 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      {/* SIDEBAR */}
       <motion.aside
         animate={{
           x: isMobile ? (mobileOpen ? 0 : -SIDEBAR_WIDTH) : 0,
@@ -147,7 +137,6 @@ const Sidebar = () => {
         shadow-[var(--shadow)]
         flex flex-col text-[#1A1D64] font-[Poppins]"
       >
-        {/* BRAND ZONE */}
         <div className="px-4 pt-6 pb-4 border-b border-[var(--border)]">
           <div
             onClick={() => navigate("/")}
@@ -169,16 +158,13 @@ const Sidebar = () => {
           </div>
 
           <button
-            onClick={() =>
-              isMobile ? setMobileOpen(false) : setOpen(!open)
-            }
+            onClick={() => (isMobile ? setMobileOpen(false) : setOpen(!open))}
             className="absolute top-5 right-4 text-[#1A1D64]/70 focus:outline-none"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* USER PILL */}
         {(open || isMobile) && (
           <div className="mx-3 my-3 px-3 py-2 rounded-full bg-white border border-[var(--border)] flex items-center gap-3">
             <div className="relative">
@@ -199,29 +185,24 @@ const Sidebar = () => {
           </div>
         )}
 
-        {/* NAV ZONE */}
         <nav className="flex-1 px-3 py-2 space-y-1">
           {menus.map((menu) =>
             menu.dropdown ? (
               <div key={menu.name}>
                 <button
-                  onClick={() =>
-                    menu.name === "My Ads"
-                      ? setAdsOpen(!adsOpen)
-                      : null
-                  }
+                  onClick={() => (menu.name === "My Ads" ? setAdsOpen(!adsOpen) : null)}
                   className="w-full flex items-center justify-between px-2 py-2 rounded-lg hover:bg-[#2E3192]/10"
                 >
                   <div className="flex items-center gap-3">
                     <menu.icon size={18} />
-                    {(open || isMobile) && (
-                      <span className="text-sm">{menu.name}</span>
-                    )}
+                    {(open || isMobile) && <span className="text-sm">{menu.name}</span>}
                   </div>
                   {(open || isMobile) &&
-                    ((menu.name === "My Ads" && adsOpen) ||
-                    adsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                  )}
+                    ((menu.name === "My Ads" && adsOpen) || adsOpen ? (
+                      <ChevronUp size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    ))}
                 </button>
 
                 <AnimatePresence>
@@ -244,8 +225,6 @@ const Sidebar = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                
               </div>
             ) : (
               <NavLink
@@ -253,8 +232,7 @@ const Sidebar = () => {
                 to={menu.path}
                 onClick={handleNavClick}
                 className={({ isActive }) =>
-                  `relative flex items-center gap-3 px-2 py-2 rounded-lg transition
-                  ${
+                  `relative flex items-center gap-3 px-2 py-2 rounded-lg transition ${
                     isActive
                       ? "bg-[#2E3192]/10 before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[3px] before:rounded-full before:bg-gradient-to-b before:from-[#2E3192] before:to-[#5B66D6]"
                       : "hover:bg-[#2E3192]/10"
@@ -262,15 +240,12 @@ const Sidebar = () => {
                 }
               >
                 <menu.icon size={18} />
-                {(open || isMobile) && (
-                  <span className="text-sm">{menu.name}</span>
-                )}
+                {(open || isMobile) && <span className="text-sm">{menu.name}</span>}
               </NavLink>
             )
           )}
         </nav>
 
-        {/* UTILITY ZONE */}
         {(open || isMobile) && (
           <div className="px-3 pb-4 border-t border-[var(--border)]">
             <button

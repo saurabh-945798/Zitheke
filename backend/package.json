@@ -7,7 +7,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed:plans": "node scripts/seedPlans.js",
-    "sync:subscription-expiry": "node scripts/runSubscriptionExpirySync.js"
+    "sync:subscription-expiry": "node scripts/runSubscriptionExpirySync.js",
+    "reset:revenue-subscriptions": "node scripts/resetRevenueSubscriptionsTestData.js"
   },
   "dependencies": {
     "axios": "^1.13.2",
