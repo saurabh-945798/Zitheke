@@ -24,6 +24,21 @@ const optional = (key, fallback = "") => {
   return String(v).trim();
 };
 
+const optionalBoolean = (key, fallback = false) => {
+  const value = optional(key, "");
+  if (!value) return fallback;
+  if (["true", "1", "yes", "on"].includes(value.toLowerCase())) return true;
+  if (["false", "0", "no", "off"].includes(value.toLowerCase())) return false;
+  return fallback;
+};
+
+const optionalNumber = (key, fallback) => {
+  const value = optional(key, "");
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const NODE_ENV = optional("NODE_ENV", "development");
 const IS_PRODUCTION = NODE_ENV === "production";
 
@@ -108,6 +123,26 @@ export const env = {
   AIRTEL_CLIENT_SECRET: optional("AIRTEL_CLIENT_SECRET", ""),
   AIRTEL_COUNTRY: optional("AIRTEL_COUNTRY", "MW").toUpperCase(),
   AIRTEL_CURRENCY: optional("AIRTEL_CURRENCY", "MWK").toUpperCase(),
+  PAYMENT_RECONCILIATION_ENABLED: optionalBoolean(
+    "PAYMENT_RECONCILIATION_ENABLED",
+    true
+  ),
+  PAYMENT_RECONCILIATION_INTERVAL_MS: optionalNumber(
+    "PAYMENT_RECONCILIATION_INTERVAL_MS",
+    60000
+  ),
+  PAYMENT_RECONCILIATION_MAX_AGE_MINUTES: optionalNumber(
+    "PAYMENT_RECONCILIATION_MAX_AGE_MINUTES",
+    1440
+  ),
+  PAYMENT_RECONCILIATION_BATCH_SIZE: optionalNumber(
+    "PAYMENT_RECONCILIATION_BATCH_SIZE",
+    20
+  ),
+  PAYMENT_RECONCILIATION_MAX_RETRIES: optionalNumber(
+    "PAYMENT_RECONCILIATION_MAX_RETRIES",
+    20
+  ),
 };
 
 /**

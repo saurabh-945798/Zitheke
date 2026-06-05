@@ -42,6 +42,7 @@ import ogPreviewRoutes from "./routes/ogPreview.routes.js";
 import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import paymentReconciliationService from "./Services/payments/paymentReconciliation.service.js";
 
 
 
@@ -582,10 +583,13 @@ server.listen(PORT, () =>
   console.log(`✅ Alinafe/Zitheke Server running on PORT ${PORT}`)
 );
 
+paymentReconciliationService.startPaymentReconciliationScheduler();
+
 // Graceful Shutdown
 const shutdown = async (signal) => {
   console.log(`Shutdown signal received: ${signal}`);
   try {
+    paymentReconciliationService.stopPaymentReconciliationScheduler();
     await new Promise((resolve) => server.close(resolve));
     if (io) io.close();
     await mongoose.connection.close();

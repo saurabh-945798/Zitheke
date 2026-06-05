@@ -20,6 +20,7 @@ import {
   getSubscriptionAnalyticsPlans,
   getSubscriptionAnalyticsSubscriptions,
   getSubscriptionAnalyticsPayments,
+  reconcilePendingPayments,
 } from "../Controllers/adminSubscriptionAnalyticsController.js";
 
 import {
@@ -95,6 +96,11 @@ router.get(
   "/subscription-analytics/payments",
   adminAuthMiddleware,
   getSubscriptionAnalyticsPayments
+);
+router.post(
+  "/subscription-analytics/reconcile-pending-payments",
+  adminAuthMiddleware,
+  reconcilePendingPayments
 );
 
 /* ======================

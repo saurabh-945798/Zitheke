@@ -87,18 +87,21 @@ const mapVerificationToPaymentStatus = (status) => {
   };
 };
 
-const verifyPaymentForUser = async ({ userUid, paymentId }) => {
+const resolvePaymentForVerification = async ({ paymentId, paymentDoc = null }) => {
+  if (paymentDoc) return paymentDoc;
   assertObjectId(paymentId, "paymentId");
-  const user = await resolveUserByUid(userUid);
-
-  const payment = await Payment.findOne({
-    _id: paymentId,
-    userId: user._id,
-  }).populate({
+  return await Payment.findById(paymentId).populate({
     path: "subscriptionId",
     populate: { path: "planId" },
   });
+};
 
+const verifyPaymentRecord = async ({
+  paymentId,
+  paymentDoc = null,
+  source = "system",
+}) => {
+  const payment = await resolvePaymentForVerification({ paymentId, paymentDoc });
   if (!payment) {
     throw createError(404, "Payment not found");
   }
@@ -127,6 +130,22 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
     const nextState = mapVerificationToPaymentStatus(verification.normalizedResponse.status);
     let activatedSubscription = null;
 
+    console.info("Payment verification transition", {
+      source,
+      paymentId: String(payment._id),
+      merchantTransactionId: payment.merchantTransactionId,
+      previousPaymentStatus: payment.status,
+      previousVerificationStatus: payment.verificationStatus,
+      airtelTransactionStatus:
+        verification?.rawResponsePayload?.verification?.data?.transaction?.status ||
+        verification?.rawResponsePayload?.verification?.transaction?.status ||
+        verification?.normalizedResponse?.rawGatewayStatus ||
+        "",
+      normalizedStatus: verification.normalizedResponse.status,
+      normalizedVerificationStatus:
+        verification.normalizedResponse.verificationStatus,
+    });
+
     if (nextState.paymentStatus === PAYMENT_STATUSES.PAID) {
       const session = await mongoose.startSession();
       try {
@@ -152,14 +171,32 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
             ...(paymentInTx.rawResponsePayload || {}),
             verification: verification.rawResponsePayload,
           };
+          console.info("Payment marked paid", {
+            source,
+            paymentId: String(paymentInTx._id),
+            merchantTransactionId: paymentInTx.merchantTransactionId,
+            finalPaymentStatus: nextState.paymentStatus,
+            finalVerificationStatus: nextState.verificationStatus,
+          });
           await paymentInTx.save({ session });
 
+          console.info("Attempting subscription activation", {
+            source,
+            paymentId: String(paymentInTx._id),
+            subscriptionId: String(payment.subscriptionId?._id || ""),
+          });
           activatedSubscription =
             await subscriptionService.activateSubscriptionForVerifiedPayment({
               subscriptionId: payment.subscriptionId._id,
               paymentId: payment._id,
               session,
             });
+          console.info("Subscription activation completed", {
+            source,
+            paymentId: String(paymentInTx._id),
+            subscriptionId: String(activatedSubscription?._id || ""),
+            subscriptionStatus: activatedSubscription?.status || "",
+          });
         });
       } finally {
         await session.endSession();
@@ -184,6 +221,13 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
         verification: verification.rawResponsePayload,
       };
       await payment.save();
+      console.info("Payment remained non-final after verification", {
+        source,
+        paymentId: String(payment._id),
+        merchantTransactionId: payment.merchantTransactionId,
+        finalPaymentStatus: payment.status,
+        finalVerificationStatus: payment.verificationStatus,
+      });
     }
 
     await PaymentEvent.create({
@@ -255,6 +299,7 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
       });
 
       console.warn("Airtel verification gateway configuration error", {
+        source,
         paymentId: String(payment._id),
         reference:
           String(payment?.gatewayTransactionId || "").trim() ||
@@ -296,7 +341,7 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
     await PaymentEvent.create({
       paymentId: payment._id,
       eventType: "payment_verification_failed",
-      source: "gateway",
+      source,
       rawPayload: error?.rawResponse || null,
       normalizedPayload: {
         message: error?.message || "Payment verification failed",
@@ -307,6 +352,29 @@ const verifyPaymentForUser = async ({ userUid, paymentId }) => {
   }
 };
 
+const verifyPaymentForUser = async ({ userUid, paymentId }) => {
+  assertObjectId(paymentId, "paymentId");
+  const user = await resolveUserByUid(userUid);
+
+  const payment = await Payment.findOne({
+    _id: paymentId,
+    userId: user._id,
+  }).populate({
+    path: "subscriptionId",
+    populate: { path: "planId" },
+  });
+
+  if (!payment) {
+    throw createError(404, "Payment not found");
+  }
+
+  return await verifyPaymentRecord({
+    paymentDoc: payment,
+    source: "user_polling",
+  });
+};
+
 export default {
+  verifyPaymentRecord,
   verifyPaymentForUser,
 };

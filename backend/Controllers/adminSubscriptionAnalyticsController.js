@@ -1,4 +1,5 @@
 import adminSubscriptionAnalyticsService from "../Services/payments/adminSubscriptionAnalytics.service.js";
+import paymentReconciliationService from "../Services/payments/paymentReconciliation.service.js";
 
 const handleError = (res, error, fallbackMessage) =>
   res.status(error?.statusCode || 500).json({
@@ -79,5 +80,22 @@ export const getSubscriptionAnalyticsPayments = async (req, res) => {
       error,
       "Failed to fetch subscription analytics payments"
     );
+  }
+};
+
+export const reconcilePendingPayments = async (req, res) => {
+  try {
+    const data =
+      await paymentReconciliationService.reconcilePendingPaymentsOnce({
+        source: "admin_manual",
+      });
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Error reconciling pending payments:", error);
+    return handleError(res, error, "Failed to reconcile pending payments");
   }
 };
