@@ -9,7 +9,7 @@ export const MEMBERSHIP_PLAN_VALUES = Object.freeze(
   Object.values(MEMBERSHIP_PLANS)
 );
 
-export const ALLOWED_PREMIUM_PLAN_AMOUNTS = Object.freeze([50, 100, 150]);
+export const ALLOWED_PREMIUM_PLAN_AMOUNTS = Object.freeze([3000, 5000, 15000]);
 
 export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
   {
@@ -28,7 +28,7 @@ export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
   {
     name: "BASIC",
     slug: MEMBERSHIP_PLANS.BASIC,
-    price: 50,
+    price: 3000,
     currency: "MWK",
     durationDays: 7,
     features: [
@@ -41,7 +41,7 @@ export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
   {
     name: "PLUS",
     slug: MEMBERSHIP_PLANS.PLUS,
-    price: 100,
+    price: 5000,
     currency: "MWK",
     durationDays: 14,
     features: [
@@ -54,7 +54,7 @@ export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
   {
     name: "ADVANCED",
     slug: MEMBERSHIP_PLANS.ADVANCED,
-    price: 150,
+    price: 15000,
     currency: "MWK",
     durationDays: 28,
     features: [

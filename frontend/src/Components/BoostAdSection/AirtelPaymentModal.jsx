@@ -140,7 +140,8 @@ const formatDate = (value) => {
   });
 };
 
-const getDisplayPlanPrice = (plan) => Number(plan?.price || 0);
+const getDisplayPlanPrice = (plan) =>
+  Number(plan?.price || 0).toLocaleString("en-MW");
 
 const AirtelPaymentModal = ({
   open,
