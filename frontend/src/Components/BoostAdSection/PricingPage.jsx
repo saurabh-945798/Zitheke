@@ -42,8 +42,11 @@ const formatDate = (value) => {
   });
 };
 
-const getDisplayPlanPrice = (plan) =>
-  Number(plan?.price || 0).toLocaleString("en-MW");
+const getDisplayPlanPrice = (plan) => {
+  const price = Number(plan?.price || 0);
+  if (price === 0) return "FREE";
+  return `${price.toLocaleString("en-MW")} MWK`;
+};
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -239,7 +242,7 @@ const PricingPage = () => {
 
                         <div className="mt-5 flex items-end gap-2">
                           <span className="text-4xl font-semibold tracking-tight text-[#1c2454]">
-                            {getDisplayPlanPrice(plan)} MWK
+                            {getDisplayPlanPrice(plan)}
                           </span>
                         </div>
 
