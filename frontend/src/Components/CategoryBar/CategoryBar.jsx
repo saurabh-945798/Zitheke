@@ -11,7 +11,10 @@ export default function ProductCategoriesNew() {
   const navigate = useNavigate();
 
   // category keys (real_estate, vehicles, etc.)
-  const categoryKeys = Object.keys(categories);
+  const categoryKeys = [
+    ...Object.keys(categories).filter((key) => key !== "Mobiles"),
+    ...("Mobiles" in categories ? ["Mobiles"] : []),
+  ];
   const [active, setActive] = useState(categoryKeys[0]);
   const activeCategory = categories[active];
 

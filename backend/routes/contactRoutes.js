@@ -3,7 +3,9 @@ import {
   submitContactForm,
   getAllContactMessages,
   markMessageAsRead,
+  deleteContactMessage,
 } from "../Controllers/contactController.js";
+import adminAuthMiddleware from "../middlewares/adminAuthMiddleware.js";
 
 const router = express.Router();
 
@@ -11,7 +13,12 @@ const router = express.Router();
 router.post("/submit", submitContactForm);
 
 /* ADMIN */
-router.get("/admin/messages", getAllContactMessages);
-router.put("/admin/messages/:id/read", markMessageAsRead);
+router.get("/admin/messages", adminAuthMiddleware, getAllContactMessages);
+router.put("/admin/messages/:id/read", adminAuthMiddleware, markMessageAsRead);
+router.delete(
+  "/admin/messages/:id",
+  adminAuthMiddleware,
+  deleteContactMessage
+);
 
 export default router;

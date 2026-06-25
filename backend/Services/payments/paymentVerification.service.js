@@ -6,6 +6,7 @@ import { PAYMENT_GATEWAYS } from "../../constants/paymentGateways.js";
 import { PAYMENT_STATUSES } from "../../constants/paymentStatuses.js";
 import { PAYMENT_VERIFICATION_STATUSES } from "../../constants/paymentVerificationStatuses.js";
 import AirtelGateway from "./gateways/airtel.gateway.js";
+import MastercardGateway from "./gateways/mastercard.gateway.js";
 import subscriptionService from "./subscription.service.js";
 
 const createError = (statusCode, message) => {
@@ -22,6 +23,7 @@ const assertObjectId = (value, label) => {
 
 const gateways = {
   [PAYMENT_GATEWAYS.AIRTEL_MONEY]: new AirtelGateway(),
+  [PAYMENT_GATEWAYS.MASTERCARD]: new MastercardGateway(),
 };
 
 const resolveGateway = (gatewayCode) => {
@@ -161,6 +163,14 @@ const verifyPaymentRecord = async ({
             verification.normalizedResponse.gatewayTransactionId ||
             paymentInTx.gatewayTransactionId ||
             "";
+          paymentInTx.gatewaySessionId =
+            verification.normalizedResponse.gatewaySessionId ||
+            paymentInTx.gatewaySessionId ||
+            "";
+          paymentInTx.gatewayOrderId =
+            verification.normalizedResponse.gatewayOrderId ||
+            paymentInTx.gatewayOrderId ||
+            "";
           paymentInTx.failureReason = "";
           paymentInTx.paidAt = paymentInTx.paidAt || new Date();
           paymentInTx.rawRequestPayload = {
@@ -207,6 +217,14 @@ const verifyPaymentRecord = async ({
       payment.gatewayTransactionId =
         verification.normalizedResponse.gatewayTransactionId ||
         payment.gatewayTransactionId ||
+        "";
+      payment.gatewaySessionId =
+        verification.normalizedResponse.gatewaySessionId ||
+        payment.gatewaySessionId ||
+        "";
+      payment.gatewayOrderId =
+        verification.normalizedResponse.gatewayOrderId ||
+        payment.gatewayOrderId ||
         "";
       payment.failureReason =
         nextState.paymentStatus === PAYMENT_STATUSES.PAID

@@ -125,9 +125,9 @@ const PricingPage = () => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="mx-auto max-w-4xl text-center"
+          className="mx-auto mt-8 max-w-4xl text-center md:mt-12"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#2E3192]/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#2E3192] shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#1c2454] bg-[#1c2454] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.28em] text-white shadow-[0_16px_36px_-20px_rgba(28,36,84,0.8)]">
             <Crown size={14} />
             Premium Membership
           </div>

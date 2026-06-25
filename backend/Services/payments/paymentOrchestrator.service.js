@@ -10,6 +10,7 @@ import { PAYMENT_GATEWAYS } from "../../constants/paymentGateways.js";
 import { SUBSCRIPTION_STATUSES } from "../../constants/subscriptionStatuses.js";
 import { ALLOWED_PREMIUM_PLAN_AMOUNTS } from "../../constants/membershipPlans.js";
 import AirtelGateway from "./gateways/airtel.gateway.js";
+import MastercardGateway from "./gateways/mastercard.gateway.js";
 import subscriptionService from "./subscription.service.js";
 
 const createError = (statusCode, message) => {
@@ -35,6 +36,7 @@ const PAYMENT_REUSE_WINDOW_MS = 3 * 60 * 1000;
 
 const gateways = {
   [PAYMENT_GATEWAYS.AIRTEL_MONEY]: new AirtelGateway(),
+  [PAYMENT_GATEWAYS.MASTERCARD]: new MastercardGateway(),
 };
 
 const resolveGateway = (gatewayCode) => {
@@ -114,6 +116,99 @@ const getRetryableInitiationState = (error) => {
   };
 };
 
+const getReusableMastercardCheckoutData = ({ adapter, payment }) => {
+  const gatewaySessionId = String(payment?.gatewaySessionId || "").trim();
+  if (!gatewaySessionId) {
+    return null;
+  }
+
+  const config =
+    typeof adapter.getRuntimeConfig === "function"
+      ? adapter.getRuntimeConfig()
+      : null;
+
+  if (!config?.baseUrl) {
+    return null;
+  }
+
+  let checkoutScriptUrl = "";
+  try {
+    checkoutScriptUrl =
+      payment.rawResponsePayload?.updateSession?.checkoutScriptUrl ||
+      payment.rawResponsePayload?.createSession?.checkoutScriptUrl ||
+      adapter.buildCheckoutScriptUrl(config);
+  } catch {
+    return null;
+  }
+
+  if (!checkoutScriptUrl) {
+    return null;
+  }
+
+  return {
+    config,
+    gatewaySessionId,
+    gatewayOrderId: String(payment?.gatewayOrderId || "").trim(),
+    checkoutScriptUrl,
+  };
+};
+
+const buildReusedInitiationResponse = ({ adapter, payment, gateway }) => {
+  const baseResponse = {
+    paymentId: String(payment._id),
+    merchantTransactionId: payment.merchantTransactionId,
+    gateway,
+    status: payment.status,
+    verificationStatus: payment.verificationStatus,
+    gatewayTransactionId: payment.gatewayTransactionId || "",
+  };
+
+  if (gateway === PAYMENT_GATEWAYS.MASTERCARD) {
+    const reusableCheckout = getReusableMastercardCheckoutData({
+      adapter,
+      payment,
+    });
+
+    if (!reusableCheckout) {
+      return null;
+    }
+
+    const { config, gatewaySessionId, gatewayOrderId, checkoutScriptUrl } =
+      reusableCheckout;
+
+    return {
+      ...baseResponse,
+      gatewaySessionId,
+      gatewayOrderId,
+      sessionId: gatewaySessionId,
+      orderId: gatewayOrderId,
+      checkoutScriptUrl,
+      customerMessage:
+        "An earlier card payment session is still pending. Reopening the existing Mastercard checkout session.",
+      checkoutSession: {
+        sessionId: gatewaySessionId,
+        orderId: gatewayOrderId,
+        transactionId:
+          payment.gatewayTransactionId || payment.merchantTransactionId || "",
+        checkoutScriptUrl,
+        merchantId: config?.merchantId || "",
+        apiVersion: config?.apiVersion || "",
+        amount: Number(payment.amount || 0).toFixed(2),
+        currency: payment.currency || config?.currency || "MWK",
+        returnUrl: config?.returnUrl || "",
+        cancelUrl: config?.cancelUrl || "",
+        errorUrl: config?.errorUrl || "",
+      },
+    };
+  }
+
+  return {
+    ...baseResponse,
+    customerMessage:
+      "An earlier payment request is still pending. Please check your phone or wait for verification. No new Airtel prompt was sent.",
+  };
+};
+
 const expireOpenPayment = async (payment, reason = "Previous payment request expired before confirmation.") => {
   payment.status = PAYMENT_STATUSES.EXPIRED;
   payment.verificationStatus = PAYMENT_VERIFICATION_STATUSES.EXPIRED;
@@ -189,22 +284,25 @@ const createPaymentIntent = async ({
         if (!isReusableOpenPayment(existingByIdempotency)) {
           await expireOpenPayment(existingByIdempotency);
         } else {
+          const reusedInitiation = buildReusedInitiationResponse({
+            adapter,
+            payment: existingByIdempotency,
+            gateway,
+          });
+
+          if (!reusedInitiation) {
+            await expireOpenPayment(
+              existingByIdempotency,
+              "Previous payment session is incomplete and cannot be reused."
+            );
+          } else {
           return {
             payment: existingByIdempotency,
             gateway: adapter.describe(),
-            initiation: {
-              paymentId: String(existingByIdempotency._id),
-              merchantTransactionId: existingByIdempotency.merchantTransactionId,
-              gateway,
-              status: existingByIdempotency.status,
-              verificationStatus: existingByIdempotency.verificationStatus,
-              gatewayTransactionId:
-                existingByIdempotency.gatewayTransactionId || "",
-              customerMessage:
-                "An earlier payment request is still pending. Please check your phone or wait for verification. No new Airtel prompt was sent.",
-            },
+            initiation: reusedInitiation,
             reused: true,
           };
+          }
         }
       }
     }
@@ -212,6 +310,7 @@ const createPaymentIntent = async ({
 
   const existingOpenPayment = await Payment.findOne({
     subscriptionId: subscription._id,
+    gateway,
     status: { $in: OPEN_PAYMENT_STATUSES },
   }).populate({
     path: "subscriptionId",
@@ -222,21 +321,25 @@ const createPaymentIntent = async ({
     if (!isReusableOpenPayment(existingOpenPayment)) {
       await expireOpenPayment(existingOpenPayment);
     } else {
-    return {
-      payment: existingOpenPayment,
-      gateway: adapter.describe(),
-      initiation: {
-        paymentId: String(existingOpenPayment._id),
-        merchantTransactionId: existingOpenPayment.merchantTransactionId,
+      const reusedInitiation = buildReusedInitiationResponse({
+        adapter,
+        payment: existingOpenPayment,
         gateway,
-        status: existingOpenPayment.status,
-        verificationStatus: existingOpenPayment.verificationStatus,
-        gatewayTransactionId: existingOpenPayment.gatewayTransactionId || "",
-        customerMessage:
-          "An earlier payment request is still pending. Please check your phone or wait for verification. No new Airtel prompt was sent.",
-      },
-      reused: true,
-    };
+      });
+
+      if (!reusedInitiation) {
+        await expireOpenPayment(
+          existingOpenPayment,
+          "Previous payment session is incomplete and cannot be reused."
+        );
+      } else {
+        return {
+          payment: existingOpenPayment,
+          gateway: adapter.describe(),
+          initiation: reusedInitiation,
+          reused: true,
+        };
+      }
     }
   }
 
@@ -275,7 +378,7 @@ const createPaymentIntent = async ({
       throw createError(409, "Payment amount does not match the selected plan price");
     }
 
-    console.info("Airtel initiation amount debug", {
+    console.info("Payment initiation amount debug", {
       selectedPlanId: String(subscription.planId._id || ""),
       planName: subscription.planId.name || "",
       planPrice,
@@ -286,6 +389,9 @@ const createPaymentIntent = async ({
 
     const initiation = await adapter.initiatePayment({
       payment,
+      subscription,
+      plan: subscription.planId,
+      user,
       msisdn,
     });
 
@@ -293,6 +399,16 @@ const createPaymentIntent = async ({
     payment.rawRequestPayload = initiation.rawRequestPayload;
     payment.rawResponsePayload = initiation.rawResponsePayload;
     payment.gatewayTransactionId = initiation.normalizedResponse.gatewayTransactionId || "";
+    payment.gatewaySessionId =
+      initiation.normalizedResponse.gatewaySessionId ||
+      initiation.normalizedResponse.checkoutSession?.sessionId ||
+      payment.gatewaySessionId ||
+      "";
+    payment.gatewayOrderId =
+      initiation.normalizedResponse.gatewayOrderId ||
+      initiation.normalizedResponse.checkoutSession?.orderId ||
+      payment.gatewayOrderId ||
+      "";
     payment.status =
       initiation.normalizedResponse.status === "failed"
         ? PAYMENT_STATUSES.FAILED
@@ -325,7 +441,8 @@ const createPaymentIntent = async ({
       initiation: {
         ...initiation.normalizedResponse,
         customerMessage:
-          "Airtel payment request sent. Please approve the prompt on your phone.",
+          initiation.normalizedResponse.customerMessage ||
+          "Payment request created successfully.",
       },
       reused: false,
     };

@@ -23,6 +23,7 @@ import UserGrowth from "./Components/Dashboard/UserGrowth";
 import AdminSettings from "./Components/Dashboard/AdminSettings";
 import AdminContactInbox from "./Components/Dashboard/AdminContactInbox";
 import RevenueSubscriptions from "./Components/Dashboard/RevenueSubscriptions";
+import Categories from "./Components/Dashboard/Categories";
 
 
 /* 🔹 ADMIN LAYOUT */
@@ -38,6 +39,7 @@ const AdminLayout = () => {
 
           <Route path="users" element={<Users />} />
           <Route path="ads" element={<AllAds />} />
+          <Route path="categories" element={<Categories />} />
           <Route path="messages" element={<Messages />} />
                     <Route path="contact-inbox" element={<AdminContactInbox />} />
 

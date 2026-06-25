@@ -68,6 +68,18 @@ const paymentSchema = new mongoose.Schema(
       trim: true,
       maxlength: 160,
     },
+    gatewaySessionId: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 200,
+    },
+    gatewayOrderId: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 160,
+    },
     status: {
       type: String,
       enum: PAYMENT_STATUS_VALUES,

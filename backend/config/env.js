@@ -123,6 +123,19 @@ export const env = {
   AIRTEL_CLIENT_SECRET: optional("AIRTEL_CLIENT_SECRET", ""),
   AIRTEL_COUNTRY: optional("AIRTEL_COUNTRY", "MW").toUpperCase(),
   AIRTEL_CURRENCY: optional("AIRTEL_CURRENCY", "MWK").toUpperCase(),
+  MPGS_ENABLED: optionalBoolean("MPGS_ENABLED", false),
+  MPGS_BASE_URL: optional(
+    "MPGS_BASE_URL",
+    "https://test-nbm.mtf.gateway.mastercard.com"
+  ).replace(/\/+$/, ""),
+  MPGS_API_VERSION: optional("MPGS_API_VERSION", "79"),
+  MPGS_MERCHANT_ID: optional("MPGS_MERCHANT_ID", ""),
+  MPGS_API_USERNAME: optional("MPGS_API_USERNAME", ""),
+  MPGS_API_PASSWORD: optional("MPGS_API_PASSWORD", ""),
+  MPGS_CURRENCY: optional("MPGS_CURRENCY", "MWK").toUpperCase(),
+  MPGS_RETURN_URL: optional("MPGS_RETURN_URL", ""),
+  MPGS_CANCEL_URL: optional("MPGS_CANCEL_URL", ""),
+  MPGS_ERROR_URL: optional("MPGS_ERROR_URL", ""),
   PAYMENT_RECONCILIATION_ENABLED: optionalBoolean(
     "PAYMENT_RECONCILIATION_ENABLED",
     true

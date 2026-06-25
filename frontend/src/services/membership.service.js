@@ -2,10 +2,12 @@ import api from "../api/axios";
 
 export const PAYMENT_GATEWAYS = {
   AIRTEL_MONEY: "airtel_money",
+  MASTERCARD: "mastercard",
 };
 
 export const PAYMENT_METHODS = {
   AIRTEL_MONEY: "airtel_money",
+  MASTERCARD: "mastercard",
 };
 
 export const listMembershipPlans = async () => {
@@ -38,6 +40,25 @@ export const createAirtelPaymentIntent = async ({
     gateway: PAYMENT_GATEWAYS.AIRTEL_MONEY,
     paymentMethod: PAYMENT_METHODS.AIRTEL_MONEY,
     msisdn,
+    idempotencyKey,
+  });
+
+  return {
+    payment: data?.payment || null,
+    gateway: data?.gateway || null,
+    initiation: data?.initiation || null,
+    reused: Boolean(data?.reused),
+  };
+};
+
+export const createMastercardPaymentIntent = async ({
+  subscriptionId,
+  idempotencyKey,
+}) => {
+  const { data } = await api.post("/payments", {
+    subscriptionId,
+    gateway: PAYMENT_GATEWAYS.MASTERCARD,
+    paymentMethod: PAYMENT_METHODS.MASTERCARD,
     idempotencyKey,
   });
 

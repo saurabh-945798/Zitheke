@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -7,18 +6,19 @@ import {
   MessageSquare,
   CheckCircle,
   Clock,
+  Trash2,
 } from "lucide-react";
+import adminApi from "../../api/adminApi";
 
 const AdminContactInbox = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeMessage, setActiveMessage] = useState(null);
+  const [deletingId, setDeletingId] = useState("");
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(
-        "/api/contact/admin/messages"
-      );
+      const res = await adminApi.get("/contact/messages");
       setMessages(res.data.data);
     } catch (err) {
       console.error("Failed to fetch messages", err);
@@ -29,12 +29,42 @@ const AdminContactInbox = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.put(
-        `/api/contact/admin/messages/${id}/read`
+      await adminApi.put(`/contact/messages/${id}/read`);
+      setMessages((current) =>
+        current.map((message) =>
+          message._id === id ? { ...message, isRead: true } : message
+        )
       );
-      fetchMessages();
+      setActiveMessage((current) =>
+        current && current._id === id ? { ...current, isRead: true } : current
+      );
     } catch (err) {
       console.error("Failed to mark as read", err);
+    }
+  };
+
+  const deleteMessage = async (id) => {
+    const confirmed = window.confirm(
+      "Delete this message from the admin inbox?"
+    );
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(id);
+      await adminApi.delete(`/contact/messages/${id}`);
+
+      setMessages((current) => current.filter((message) => message._id !== id));
+      setActiveMessage((current) =>
+        current?._id === id ? null : current
+      );
+    } catch (err) {
+      console.error("Failed to delete message", err);
+      window.alert(
+        err?.response?.data?.message ||
+          "Failed to delete the selected message."
+      );
+    } finally {
+      setDeletingId("");
     }
   };
 
@@ -121,16 +151,28 @@ const AdminContactInbox = () => {
                 exit={{ opacity: 0 }}
                 className="bg-white rounded-2xl shadow-md p-8 h-full"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <User className="text-[#2E3192]" />
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      {activeMessage.name}
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                      {activeMessage.email}
-                    </p>
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <User className="text-[#2E3192]" />
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {activeMessage.name}
+                      </h2>
+                      <p className="text-sm text-gray-500">
+                        {activeMessage.email}
+                      </p>
+                    </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteMessage(activeMessage._id)}
+                    disabled={deletingId === activeMessage._id}
+                    className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Trash2 size={16} />
+                    {deletingId === activeMessage._id ? "Deleting..." : "Delete"}
+                  </button>
                 </div>
 
                 <div className="mb-6">

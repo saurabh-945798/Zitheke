@@ -7,6 +7,9 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed:plans": "node scripts/seedPlans.js",
+    "prices:mpgs-test:dry": "node scripts/set-mpgs-test-prices.js --dry-run",
+    "prices:mpgs-test": "node scripts/set-mpgs-test-prices.js",
+    "prices:mpgs-test:revert": "node scripts/set-mpgs-test-prices.js --revert",
     "sync:subscription-expiry": "node scripts/runSubscriptionExpirySync.js",
     "reset:revenue-subscriptions": "node scripts/resetRevenueSubscriptionsTestData.js"
   },

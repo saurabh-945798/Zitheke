@@ -18,13 +18,27 @@ export const createPaymentIntentSchema = z.object({
     .string()
     .trim()
     .min(8, "msisdn is required")
-    .max(20, "msisdn is too long"),
+    .max(20, "msisdn is too long")
+    .optional(),
   idempotencyKey: z
     .string()
     .trim()
     .min(8, "idempotencyKey must be at least 8 characters")
     .max(128, "idempotencyKey is too long")
     .optional(),
+}).superRefine((value, ctx) => {
+  const gateway = String(value.gateway || "").trim().toLowerCase();
+
+  if (gateway === "airtel_money") {
+    const msisdn = String(value.msisdn || "").trim();
+    if (!msisdn) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["msisdn"],
+        message: "msisdn is required for Airtel Money payments",
+      });
+    }
+  }
 });
 
 export const paymentIdParamSchema = z.object({

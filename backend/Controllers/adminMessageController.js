@@ -105,3 +105,50 @@ export const getMessagesForAdmin = async (req, res) => {
     });
   }
 };
+
+/* ============================================
+   3️⃣ Delete Conversation (ADMIN ONLY)
+   DELETE /api/admin/conversations/:conversationId
+============================================ */
+export const deleteConversationForAdmin = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(conversationId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid conversation ID is required",
+      });
+    }
+
+    const convo = await Conversation.findById(conversationId).lean();
+
+    if (!convo) {
+      return res.status(404).json({
+        success: false,
+        message: "Conversation not found",
+      });
+    }
+
+    await Message.deleteMany({
+      $or: [
+        { conversationId: new mongoose.Types.ObjectId(conversationId) },
+        { conversationId },
+      ],
+    });
+
+    await Conversation.deleteOne({ _id: conversationId });
+
+    return res.status(200).json({
+      success: true,
+      message: "Conversation deleted with all messages.",
+      data: { conversationId },
+    });
+  } catch (error) {
+    console.error("❌ Error deleting admin conversation:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete conversation",
+    });
+  }
+};

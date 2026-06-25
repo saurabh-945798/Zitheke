@@ -36,6 +36,7 @@ import Listings from "./Components/Listings/Listings.jsx";
 import SellerProfile from "./Components/SellerProfile/SellerProfile";
 import PricingPage from "./Components/BoostAdSection/PricingPage.jsx";
 import CheckoutPage from "./Components/BoostAdSection/CheckoutPage.jsx";
+import MastercardCheckoutPage from "./Components/BoostAdSection/MastercardCheckoutPage.jsx";
 import SafetyTipsPage from "./Components/SafetyTips/SafetyTipsPage.jsx";
 import BrowseListings from "./Components/BrowseListings/BrowseListings.jsx";
 import BoostedPage from "./Components/BoostedPage/BoostedPage.jsx";
@@ -161,6 +162,38 @@ function App() {
         element={
           <MainLayout>
             <CheckoutPage />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/checkout/mastercard"
+        element={
+          <MainLayout>
+            <MastercardCheckoutPage mode="checkout" />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/checkout/mastercard/return"
+        element={
+          <MainLayout>
+            <MastercardCheckoutPage mode="return" />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/checkout/mastercard/cancel"
+        element={
+          <MainLayout>
+            <MastercardCheckoutPage mode="cancel" />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/checkout/mastercard/error"
+        element={
+          <MainLayout>
+            <MastercardCheckoutPage mode="error" />
           </MainLayout>
         }
       />

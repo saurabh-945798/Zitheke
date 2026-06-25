@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from "react";
 import adminApi from "../../api/adminApi"; // âœ… JWT INCLUDED
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 import {
   Search,
   MessageSquare,
   Clock,
   User,
   ArrowLeft,
+  Trash2,
 } from "lucide-react";
 
 const Messages = () => {
@@ -15,6 +17,7 @@ const Messages = () => {
   const [selectedConv, setSelectedConv] = useState(null);
   const [messages, setMessages] = useState([]);
   const [search, setSearch] = useState("");
+  const [deletingConversationId, setDeletingConversationId] = useState("");
 
   /* ======================================================
         FETCH ALL CONVERSATIONS (ADMIN AUTH)
@@ -54,6 +57,56 @@ const Messages = () => {
     }
   };
 
+  const handleDeleteConversation = async () => {
+    if (!selectedConv || deletingConversationId) return;
+
+    const confirm = await Swal.fire({
+      title: "Delete conversation?",
+      text: "This will permanently delete all messages in this conversation. This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const conversationId = selectedConv;
+
+    try {
+      setDeletingConversationId(conversationId);
+      await adminApi.delete(`/conversations/${conversationId}`);
+
+      setConversations((current) =>
+        current.filter((conversation) => conversation._id !== conversationId)
+      );
+      setSelectedConv(null);
+      setMessages([]);
+
+      await Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Conversation deleted",
+        showConfirmButton: false,
+        timer: 2200,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message ||
+          "Failed to delete the selected conversation.",
+        "error"
+      );
+    } finally {
+      setDeletingConversationId("");
+    }
+  };
+
   /* ======================================================
         FILTER CONVERSATIONS
   ====================================================== */
@@ -65,6 +118,9 @@ const Messages = () => {
       conv.lastMessage?.toLowerCase().includes(searchLower)
     );
   });
+
+  const activeConversation =
+    conversations.find((conversation) => conversation._id === selectedConv) || null;
 
   /* ======================================================
         UI RENDER
@@ -160,24 +216,31 @@ const Messages = () => {
 
               <User size={22} className="text-[#2E3192]" />
 
-              <div>
+              <div className="flex-1">
                 <p className="font-semibold text-[#1A1D64]">
-                  {conversations.find((c) => c._id === selectedConv)?.userA?.name}
+                  {activeConversation?.userA?.name}
                   {" — "}
-                  {conversations.find((c) => c._id === selectedConv)?.userB?.name}
+                  {activeConversation?.userB?.name}
                 </p>
                 <p className="text-xs text-gray-500">Conversation View</p>
               </div>
+
+              <button
+                type="button"
+                onClick={handleDeleteConversation}
+                disabled={deletingConversationId === selectedConv}
+                className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Trash2 size={16} />
+                {deletingConversationId === selectedConv ? "Deleting..." : "Delete Chat"}
+              </button>
             </div>
 
             {/* MESSAGES */}
             <div className="flex-1 p-4 space-y-3 overflow-y-auto">
               {messages.length > 0 ? (
                 messages.map((msg) => {
-                  const conv = conversations.find(
-                    (c) => c._id === selectedConv
-                  );
-                  const isSenderA = msg.senderId === conv?.userA?._id;
+                  const isSenderA = msg.senderId === activeConversation?.userA?._id;
 
                   return (
                     <motion.div

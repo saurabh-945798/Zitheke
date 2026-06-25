@@ -306,7 +306,7 @@ const Users = () => {
                 <th className="w-[16%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Phone</th>
                 <th className="w-[14%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Location</th>
                 <th className="w-[12%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Joined</th>
-                <th className="w-[8%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Status</th>
+                <th className="w-[8%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Account Status</th>
                 <th className="w-[10%] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]">Actions</th>
               </tr>
             </thead>
@@ -441,10 +441,15 @@ const Users = () => {
                   <h3 className="mt-4 text-xl font-semibold text-[#1A1D64]">{selectedUser.name || "Unknown User"}</h3>
                   <p className="mt-1 text-sm text-slate-500">{selectedUser.email || "No email"}</p>
                   <div className="mt-4 flex justify-center">
-                    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${statusPill(selectedUser.status)}`}>
-                      {selectedUser.status === "Suspended" ? <XCircle size={14} /> : <CheckCircle size={14} />}
-                      {selectedUser.status === "Suspended" ? "Suspended" : "Active"}
-                    </span>
+                    <div className="text-center">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                        Account Status
+                      </p>
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${statusPill(selectedUser.status)}`}>
+                        {selectedUser.status === "Suspended" ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                        {selectedUser.status === "Suspended" ? "Suspended" : "Active"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 

@@ -9,7 +9,14 @@ export const MEMBERSHIP_PLAN_VALUES = Object.freeze(
   Object.values(MEMBERSHIP_PLANS)
 );
 
-export const ALLOWED_PREMIUM_PLAN_AMOUNTS = Object.freeze([3000, 5000, 15000]);
+const PRODUCTION_PREMIUM_PLAN_AMOUNTS = [3000, 5000, 15000];
+// TEMP MPGS TEST PRICING - revert after card testing
+const TEMP_MPGS_TEST_PREMIUM_PLAN_AMOUNTS = [50, 100, 150];
+
+export const ALLOWED_PREMIUM_PLAN_AMOUNTS = Object.freeze([
+  ...PRODUCTION_PREMIUM_PLAN_AMOUNTS,
+  ...TEMP_MPGS_TEST_PREMIUM_PLAN_AMOUNTS,
+]);
 
 export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
   {

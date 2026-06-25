@@ -8,6 +8,7 @@ import roleMiddleware from "../middlewares/roleMiddleware.js";
 import {
   getAllConversations,
   getMessagesForAdmin,
+  deleteConversationForAdmin,
 } from "../Controllers/adminMessageController.js";
 
 const router = express.Router();
@@ -26,5 +27,8 @@ router.get("/conversations", getAllConversations);
 
 // ✅ Get messages of a specific conversation
 router.get("/messages/:conversationId", getMessagesForAdmin);
+
+// ✅ Delete a specific conversation with all messages
+router.delete("/conversations/:conversationId", deleteConversationForAdmin);
 
 export default router;

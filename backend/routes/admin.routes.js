@@ -22,6 +22,33 @@ import {
   getSubscriptionAnalyticsPayments,
   reconcilePendingPayments,
 } from "../Controllers/adminSubscriptionAnalyticsController.js";
+import {
+  getAllContactMessages,
+  markMessageAsRead,
+  deleteContactMessage,
+} from "../Controllers/contactController.js";
+import {
+  listAdminCategories,
+  createAdminCategory,
+  updateAdminCategory,
+  updateAdminCategoryStatus,
+  addAdminSubcategory,
+  updateAdminSubcategory,
+  updateAdminSubcategoryStatus,
+  deleteAdminCategory,
+  deleteAdminSubcategory,
+} from "../Controllers/categoryController.js";
+import {
+  categoryIdParamSchema,
+  subcategoryIdParamSchema,
+  listCategoriesQuerySchema,
+  createCategorySchema,
+  updateCategorySchema,
+  categoryStatusSchema,
+  createSubcategorySchema,
+  updateSubcategorySchema,
+  subcategoryStatusSchema,
+} from "../schemas/category.schema.js";
 
 import {
   // 👤 USERS
@@ -110,6 +137,84 @@ router.post(
   "/subscriptions/expiry-sync",
   adminAuthMiddleware,
   runSubscriptionExpirySync
+);
+
+/* ======================
+   ADMIN CONTACT INBOX
+====================== */
+router.get("/contact/messages", adminAuthMiddleware, getAllContactMessages);
+router.put(
+  "/contact/messages/:id/read",
+  adminAuthMiddleware,
+  markMessageAsRead
+);
+router.delete(
+  "/contact/messages/:id",
+  adminAuthMiddleware,
+  deleteContactMessage
+);
+
+/* ======================
+   ADMIN CATEGORIES
+====================== */
+router.get(
+  "/categories",
+  adminAuthMiddleware,
+  validate(listCategoriesQuerySchema, "query"),
+  listAdminCategories
+);
+router.post(
+  "/categories",
+  adminAuthMiddleware,
+  validate(createCategorySchema, "body"),
+  createAdminCategory
+);
+router.put(
+  "/categories/:categoryId",
+  adminAuthMiddleware,
+  validate(categoryIdParamSchema, "params"),
+  validate(updateCategorySchema, "body"),
+  updateAdminCategory
+);
+router.patch(
+  "/categories/:categoryId/status",
+  adminAuthMiddleware,
+  validate(categoryIdParamSchema, "params"),
+  validate(categoryStatusSchema, "body"),
+  updateAdminCategoryStatus
+);
+router.post(
+  "/categories/:categoryId/subcategories",
+  adminAuthMiddleware,
+  validate(categoryIdParamSchema, "params"),
+  validate(createSubcategorySchema, "body"),
+  addAdminSubcategory
+);
+router.put(
+  "/categories/:categoryId/subcategories/:subcategoryId",
+  adminAuthMiddleware,
+  validate(subcategoryIdParamSchema, "params"),
+  validate(updateSubcategorySchema, "body"),
+  updateAdminSubcategory
+);
+router.patch(
+  "/categories/:categoryId/subcategories/:subcategoryId/status",
+  adminAuthMiddleware,
+  validate(subcategoryIdParamSchema, "params"),
+  validate(subcategoryStatusSchema, "body"),
+  updateAdminSubcategoryStatus
+);
+router.delete(
+  "/categories/:categoryId",
+  adminAuthMiddleware,
+  validate(categoryIdParamSchema, "params"),
+  deleteAdminCategory
+);
+router.delete(
+  "/categories/:categoryId/subcategories/:subcategoryId",
+  adminAuthMiddleware,
+  validate(subcategoryIdParamSchema, "params"),
+  deleteAdminSubcategory
 );
 
 /* ======================

@@ -90,3 +90,32 @@ export const markMessageAsRead = async (req, res) => {
     });
   }
 };
+
+/* ===============================
+   ADMIN: DELETE MESSAGE
+================================ */
+export const deleteContactMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await ContactMessage.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Message not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Message deleted successfully",
+      data: { id },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete message",
+    });
+  }
+};
