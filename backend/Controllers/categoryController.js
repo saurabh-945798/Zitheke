@@ -149,6 +149,44 @@ export const listAdminCategories = async (req, res) => {
   }
 };
 
+export const listPublicCategories = async (req, res) => {
+  try {
+    const categories = await Category.find(
+      { isActive: true },
+      {
+        name: 1,
+        slug: 1,
+        subcategories: 1,
+      }
+    )
+      .sort({ name: 1, createdAt: -1 })
+      .lean();
+
+    const safeCategories = categories.map((category) => ({
+      _id: category._id,
+      name: category.name,
+      slug: category.slug,
+      subcategories: Array.isArray(category.subcategories)
+        ? category.subcategories
+            .filter((subcategory) => subcategory?.isActive)
+            .map((subcategory) => ({
+              _id: subcategory._id,
+              name: subcategory.name,
+              slug: subcategory.slug,
+            }))
+        : [],
+    }));
+
+    return res.status(200).json({
+      success: true,
+      categories: safeCategories,
+    });
+  } catch (error) {
+    console.error("Error listing public categories:", error);
+    return handleError(res, error, "Failed to fetch categories");
+  }
+};
+
 export const createAdminCategory = async (req, res) => {
   try {
     const payload = req.validated?.body || req.body;

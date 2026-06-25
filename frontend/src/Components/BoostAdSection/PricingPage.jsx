@@ -18,17 +18,17 @@ import useMembershipAccess from "../../hooks/useMembershipAccess.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 const PLAN_GRADIENTS = {
-  free: "from-slate-500 via-slate-600 to-slate-700",
-  basic: "from-[#2E3192] via-[#3843b6] to-[#4d56cf]",
-  plus: "from-[#2E3192] via-[#4552d5] to-[#6a76e8]",
-  advanced: "from-[#1f4f9b] via-[#2E3192] to-[#4f66d9]",
+  free: "from-[#5c6777] via-[#4d5768] to-[#39414f]",
+  basic: "from-[#0f4c4d] via-[#146466] to-[#1c7d7f]",
+  plus: "from-[#b45309] via-[#d97706] to-[#f59e0b]",
+  advanced: "from-[#1d4ed8] via-[#2563eb] to-[#3b82f6]",
 };
 
 const PLAN_ACCENTS = {
-  free: "border-slate-200 bg-white",
-  basic: "border-[#D8DEFF] bg-white",
-  plus: "border-[#C9D1FF] bg-white shadow-[0_24px_60px_-32px_rgba(46,49,146,0.38)]",
-  advanced: "border-[#D8DEFF] bg-white",
+  free: "border-[#d7dde7] bg-white",
+  basic: "border-[#cfe6df] bg-white",
+  plus: "border-[#f6d2aa] bg-white shadow-[0_24px_60px_-32px_rgba(217,119,6,0.24)]",
+  advanced: "border-[#d7e3ff] bg-white",
 };
 
 const formatDate = (value) => {
@@ -112,12 +112,12 @@ const PricingPage = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f8f9ff] via-white to-[#f4f6ff] px-4 py-20 text-[#14213d] sm:px-6 lg:px-8">
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f4f8f7] via-[#fffdfa] to-[#f7f8ff] px-4 py-20 text-[#14213d] sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[#2E3192]/12 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-[#F4B400]/10 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#2E3192]/10 blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(46,49,146,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(46,49,146,0.18)_1px,transparent_1px)] [background-size:28px_28px]" />
+        <div className="absolute left-1/2 top-0 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[#146466]/12 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-[#f59e0b]/10 blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#2563eb]/10 blur-3xl" />
+        <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(20,100,102,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(20,100,102,0.14)_1px,transparent_1px)] [background-size:28px_28px]" />
       </div>
 
       <div className="relative mx-auto max-w-7xl">
@@ -127,15 +127,15 @@ const PricingPage = () => {
           transition={{ duration: 0.45 }}
           className="mx-auto mt-8 max-w-4xl text-center md:mt-12"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#1c2454] bg-[#1c2454] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.28em] text-white shadow-[0_16px_36px_-20px_rgba(28,36,84,0.8)]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#163738] bg-[#163738] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.28em] text-white shadow-[0_16px_36px_-20px_rgba(22,55,56,0.72)]">
             <Crown size={14} />
-            Premium Membership
+            Featured Seller Plans
           </div>
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-[#1c2454] md:text-6xl">
-            Upgrade faster. Sell with premium visibility.
+          <h1 className="mt-6 text-4xl font-black tracking-[-0.03em] text-[#163738] md:text-6xl">
+            Upgrade faster. Sell with Zitheke. Increase your revenue.
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">
-            Choose a membership plan that lifts your ads above the noise, unlocks featured visibility, and gives your account stronger marketplace presence.
+          <p className="mx-auto mt-5 max-w-2xl text-sm font-medium leading-7 text-slate-600 md:text-base">
+            Choose a seller plan that gives your listings stronger visibility, helps you reach more buyers, and supports faster growth on Zitheke.
           </p>
         </motion.div>
 
@@ -146,19 +146,19 @@ const PricingPage = () => {
           className="mt-10 grid gap-4 rounded-[2rem] border border-[#dfe5ff] bg-white p-5 shadow-[0_24px_70px_-36px_rgba(46,49,146,0.22)] lg:grid-cols-[1.5fr_1fr]"
         >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#2E3192]/65">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#146466]/70">
               Current Membership
             </p>
             {membershipLoading ? (
               <div className="mt-4 flex items-center gap-3 text-slate-500">
-                <Loader2 className="h-5 w-5 animate-spin text-[#2E3192]" />
+                <Loader2 className="h-5 w-5 animate-spin text-[#146466]" />
                 Loading your membership access...
               </div>
             ) : (
               <>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#EEF2FF] px-4 py-2 text-sm font-semibold text-[#2E3192]">
-                    <BadgeCheck size={16} className="text-[#F4B400]" />
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[#edf7f4] px-4 py-2 text-sm font-semibold text-[#146466]">
+                    <BadgeCheck size={16} className="text-[#f59e0b]" />
                     {access?.plan?.name || "FREE"}
                   </span>
                   {access?.isPremium && access?.subscription?.endDate ? (
@@ -168,7 +168,7 @@ const PricingPage = () => {
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-                      <ShieldCheck size={16} className="text-[#2E3192]" />
+                      <ShieldCheck size={16} className="text-[#146466]" />
                       Standard account access
                     </span>
                   )}
@@ -183,8 +183,8 @@ const PricingPage = () => {
             )}
           </div>
 
-          <div className="rounded-[1.7rem] border border-[#E3E8FF] bg-[#F8FAFF] p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#2E3192]/60">
+          <div className="rounded-[1.7rem] border border-[#dce9e4] bg-[#f6fbfa] p-5">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#146466]/65">
               What changes instantly
             </p>
             <div className="mt-4 space-y-3 text-sm text-slate-700">
@@ -228,20 +228,20 @@ const PricingPage = () => {
                   >
                     <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${PLAN_GRADIENTS[slug] || PLAN_GRADIENTS.basic}`} />
                     {isPopular && (
-                      <div className="absolute right-5 top-5 rounded-full bg-[#F4B400] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[#1c2454] shadow-sm">
+                      <div className="absolute right-5 top-5 rounded-full bg-[#fff1d6] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[#a35408] shadow-sm">
                         Popular
                       </div>
                     )}
 
                     <div className="flex min-h-[23rem] flex-col">
                       <div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-600">
-                          <Crown size={14} className="text-[#F4B400]" />
+                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] text-slate-600">
+                          <Crown size={14} className="text-[#f59e0b]" />
                           {plan.name}
                         </div>
 
                         <div className="mt-5 flex items-end gap-2">
-                          <span className="text-4xl font-semibold tracking-tight text-[#1c2454]">
+                          <span className="text-4xl font-black tracking-[-0.03em] text-[#163738]">
                             {getDisplayPlanPrice(plan)}
                           </span>
                         </div>
@@ -260,7 +260,7 @@ const PricingPage = () => {
                               key={feature}
                               className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-3 py-3 text-sm text-slate-700"
                             >
-                              <Check size={16} className="mt-0.5 shrink-0 text-[#2E3192]" />
+                              <Check size={16} className="mt-0.5 shrink-0 text-[#146466]" />
                               <span>{feature}</span>
                             </div>
                           ))}
@@ -279,7 +279,7 @@ const PricingPage = () => {
                             className={`inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition ${
                               isFree
                                 ? "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
-                                : `bg-gradient-to-r ${PLAN_GRADIENTS[slug] || PLAN_GRADIENTS.basic} text-white shadow-[0_16px_36px_rgba(46,49,146,0.22)] hover:-translate-y-0.5`
+                                : "bg-gradient-to-r from-[#1d4ed8] via-[#2563eb] to-[#3b82f6] text-white shadow-[0_16px_36px_rgba(37,99,235,0.22)] hover:-translate-y-0.5"
                             }`}
                           >
                             {isFree ? "Included by default" : access?.isPremium ? "Switch to this plan" : "Upgrade with Airtel"}
@@ -291,11 +291,7 @@ const PricingPage = () => {
                           <p className="text-center text-xs text-slate-500">
                             Browse and contact sellers with a standard account.
                           </p>
-                        ) : (
-                          <p className="text-center text-xs text-slate-500">
-                            Backend-controlled pricing and verification only. No direct frontend activation.
-                          </p>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </motion.div>
@@ -325,7 +321,7 @@ const PricingPage = () => {
 const FeatureBullet = ({ icon: Icon, text }) => (
   <div className="flex items-start gap-3">
     <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-[#E6EAFF]">
-      <Icon size={16} className="text-[#2E3192]" />
+      <Icon size={16} className="text-[#146466]" />
     </div>
     <span className="leading-6 text-slate-700">{text}</span>
   </div>

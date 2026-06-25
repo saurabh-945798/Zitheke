@@ -1,0 +1,4330 @@
+{
+  "generatedAt": "2026-06-25T10:38:43.913Z",
+  "readOnly": true,
+  "sourceFiles": {
+    "createAd": "C:\\Users\\bittu\\Alinafe\\frontend\\src\\Components\\Dashboard\\CreateAd.jsx",
+    "adminAllAds": "C:\\Users\\bittu\\Alinafe\\admin\\src\\Components\\Dashboard\\AllAds.jsx",
+    "categoryBar": "C:\\Users\\bittu\\Alinafe\\frontend\\src\\Components\\CategoryBar\\categories.js"
+  },
+  "databaseSummary": {
+    "adCount": 515,
+    "categoryDocumentCount": 0,
+    "emptyCategoryCount": 0,
+    "emptySubcategoryCount": 27
+  },
+  "categoriesBySource": {
+    "createAd": [
+      {
+        "category": "Agriculture",
+        "normalizedCategory": "agriculture",
+        "subcategories": [
+          "Equipment",
+          "Fertilizers",
+          "Other Products",
+          "Pesticides",
+          "Seeds"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Alcohol",
+        "normalizedCategory": "alcohol",
+        "subcategories": [
+          "Alcohol/Liquor"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "normalizedCategory": "beauty & personal care",
+        "subcategories": [
+          "Fragrance",
+          "Hair Care",
+          "Makeup",
+          "Personal Care",
+          "Skin Care"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Electronics",
+        "normalizedCategory": "electronics",
+        "subcategories": [
+          "ACs & Coolers",
+          "Cameras & Lenses",
+          "Computer Accessories",
+          "Computers & Laptops",
+          "Gaming Consoles & Accessories",
+          "Home Appliances",
+          "Kitchen Appliances",
+          "Printers, Monitors & Hard Disks",
+          "Refrigerators",
+          "Smart Home Devices",
+          "Smart Watches & Wearables",
+          "Speakers & Headphones",
+          "TVs & Home Entertainment",
+          "Washing Machines"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Fashion",
+        "normalizedCategory": "fashion",
+        "subcategories": [
+          "Bags",
+          "Curtains",
+          "Footwear",
+          "Men",
+          "Nightwear",
+          "Others",
+          "Shirts",
+          "Shoes",
+          "Shorts",
+          "Trouser",
+          "Undergarments",
+          "Watches",
+          "Women"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Food & Beverages",
+        "normalizedCategory": "food & beverages",
+        "subcategories": [
+          "Cakes",
+          "Fruits",
+          "Ice Cream",
+          "Soft Drink",
+          "Spices",
+          "Vegetables"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Furniture",
+        "normalizedCategory": "furniture",
+        "subcategories": [
+          "Beds",
+          "Coffee Tables",
+          "Dining Tables",
+          "Office Chairs",
+          "Office Tables",
+          "Sofas",
+          "Storage Cabinets",
+          "Study Tables",
+          "TV Units",
+          "Wardrobes"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Hardware",
+        "normalizedCategory": "hardware",
+        "subcategories": [
+          "Other"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Hobbies & Entertainment",
+        "normalizedCategory": "hobbies & entertainment",
+        "subcategories": [
+          "Music Instruments"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Jobs",
+        "normalizedCategory": "jobs",
+        "subcategories": [
+          "Accountant",
+          "Cook / Chef",
+          "Data Entry Jobs",
+          "Delivery Jobs",
+          "Driver Jobs",
+          "Hotel & Restaurant Jobs",
+          "Housekeeping",
+          "Office Assistant",
+          "Retail / Store Staff",
+          "Sales & Marketing",
+          "Teacher / Tutor",
+          "Telecaller / BPO"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "normalizedCategory": "kitchenware & cookware",
+        "subcategories": [
+          "Kitchen utensils"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Livestock",
+        "normalizedCategory": "livestock",
+        "subcategories": [
+          "Beef",
+          "Chicken",
+          "Cows",
+          "Eggs",
+          "Fish",
+          "Goat",
+          "Pork Meat"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Mobiles",
+        "normalizedCategory": "mobiles",
+        "subcategories": [
+          "Accessories",
+          "Mobile Phones",
+          "Tablets"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Music",
+        "normalizedCategory": "music",
+        "subcategories": [
+          "Accessories",
+          "Amplifiers",
+          "DJ Equipment",
+          "Drums & Percussion",
+          "Guitars",
+          "Keyboards & Pianos",
+          "Microphones",
+          "Musical Instruments",
+          "Sound Systems",
+          "Studio Equipment"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Real Estate",
+        "normalizedCategory": "real estate",
+        "subcategories": [
+          "For Rent: Houses & Apartments",
+          "For Rent: Shops & Offices",
+          "For Sale: Houses & Apartments",
+          "For Sale: Shops & Offices",
+          "Lands & Plots",
+          "PG & Guest Houses"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Services",
+        "normalizedCategory": "services",
+        "subcategories": [
+          "AC Repair & Services",
+          "Beauty & Salon Services",
+          "Carpentry Services",
+          "CCTV Installation & Repair",
+          "Computer & Laptop Repair",
+          "Driver Services",
+          "Electrician",
+          "Event & Wedding Services",
+          "Fitness Trainer",
+          "Home Cleaning",
+          "Interior Design & Renovation",
+          "Mobile Repair",
+          "Packers & Movers",
+          "Painter",
+          "Pest Control",
+          "Plumber",
+          "Refrigerator Repair",
+          "Travel & Tour Services",
+          "Tutoring & Classes",
+          "Washing Machine Repair"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Sports",
+        "normalizedCategory": "sports",
+        "subcategories": [
+          "Badminton & Tennis",
+          "Boxing & Martial Arts",
+          "Camping & Trekking Gear",
+          "Cricket Equipment",
+          "Cycling",
+          "Football Gear",
+          "Gym & Fitness Equipment",
+          "Indoor Games (Chess, Carrom, etc.)",
+          "Skating & Skateboards",
+          "Sportswear & Jerseys",
+          "Swimming Gear",
+          "Yoga & Meditation Items"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Stationary",
+        "normalizedCategory": "stationary",
+        "subcategories": [
+          "Stationary"
+        ],
+        "sourceType": "createAd"
+      },
+      {
+        "category": "Vehicles",
+        "normalizedCategory": "vehicles",
+        "subcategories": [
+          "Bicycles",
+          "Bikes",
+          "Cars",
+          "Commercial Vehicles",
+          "Electric Bikes",
+          "Motorcycles",
+          "Scooters",
+          "Spare Parts",
+          "Vehicle Accessories"
+        ],
+        "sourceType": "createAd"
+      }
+    ],
+    "adminAllAds": [
+      {
+        "category": "Agriculture",
+        "normalizedCategory": "agriculture",
+        "subcategories": [
+          "Equipment",
+          "Fertilizers",
+          "Other Products",
+          "Pesticides",
+          "Seeds"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Alcohol & Tobacco",
+        "normalizedCategory": "alcohol & tobacco",
+        "subcategories": [
+          "Alcohol/Liquor"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "normalizedCategory": "beauty & personal care",
+        "subcategories": [
+          "Fragrance",
+          "Hair Care",
+          "Makeup",
+          "Personal Care",
+          "Skin Care"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Electronics",
+        "normalizedCategory": "electronics",
+        "subcategories": [
+          "ACs & Coolers",
+          "Cameras & Lenses",
+          "Computer Accessories",
+          "Computers & Laptops",
+          "Gaming Consoles & Accessories",
+          "Home Appliances",
+          "Kitchen Appliances",
+          "Printers, Monitors & Hard Disks",
+          "Refrigerators",
+          "Smart Home Devices",
+          "Smart Watches & Wearables",
+          "Speakers & Headphones",
+          "TVs & Home Entertainment",
+          "Washing Machines"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Fashion",
+        "normalizedCategory": "fashion",
+        "subcategories": [
+          "Bags",
+          "Curtains",
+          "Footwear",
+          "Men",
+          "Nightwear",
+          "Others",
+          "Shirts",
+          "Shoes",
+          "Shorts",
+          "Trouser",
+          "Undergarments",
+          "Watches",
+          "Women"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Food & Beverages",
+        "normalizedCategory": "food & beverages",
+        "subcategories": [
+          "Cakes",
+          "Fruits",
+          "Ice Cream",
+          "Soft Drink",
+          "Spices",
+          "Vegetables"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Furniture",
+        "normalizedCategory": "furniture",
+        "subcategories": [
+          "Beds",
+          "Coffee Tables",
+          "Dining Tables",
+          "Office Chairs",
+          "Office Tables",
+          "Sofas",
+          "Storage Cabinets",
+          "Study Tables",
+          "TV Units",
+          "Wardrobes"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Hardware",
+        "normalizedCategory": "hardware",
+        "subcategories": [
+          "Other"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Hobbies & Entertainment",
+        "normalizedCategory": "hobbies & entertainment",
+        "subcategories": [
+          "Music Instruments"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Jobs",
+        "normalizedCategory": "jobs",
+        "subcategories": [
+          "Accountant",
+          "Cook / Chef",
+          "Data Entry Jobs",
+          "Delivery Jobs",
+          "Driver Jobs",
+          "Hotel & Restaurant Jobs",
+          "Housekeeping",
+          "Office Assistant",
+          "Retail / Store Staff",
+          "Sales & Marketing",
+          "Teacher / Tutor",
+          "Telecaller / BPO"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "normalizedCategory": "kitchenware & cookware",
+        "subcategories": [
+          "Kitchen utensils"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Livestock",
+        "normalizedCategory": "livestock",
+        "subcategories": [
+          "Beef",
+          "Chicken",
+          "Cows",
+          "Eggs",
+          "Fish",
+          "Goat",
+          "Pork Meat"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Mobiles",
+        "normalizedCategory": "mobiles",
+        "subcategories": [
+          "Accessories",
+          "Mobile Phones",
+          "Tablets"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Music",
+        "normalizedCategory": "music",
+        "subcategories": [
+          "Accessories",
+          "Amplifiers",
+          "DJ Equipment",
+          "Drums & Percussion",
+          "Guitars",
+          "Keyboards & Pianos",
+          "Microphones",
+          "Musical Instruments",
+          "Sound Systems",
+          "Studio Equipment"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Real Estate",
+        "normalizedCategory": "real estate",
+        "subcategories": [
+          "For Rent: Houses & Apartments",
+          "For Rent: Shops & Offices",
+          "For Sale: Houses & Apartments",
+          "For Sale: Shops & Offices",
+          "Lands & Plots",
+          "PG & Guest Houses"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Services",
+        "normalizedCategory": "services",
+        "subcategories": [
+          "AC Repair & Services",
+          "Beauty & Salon Services",
+          "Carpentry Services",
+          "CCTV Installation & Repair",
+          "Computer & Laptop Repair",
+          "Driver Services",
+          "Electrician",
+          "Event & Wedding Services",
+          "Fitness Trainer",
+          "Home Cleaning",
+          "Interior Design & Renovation",
+          "Mobile Repair",
+          "Packers & Movers",
+          "Painter",
+          "Pest Control",
+          "Plumber",
+          "Refrigerator Repair",
+          "Travel & Tour Services",
+          "Tutoring & Classes",
+          "Washing Machine Repair"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Sports",
+        "normalizedCategory": "sports",
+        "subcategories": [
+          "Badminton & Tennis",
+          "Boxing & Martial Arts",
+          "Camping & Trekking Gear",
+          "Cricket Equipment",
+          "Cycling",
+          "Football Gear",
+          "Gym & Fitness Equipment",
+          "Indoor Games (Chess, Carrom, etc.)",
+          "Skating & Skateboards",
+          "Sportswear & Jerseys",
+          "Swimming Gear",
+          "Yoga & Meditation Items"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Stationary",
+        "normalizedCategory": "stationary",
+        "subcategories": [
+          "Stationary"
+        ],
+        "sourceType": "adminAllAds"
+      },
+      {
+        "category": "Vehicles",
+        "normalizedCategory": "vehicles",
+        "subcategories": [
+          "Bicycles",
+          "Bikes",
+          "Cars",
+          "Commercial Vehicles",
+          "Electric Bikes",
+          "Motorcycles",
+          "Scooters",
+          "Spare Parts",
+          "Vehicle Accessories"
+        ],
+        "sourceType": "adminAllAds"
+      }
+    ],
+    "categoryBar": [
+      {
+        "category": "Agriculture",
+        "normalizedCategory": "agriculture",
+        "subcategories": [
+          "Agricultural Machinery",
+          "Animal Feed",
+          "Farming Tools",
+          "Fertilizers",
+          "Greenhouse Supplies",
+          "Irrigation Equipment",
+          "Nursery Plants",
+          "Organic Products",
+          "Pesticides & Insecticides",
+          "Seeds"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Electronics",
+        "normalizedCategory": "electronics",
+        "subcategories": [
+          "ACs & Coolers",
+          "Cameras & Lenses",
+          "Computer Accessories",
+          "Computers & Laptops",
+          "Gaming Consoles & Accessories",
+          "Home Appliances",
+          "Kitchen Appliances",
+          "Printers, Monitors & Hard Disks",
+          "Refrigerators",
+          "Smart Home Devices",
+          "Smart Watches & Wearables",
+          "Speakers & Headphones",
+          "TVs & Home Entertainment",
+          "Washing Machines"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Fashion",
+        "normalizedCategory": "fashion",
+        "subcategories": [
+          "Footwear",
+          "Men",
+          "Women"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Furniture",
+        "normalizedCategory": "furniture",
+        "subcategories": [
+          "Beds",
+          "Lights",
+          "Sofas",
+          "Tables & Chairs",
+          "Wardrobes"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Jobs",
+        "normalizedCategory": "jobs",
+        "subcategories": [
+          "Accountant",
+          "Cook / Chef",
+          "Data Entry Jobs",
+          "Delivery Jobs",
+          "Driver Jobs",
+          "Hotel & Restaurant Jobs",
+          "Housekeeping",
+          "Office Assistant",
+          "Retail / Store Staff",
+          "Sales & Marketing",
+          "Teacher / Tutor",
+          "Telecaller / BPO"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "normalizedCategory": "kitchenware & cookware",
+        "subcategories": [
+          "Bakeware",
+          "Cookware (Pans, Tawas, Pots)",
+          "Dinner Sets",
+          "Gas Stoves & Burners",
+          "Kitchen Utensils",
+          "Knives & Cutlery",
+          "Pressure Cookers",
+          "Serving Utensils",
+          "Storage Containers",
+          "Traditional Utensils (Brass, Copper)"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Mobiles",
+        "normalizedCategory": "mobiles",
+        "subcategories": [
+          "Mobile Accessories",
+          "Mobile Phones",
+          "Tablets"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Real Estate",
+        "normalizedCategory": "real estate",
+        "subcategories": [
+          "For Rent: Houses & Apartments",
+          "For Rent: Shops & Offices",
+          "For Sale: Houses & Apartments",
+          "For Sale: Shops & Offices",
+          "Lands & Plots",
+          "PG & Guest Houses"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Services",
+        "normalizedCategory": "services",
+        "subcategories": [
+          "AC Repair & Services",
+          "Beauty & Salon Services",
+          "Carpentry Services",
+          "CCTV Installation & Repair",
+          "Computer & Laptop Repair",
+          "Driver Services",
+          "Electrician",
+          "Event & Wedding Services",
+          "Fitness Trainer",
+          "Home Cleaning",
+          "Interior Design & Renovation",
+          "Mobile Repair",
+          "Packers & Movers",
+          "Painter",
+          "Pest Control",
+          "Plumber",
+          "Refrigerator Repair",
+          "Travel & Tour Services",
+          "Tutoring & Classes",
+          "Washing Machine Repair"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Sports",
+        "normalizedCategory": "sports",
+        "subcategories": [
+          "Badminton & Tennis",
+          "Boxing & Martial Arts",
+          "Camping & Trekking Gear",
+          "Cricket Equipment",
+          "Cycling",
+          "Football Gear",
+          "Gym & Fitness Equipment",
+          "Indoor Games (Chess, Carrom, etc.)",
+          "Skating & Skateboards",
+          "Sportswear & Jerseys",
+          "Swimming Gear",
+          "Yoga & Meditation Items"
+        ],
+        "sourceType": "categoryBar"
+      },
+      {
+        "category": "Vehicles",
+        "normalizedCategory": "vehicles",
+        "subcategories": [
+          "Bicycles",
+          "Bikes",
+          "Cars",
+          "Cars & pick-ups",
+          "Commercial Vehicles",
+          "Electric Bikes",
+          "Motorcycles",
+          "Scooters",
+          "Spare Parts",
+          "Vehicle Accessories"
+        ],
+        "sourceType": "categoryBar"
+      }
+    ],
+    "liveAds": [
+      {
+        "category": "Fashion",
+        "count": 94
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "count": 88
+      },
+      {
+        "category": "Agriculture",
+        "count": 63
+      },
+      {
+        "category": "Electronics",
+        "count": 58
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "count": 54
+      },
+      {
+        "category": "Vehicles",
+        "count": 51
+      },
+      {
+        "category": "Mobiles",
+        "count": 46
+      },
+      {
+        "category": "Furniture",
+        "count": 23
+      },
+      {
+        "category": "Food & Beverages",
+        "count": 9
+      },
+      {
+        "category": "Livestock",
+        "count": 7
+      },
+      {
+        "category": "Sports",
+        "count": 6
+      },
+      {
+        "category": "Services",
+        "count": 5
+      },
+      {
+        "category": "Real Estate",
+        "count": 4
+      },
+      {
+        "category": "Hardware",
+        "count": 3
+      },
+      {
+        "category": "Jobs",
+        "count": 2
+      },
+      {
+        "category": "Alcohol & Tobacco",
+        "count": 1
+      },
+      {
+        "category": "Stationary",
+        "count": 1
+      }
+    ],
+    "categoryCollection": []
+  },
+  "liveAds": {
+    "distinctCategories": [
+      "Agriculture",
+      "Alcohol & Tobacco",
+      "Beauty & Personal Care",
+      "Electronics",
+      "Fashion",
+      "Food & Beverages",
+      "Furniture",
+      "Hardware",
+      "Jobs",
+      "Kitchenware & Cookware",
+      "Livestock",
+      "Mobiles",
+      "Real Estate",
+      "Services",
+      "Sports",
+      "Stationary",
+      "Vehicles"
+    ],
+    "distinctCategorySubcategoryPairs": [
+      {
+        "category": "Agriculture",
+        "subcategory": "Equipment"
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Other Products"
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Others"
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Seeds"
+      },
+      {
+        "category": "Alcohol & Tobacco",
+        "subcategory": "Alcohol/Liquor"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Fragrance"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Hair Care"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Personal Care"
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Skin Care"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": ""
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Cameras & Lenses"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computer Accessories"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computers & Laptops"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computers & laptops"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Gaming Consoles & Accessories"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Home Appliances"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Home appliances"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Kitchen Appliances"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Smart Home Devices"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Smart Watches & Wearables"
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Speakers & Headphones"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": ""
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Bags"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Footwear"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Men"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Others"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Shoes"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Shorts"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Trouser"
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Women"
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": ""
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Cakes"
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Fruits"
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Milk"
+      },
+      {
+        "category": "Furniture",
+        "subcategory": ""
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Beds"
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Dining Tables"
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Office Chairs"
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Sofas"
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Storage Cabinets"
+      },
+      {
+        "category": "Hardware",
+        "subcategory": "Other"
+      },
+      {
+        "category": "Jobs",
+        "subcategory": "Office Assistant"
+      },
+      {
+        "category": "Jobs",
+        "subcategory": "Retail / Store Staff"
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": ""
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": "Kitchen Utensils"
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": "Kitchen utensils"
+      },
+      {
+        "category": "Livestock",
+        "subcategory": ""
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Beef"
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Chicken"
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Eggs"
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Fish"
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Goat"
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": ""
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": "Accessories"
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": "Mobile Phones"
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": ""
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Rent: Houses & Apartments"
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Rent: Shops & Offices"
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Sale: Houses & Apartments"
+      },
+      {
+        "category": "Services",
+        "subcategory": ""
+      },
+      {
+        "category": "Services",
+        "subcategory": "Home Cleaning"
+      },
+      {
+        "category": "Services",
+        "subcategory": "Interior Design & Renovation"
+      },
+      {
+        "category": "Services",
+        "subcategory": "Plumber"
+      },
+      {
+        "category": "Sports",
+        "subcategory": ""
+      },
+      {
+        "category": "Sports",
+        "subcategory": "Football Gear"
+      },
+      {
+        "category": "Sports",
+        "subcategory": "Sportswear & Jerseys"
+      },
+      {
+        "category": "Stationary",
+        "subcategory": "Stationary"
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": ""
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Bicycles"
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Bikes"
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Cars"
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Motorcycles"
+      }
+    ],
+    "categoryCounts": [
+      {
+        "category": "Fashion",
+        "count": 94
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "count": 88
+      },
+      {
+        "category": "Agriculture",
+        "count": 63
+      },
+      {
+        "category": "Electronics",
+        "count": 58
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "count": 54
+      },
+      {
+        "category": "Vehicles",
+        "count": 51
+      },
+      {
+        "category": "Mobiles",
+        "count": 46
+      },
+      {
+        "category": "Furniture",
+        "count": 23
+      },
+      {
+        "category": "Food & Beverages",
+        "count": 9
+      },
+      {
+        "category": "Livestock",
+        "count": 7
+      },
+      {
+        "category": "Sports",
+        "count": 6
+      },
+      {
+        "category": "Services",
+        "count": 5
+      },
+      {
+        "category": "Real Estate",
+        "count": 4
+      },
+      {
+        "category": "Hardware",
+        "count": 3
+      },
+      {
+        "category": "Jobs",
+        "count": 2
+      },
+      {
+        "category": "Alcohol & Tobacco",
+        "count": 1
+      },
+      {
+        "category": "Stationary",
+        "count": 1
+      }
+    ],
+    "categorySubcategoryCounts": [
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": "Kitchen utensils",
+        "count": 55
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Other Products",
+        "count": 50
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": "Kitchen Utensils",
+        "count": 31
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Cars",
+        "count": 26
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Footwear",
+        "count": 24
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": "Mobile Phones",
+        "count": 22
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": "Accessories",
+        "count": 21
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Others",
+        "count": 18
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Fragrance",
+        "count": 16
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Hair Care",
+        "count": 16
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Skin Care",
+        "count": 15
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computers & Laptops",
+        "count": 12
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Bags",
+        "count": 12
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Men",
+        "count": 12
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Shoes",
+        "count": 12
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Sofas",
+        "count": 12
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Women",
+        "count": 11
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Home Appliances",
+        "count": 10
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Speakers & Headphones",
+        "count": 10
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Motorcycles",
+        "count": 9
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Bicycles",
+        "count": 8
+      },
+      {
+        "category": "Beauty & Personal Care",
+        "subcategory": "Personal Care",
+        "count": 7
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Seeds",
+        "count": 6
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computer Accessories",
+        "count": 6
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "",
+        "count": 6
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Beds",
+        "count": 6
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Others",
+        "count": 5
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Smart Home Devices",
+        "count": 5
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "Bikes",
+        "count": 5
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "",
+        "count": 4
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Cameras & Lenses",
+        "count": 3
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Smart Watches & Wearables",
+        "count": 3
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "",
+        "count": 3
+      },
+      {
+        "category": "Hardware",
+        "subcategory": "Other",
+        "count": 3
+      },
+      {
+        "category": "Mobiles",
+        "subcategory": "",
+        "count": 3
+      },
+      {
+        "category": "Sports",
+        "subcategory": "Sportswear & Jerseys",
+        "count": 3
+      },
+      {
+        "category": "Vehicles",
+        "subcategory": "",
+        "count": 3
+      },
+      {
+        "category": "Agriculture",
+        "subcategory": "Equipment",
+        "count": 2
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Kitchen Appliances",
+        "count": 2
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Dining Tables",
+        "count": 2
+      },
+      {
+        "category": "Kitchenware & Cookware",
+        "subcategory": "",
+        "count": 2
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Chicken",
+        "count": 2
+      },
+      {
+        "category": "Services",
+        "subcategory": "",
+        "count": 2
+      },
+      {
+        "category": "Sports",
+        "subcategory": "Football Gear",
+        "count": 2
+      },
+      {
+        "category": "Alcohol & Tobacco",
+        "subcategory": "Alcohol/Liquor",
+        "count": 1
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Computers & laptops",
+        "count": 1
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Gaming Consoles & Accessories",
+        "count": 1
+      },
+      {
+        "category": "Electronics",
+        "subcategory": "Home appliances",
+        "count": 1
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Shorts",
+        "count": 1
+      },
+      {
+        "category": "Fashion",
+        "subcategory": "Trouser",
+        "count": 1
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Cakes",
+        "count": 1
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Fruits",
+        "count": 1
+      },
+      {
+        "category": "Food & Beverages",
+        "subcategory": "Milk",
+        "count": 1
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "",
+        "count": 1
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Office Chairs",
+        "count": 1
+      },
+      {
+        "category": "Furniture",
+        "subcategory": "Storage Cabinets",
+        "count": 1
+      },
+      {
+        "category": "Jobs",
+        "subcategory": "Office Assistant",
+        "count": 1
+      },
+      {
+        "category": "Jobs",
+        "subcategory": "Retail / Store Staff",
+        "count": 1
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "",
+        "count": 1
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Beef",
+        "count": 1
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Eggs",
+        "count": 1
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Fish",
+        "count": 1
+      },
+      {
+        "category": "Livestock",
+        "subcategory": "Goat",
+        "count": 1
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "",
+        "count": 1
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Rent: Houses & Apartments",
+        "count": 1
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Rent: Shops & Offices",
+        "count": 1
+      },
+      {
+        "category": "Real Estate",
+        "subcategory": "For Sale: Houses & Apartments",
+        "count": 1
+      },
+      {
+        "category": "Services",
+        "subcategory": "Home Cleaning",
+        "count": 1
+      },
+      {
+        "category": "Services",
+        "subcategory": "Interior Design & Renovation",
+        "count": 1
+      },
+      {
+        "category": "Services",
+        "subcategory": "Plumber",
+        "count": 1
+      },
+      {
+        "category": "Sports",
+        "subcategory": "",
+        "count": 1
+      },
+      {
+        "category": "Stationary",
+        "subcategory": "Stationary",
+        "count": 1
+      }
+    ],
+    "emptyCategoryCount": 0,
+    "emptySubcategoryCount": 27
+  },
+  "comparison": {
+    "categoriesPresentInHardcodedSourcesButAbsentFromAds": [
+      "Alcohol",
+      "Hobbies & Entertainment",
+      "Music"
+    ],
+    "categoriesPresentInAdsButAbsentFromHardcodedSources": [],
+    "categoriesPresentInAdsButAbsentFromCategoryCollection": [
+      "Agriculture",
+      "Alcohol & Tobacco",
+      "Beauty & Personal Care",
+      "Electronics",
+      "Fashion",
+      "Food & Beverages",
+      "Furniture",
+      "Hardware",
+      "Jobs",
+      "Kitchenware & Cookware",
+      "Livestock",
+      "Mobiles",
+      "Real Estate",
+      "Services",
+      "Sports",
+      "Stationary",
+      "Vehicles"
+    ]
+  },
+  "unifiedCategoryCandidates": [
+    {
+      "normalizedCategory": "agriculture",
+      "sourceVariants": [
+        "Agriculture"
+      ],
+      "liveAdCount": 63,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "agricultural machinery",
+          "sourceVariants": [
+            "Agricultural Machinery"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "animal feed",
+          "sourceVariants": [
+            "Animal Feed"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "equipment",
+          "sourceVariants": [
+            "Equipment"
+          ],
+          "liveAdCount": 2,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "farming tools",
+          "sourceVariants": [
+            "Farming Tools"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "fertilizers",
+          "sourceVariants": [
+            "Fertilizers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "greenhouse supplies",
+          "sourceVariants": [
+            "Greenhouse Supplies"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "irrigation equipment",
+          "sourceVariants": [
+            "Irrigation Equipment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "nursery plants",
+          "sourceVariants": [
+            "Nursery Plants"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "organic products",
+          "sourceVariants": [
+            "Organic Products"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "other products",
+          "sourceVariants": [
+            "Other Products"
+          ],
+          "liveAdCount": 50,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "others",
+          "sourceVariants": [
+            "Others"
+          ],
+          "liveAdCount": 5,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pesticides",
+          "sourceVariants": [
+            "Pesticides"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pesticides & insecticides",
+          "sourceVariants": [
+            "Pesticides & Insecticides"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "seeds",
+          "sourceVariants": [
+            "Seeds"
+          ],
+          "liveAdCount": 6,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "alcohol",
+      "sourceVariants": [
+        "Alcohol"
+      ],
+      "liveAdCount": 0,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "alcohol/liquor",
+          "sourceVariants": [
+            "Alcohol/Liquor"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "alcohol & tobacco",
+      "sourceVariants": [
+        "Alcohol & Tobacco"
+      ],
+      "liveAdCount": 1,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "alcohol/liquor",
+          "sourceVariants": [
+            "Alcohol/Liquor"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "beauty & personal care",
+      "sourceVariants": [
+        "Beauty & Personal Care"
+      ],
+      "liveAdCount": 54,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "fragrance",
+          "sourceVariants": [
+            "Fragrance"
+          ],
+          "liveAdCount": 16,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "hair care",
+          "sourceVariants": [
+            "Hair Care"
+          ],
+          "liveAdCount": 16,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "makeup",
+          "sourceVariants": [
+            "Makeup"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "personal care",
+          "sourceVariants": [
+            "Personal Care"
+          ],
+          "liveAdCount": 7,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "skin care",
+          "sourceVariants": [
+            "Skin Care"
+          ],
+          "liveAdCount": 15,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "electronics",
+      "sourceVariants": [
+        "Electronics"
+      ],
+      "liveAdCount": 58,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 4,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "acs & coolers",
+          "sourceVariants": [
+            "ACs & Coolers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cameras & lenses",
+          "sourceVariants": [
+            "Cameras & Lenses"
+          ],
+          "liveAdCount": 3,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "computer accessories",
+          "sourceVariants": [
+            "Computer Accessories"
+          ],
+          "liveAdCount": 6,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "computers & laptops",
+          "sourceVariants": [
+            "Computers & laptops",
+            "Computers & Laptops"
+          ],
+          "liveAdCount": 13,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "gaming consoles & accessories",
+          "sourceVariants": [
+            "Gaming Consoles & Accessories"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "home appliances",
+          "sourceVariants": [
+            "Home appliances",
+            "Home Appliances"
+          ],
+          "liveAdCount": 11,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "kitchen appliances",
+          "sourceVariants": [
+            "Kitchen Appliances"
+          ],
+          "liveAdCount": 2,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "printers, monitors & hard disks",
+          "sourceVariants": [
+            "Printers, Monitors & Hard Disks"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "refrigerators",
+          "sourceVariants": [
+            "Refrigerators"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "smart home devices",
+          "sourceVariants": [
+            "Smart Home Devices"
+          ],
+          "liveAdCount": 5,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "smart watches & wearables",
+          "sourceVariants": [
+            "Smart Watches & Wearables"
+          ],
+          "liveAdCount": 3,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "speakers & headphones",
+          "sourceVariants": [
+            "Speakers & Headphones"
+          ],
+          "liveAdCount": 10,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "tvs & home entertainment",
+          "sourceVariants": [
+            "TVs & Home Entertainment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "washing machines",
+          "sourceVariants": [
+            "Washing Machines"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "fashion",
+      "sourceVariants": [
+        "Fashion"
+      ],
+      "liveAdCount": 94,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 3,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "bags",
+          "sourceVariants": [
+            "Bags"
+          ],
+          "liveAdCount": 12,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "curtains",
+          "sourceVariants": [
+            "Curtains"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "footwear",
+          "sourceVariants": [
+            "Footwear"
+          ],
+          "liveAdCount": 24,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "men",
+          "sourceVariants": [
+            "Men"
+          ],
+          "liveAdCount": 12,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "nightwear",
+          "sourceVariants": [
+            "Nightwear"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "others",
+          "sourceVariants": [
+            "Others"
+          ],
+          "liveAdCount": 18,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "shirts",
+          "sourceVariants": [
+            "Shirts"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "shoes",
+          "sourceVariants": [
+            "Shoes"
+          ],
+          "liveAdCount": 12,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "shorts",
+          "sourceVariants": [
+            "Shorts"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "trouser",
+          "sourceVariants": [
+            "Trouser"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "undergarments",
+          "sourceVariants": [
+            "Undergarments"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "watches",
+          "sourceVariants": [
+            "Watches"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "women",
+          "sourceVariants": [
+            "Women"
+          ],
+          "liveAdCount": 11,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "food & beverages",
+      "sourceVariants": [
+        "Food & Beverages"
+      ],
+      "liveAdCount": 9,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 6,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cakes",
+          "sourceVariants": [
+            "Cakes"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "fruits",
+          "sourceVariants": [
+            "Fruits"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "ice cream",
+          "sourceVariants": [
+            "Ice Cream"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "milk",
+          "sourceVariants": [
+            "Milk"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "soft drink",
+          "sourceVariants": [
+            "Soft Drink"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "spices",
+          "sourceVariants": [
+            "Spices"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "vegetables",
+          "sourceVariants": [
+            "Vegetables"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "furniture",
+      "sourceVariants": [
+        "Furniture"
+      ],
+      "liveAdCount": 23,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 1,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "beds",
+          "sourceVariants": [
+            "Beds"
+          ],
+          "liveAdCount": 6,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "coffee tables",
+          "sourceVariants": [
+            "Coffee Tables"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "dining tables",
+          "sourceVariants": [
+            "Dining Tables"
+          ],
+          "liveAdCount": 2,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "lights",
+          "sourceVariants": [
+            "Lights"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "office chairs",
+          "sourceVariants": [
+            "Office Chairs"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "office tables",
+          "sourceVariants": [
+            "Office Tables"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "sofas",
+          "sourceVariants": [
+            "Sofas"
+          ],
+          "liveAdCount": 12,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "storage cabinets",
+          "sourceVariants": [
+            "Storage Cabinets"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "study tables",
+          "sourceVariants": [
+            "Study Tables"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "tables & chairs",
+          "sourceVariants": [
+            "Tables & Chairs"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "tv units",
+          "sourceVariants": [
+            "TV Units"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "wardrobes",
+          "sourceVariants": [
+            "Wardrobes"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "hardware",
+      "sourceVariants": [
+        "Hardware"
+      ],
+      "liveAdCount": 3,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "other",
+          "sourceVariants": [
+            "Other"
+          ],
+          "liveAdCount": 3,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "hobbies & entertainment",
+      "sourceVariants": [
+        "Hobbies & Entertainment"
+      ],
+      "liveAdCount": 0,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "music instruments",
+          "sourceVariants": [
+            "Music Instruments"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "jobs",
+      "sourceVariants": [
+        "Jobs"
+      ],
+      "liveAdCount": 2,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "accountant",
+          "sourceVariants": [
+            "Accountant"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cook / chef",
+          "sourceVariants": [
+            "Cook / Chef"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "data entry jobs",
+          "sourceVariants": [
+            "Data Entry Jobs"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "delivery jobs",
+          "sourceVariants": [
+            "Delivery Jobs"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "driver jobs",
+          "sourceVariants": [
+            "Driver Jobs"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "hotel & restaurant jobs",
+          "sourceVariants": [
+            "Hotel & Restaurant Jobs"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "housekeeping",
+          "sourceVariants": [
+            "Housekeeping"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "office assistant",
+          "sourceVariants": [
+            "Office Assistant"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "retail / store staff",
+          "sourceVariants": [
+            "Retail / Store Staff"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "sales & marketing",
+          "sourceVariants": [
+            "Sales & Marketing"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "teacher / tutor",
+          "sourceVariants": [
+            "Teacher / Tutor"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "telecaller / bpo",
+          "sourceVariants": [
+            "Telecaller / BPO"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "kitchenware & cookware",
+      "sourceVariants": [
+        "Kitchenware & Cookware"
+      ],
+      "liveAdCount": 88,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 2,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "bakeware",
+          "sourceVariants": [
+            "Bakeware"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cookware (pans, tawas, pots)",
+          "sourceVariants": [
+            "Cookware (Pans, Tawas, Pots)"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "dinner sets",
+          "sourceVariants": [
+            "Dinner Sets"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "gas stoves & burners",
+          "sourceVariants": [
+            "Gas Stoves & Burners"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "kitchen utensils",
+          "sourceVariants": [
+            "Kitchen utensils",
+            "Kitchen Utensils"
+          ],
+          "liveAdCount": 86,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "knives & cutlery",
+          "sourceVariants": [
+            "Knives & Cutlery"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pressure cookers",
+          "sourceVariants": [
+            "Pressure Cookers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "serving utensils",
+          "sourceVariants": [
+            "Serving Utensils"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "storage containers",
+          "sourceVariants": [
+            "Storage Containers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "traditional utensils (brass, copper)",
+          "sourceVariants": [
+            "Traditional Utensils (Brass, Copper)"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "livestock",
+      "sourceVariants": [
+        "Livestock"
+      ],
+      "liveAdCount": 7,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 1,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "beef",
+          "sourceVariants": [
+            "Beef"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "chicken",
+          "sourceVariants": [
+            "Chicken"
+          ],
+          "liveAdCount": 2,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cows",
+          "sourceVariants": [
+            "Cows"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "eggs",
+          "sourceVariants": [
+            "Eggs"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "fish",
+          "sourceVariants": [
+            "Fish"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "goat",
+          "sourceVariants": [
+            "Goat"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pork meat",
+          "sourceVariants": [
+            "Pork Meat"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "mobiles",
+      "sourceVariants": [
+        "Mobiles"
+      ],
+      "liveAdCount": 46,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 3,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "accessories",
+          "sourceVariants": [
+            "Accessories"
+          ],
+          "liveAdCount": 21,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "mobile accessories",
+          "sourceVariants": [
+            "Mobile Accessories"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "mobile phones",
+          "sourceVariants": [
+            "Mobile Phones"
+          ],
+          "liveAdCount": 22,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "tablets",
+          "sourceVariants": [
+            "Tablets"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "music",
+      "sourceVariants": [
+        "Music"
+      ],
+      "liveAdCount": 0,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "accessories",
+          "sourceVariants": [
+            "Accessories"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "amplifiers",
+          "sourceVariants": [
+            "Amplifiers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "dj equipment",
+          "sourceVariants": [
+            "DJ Equipment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "drums & percussion",
+          "sourceVariants": [
+            "Drums & Percussion"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "guitars",
+          "sourceVariants": [
+            "Guitars"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "keyboards & pianos",
+          "sourceVariants": [
+            "Keyboards & Pianos"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "microphones",
+          "sourceVariants": [
+            "Microphones"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "musical instruments",
+          "sourceVariants": [
+            "Musical Instruments"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "sound systems",
+          "sourceVariants": [
+            "Sound Systems"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "studio equipment",
+          "sourceVariants": [
+            "Studio Equipment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "real estate",
+      "sourceVariants": [
+        "Real Estate"
+      ],
+      "liveAdCount": 4,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 1,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "for rent: houses & apartments",
+          "sourceVariants": [
+            "For Rent: Houses & Apartments"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "for rent: shops & offices",
+          "sourceVariants": [
+            "For Rent: Shops & Offices"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "for sale: houses & apartments",
+          "sourceVariants": [
+            "For Sale: Houses & Apartments"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "for sale: shops & offices",
+          "sourceVariants": [
+            "For Sale: Shops & Offices"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "lands & plots",
+          "sourceVariants": [
+            "Lands & Plots"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pg & guest houses",
+          "sourceVariants": [
+            "PG & Guest Houses"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "services",
+      "sourceVariants": [
+        "Services"
+      ],
+      "liveAdCount": 5,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 2,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "ac repair & services",
+          "sourceVariants": [
+            "AC Repair & Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "beauty & salon services",
+          "sourceVariants": [
+            "Beauty & Salon Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "carpentry services",
+          "sourceVariants": [
+            "Carpentry Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cctv installation & repair",
+          "sourceVariants": [
+            "CCTV Installation & Repair"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "computer & laptop repair",
+          "sourceVariants": [
+            "Computer & Laptop Repair"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "driver services",
+          "sourceVariants": [
+            "Driver Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "electrician",
+          "sourceVariants": [
+            "Electrician"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "event & wedding services",
+          "sourceVariants": [
+            "Event & Wedding Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "fitness trainer",
+          "sourceVariants": [
+            "Fitness Trainer"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "home cleaning",
+          "sourceVariants": [
+            "Home Cleaning"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "interior design & renovation",
+          "sourceVariants": [
+            "Interior Design & Renovation"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "mobile repair",
+          "sourceVariants": [
+            "Mobile Repair"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "packers & movers",
+          "sourceVariants": [
+            "Packers & Movers"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "painter",
+          "sourceVariants": [
+            "Painter"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "pest control",
+          "sourceVariants": [
+            "Pest Control"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "plumber",
+          "sourceVariants": [
+            "Plumber"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "refrigerator repair",
+          "sourceVariants": [
+            "Refrigerator Repair"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "travel & tour services",
+          "sourceVariants": [
+            "Travel & Tour Services"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "tutoring & classes",
+          "sourceVariants": [
+            "Tutoring & Classes"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "washing machine repair",
+          "sourceVariants": [
+            "Washing Machine Repair"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "sports",
+      "sourceVariants": [
+        "Sports"
+      ],
+      "liveAdCount": 6,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 1,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "badminton & tennis",
+          "sourceVariants": [
+            "Badminton & Tennis"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "boxing & martial arts",
+          "sourceVariants": [
+            "Boxing & Martial Arts"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "camping & trekking gear",
+          "sourceVariants": [
+            "Camping & Trekking Gear"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cricket equipment",
+          "sourceVariants": [
+            "Cricket Equipment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cycling",
+          "sourceVariants": [
+            "Cycling"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "football gear",
+          "sourceVariants": [
+            "Football Gear"
+          ],
+          "liveAdCount": 2,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "gym & fitness equipment",
+          "sourceVariants": [
+            "Gym & Fitness Equipment"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "indoor games (chess, carrom, etc.)",
+          "sourceVariants": [
+            "Indoor Games (Chess, Carrom, etc.)"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "skating & skateboards",
+          "sourceVariants": [
+            "Skating & Skateboards"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "sportswear & jerseys",
+          "sourceVariants": [
+            "Sportswear & Jerseys"
+          ],
+          "liveAdCount": 3,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "swimming gear",
+          "sourceVariants": [
+            "Swimming Gear"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "yoga & meditation items",
+          "sourceVariants": [
+            "Yoga & Meditation Items"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "stationary",
+      "sourceVariants": [
+        "Stationary"
+      ],
+      "liveAdCount": 1,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "stationary",
+          "sourceVariants": [
+            "Stationary"
+          ],
+          "liveAdCount": 1,
+          "sources": [
+            "adminAllAds",
+            "createAd",
+            "liveAds"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "vehicles",
+      "sourceVariants": [
+        "Vehicles"
+      ],
+      "liveAdCount": 51,
+      "subcategories": [
+        {
+          "normalizedSubcategory": "",
+          "sourceVariants": [],
+          "liveAdCount": 3,
+          "sources": [
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "bicycles",
+          "sourceVariants": [
+            "Bicycles"
+          ],
+          "liveAdCount": 8,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "bikes",
+          "sourceVariants": [
+            "Bikes"
+          ],
+          "liveAdCount": 5,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cars",
+          "sourceVariants": [
+            "Cars"
+          ],
+          "liveAdCount": 26,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "cars & pick-ups",
+          "sourceVariants": [
+            "Cars & pick-ups"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "categoryBar"
+          ]
+        },
+        {
+          "normalizedSubcategory": "commercial vehicles",
+          "sourceVariants": [
+            "Commercial Vehicles"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "electric bikes",
+          "sourceVariants": [
+            "Electric Bikes"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "motorcycles",
+          "sourceVariants": [
+            "Motorcycles"
+          ],
+          "liveAdCount": 9,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd",
+            "liveAds"
+          ]
+        },
+        {
+          "normalizedSubcategory": "scooters",
+          "sourceVariants": [
+            "Scooters"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "spare parts",
+          "sourceVariants": [
+            "Spare Parts"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        },
+        {
+          "normalizedSubcategory": "vehicle accessories",
+          "sourceVariants": [
+            "Vehicle Accessories"
+          ],
+          "liveAdCount": 0,
+          "sources": [
+            "adminAllAds",
+            "categoryBar",
+            "createAd"
+          ]
+        }
+      ]
+    }
+  ],
+  "duplicateMatches": [
+    {
+      "normalizedCategory": "electronics",
+      "variants": [
+        "Electronics"
+      ],
+      "subcategoryDuplicates": [
+        {
+          "normalizedSubcategory": "computers & laptops",
+          "variants": [
+            "Computers & laptops",
+            "Computers & Laptops"
+          ]
+        },
+        {
+          "normalizedSubcategory": "home appliances",
+          "variants": [
+            "Home appliances",
+            "Home Appliances"
+          ]
+        }
+      ]
+    },
+    {
+      "normalizedCategory": "kitchenware & cookware",
+      "variants": [
+        "Kitchenware & Cookware"
+      ],
+      "subcategoryDuplicates": [
+        {
+          "normalizedSubcategory": "kitchen utensils",
+          "variants": [
+            "Kitchen utensils",
+            "Kitchen Utensils"
+          ]
+        }
+      ]
+    }
+  ],
+  "potentialNameVariants": [
+    {
+      "left": [
+        "Alcohol"
+      ],
+      "right": [
+        "Alcohol & Tobacco"
+      ],
+      "reason": "token-or-substring-overlap"
+    },
+    {
+      "left": [
+        "Alcohol"
+      ],
+      "right": [
+        "Alcohol & Tobacco"
+      ],
+      "reason": "manual-rule"
+    },
+    {
+      "left": [
+        "Others"
+      ],
+      "right": [
+        "Other Products"
+      ],
+      "reason": "manual-rule"
+    },
+    {
+      "left": [
+        "Accessories"
+      ],
+      "right": [
+        "Mobile Accessories"
+      ],
+      "reason": "manual-rule"
+    }
+  ],
+  "ambiguousMappingsRequiringManualApproval": [
+    {
+      "left": [
+        "Alcohol"
+      ],
+      "right": [
+        "Alcohol & Tobacco"
+      ],
+      "reason": "token-or-substring-overlap"
+    },
+    {
+      "left": [
+        "Alcohol"
+      ],
+      "right": [
+        "Alcohol & Tobacco"
+      ],
+      "reason": "manual-rule"
+    },
+    {
+      "left": [
+        "Others"
+      ],
+      "right": [
+        "Other Products"
+      ],
+      "reason": "manual-rule"
+    },
+    {
+      "left": [
+        "Accessories"
+      ],
+      "right": [
+        "Mobile Accessories"
+      ],
+      "reason": "manual-rule"
+    }
+  ],
+  "recommendedCanonicalNames": [
+    {
+      "normalizedCategory": "agriculture",
+      "recommendedCanonicalName": "Agriculture",
+      "variants": [
+        "Agriculture"
+      ]
+    },
+    {
+      "normalizedCategory": "alcohol",
+      "recommendedCanonicalName": "Alcohol",
+      "variants": [
+        "Alcohol"
+      ]
+    },
+    {
+      "normalizedCategory": "alcohol & tobacco",
+      "recommendedCanonicalName": "Alcohol & Tobacco",
+      "variants": [
+        "Alcohol & Tobacco"
+      ]
+    },
+    {
+      "normalizedCategory": "beauty & personal care",
+      "recommendedCanonicalName": "Beauty & Personal Care",
+      "variants": [
+        "Beauty & Personal Care"
+      ]
+    },
+    {
+      "normalizedCategory": "electronics",
+      "recommendedCanonicalName": "Electronics",
+      "variants": [
+        "Electronics"
+      ]
+    },
+    {
+      "normalizedCategory": "fashion",
+      "recommendedCanonicalName": "Fashion",
+      "variants": [
+        "Fashion"
+      ]
+    },
+    {
+      "normalizedCategory": "food & beverages",
+      "recommendedCanonicalName": "Food & Beverages",
+      "variants": [
+        "Food & Beverages"
+      ]
+    },
+    {
+      "normalizedCategory": "furniture",
+      "recommendedCanonicalName": "Furniture",
+      "variants": [
+        "Furniture"
+      ]
+    },
+    {
+      "normalizedCategory": "hardware",
+      "recommendedCanonicalName": "Hardware",
+      "variants": [
+        "Hardware"
+      ]
+    },
+    {
+      "normalizedCategory": "hobbies & entertainment",
+      "recommendedCanonicalName": "Hobbies & Entertainment",
+      "variants": [
+        "Hobbies & Entertainment"
+      ]
+    },
+    {
+      "normalizedCategory": "jobs",
+      "recommendedCanonicalName": "Jobs",
+      "variants": [
+        "Jobs"
+      ]
+    },
+    {
+      "normalizedCategory": "kitchenware & cookware",
+      "recommendedCanonicalName": "Kitchenware & Cookware",
+      "variants": [
+        "Kitchenware & Cookware"
+      ]
+    },
+    {
+      "normalizedCategory": "livestock",
+      "recommendedCanonicalName": "Livestock",
+      "variants": [
+        "Livestock"
+      ]
+    },
+    {
+      "normalizedCategory": "mobiles",
+      "recommendedCanonicalName": "Mobiles",
+      "variants": [
+        "Mobiles"
+      ]
+    },
+    {
+      "normalizedCategory": "music",
+      "recommendedCanonicalName": "Music",
+      "variants": [
+        "Music"
+      ]
+    },
+    {
+      "normalizedCategory": "real estate",
+      "recommendedCanonicalName": "Real Estate",
+      "variants": [
+        "Real Estate"
+      ]
+    },
+    {
+      "normalizedCategory": "services",
+      "recommendedCanonicalName": "Services",
+      "variants": [
+        "Services"
+      ]
+    },
+    {
+      "normalizedCategory": "sports",
+      "recommendedCanonicalName": "Sports",
+      "variants": [
+        "Sports"
+      ]
+    },
+    {
+      "normalizedCategory": "stationary",
+      "recommendedCanonicalName": "Stationary",
+      "variants": [
+        "Stationary"
+      ]
+    },
+    {
+      "normalizedCategory": "vehicles",
+      "recommendedCanonicalName": "Vehicles",
+      "variants": [
+        "Vehicles"
+      ]
+    }
+  ],
+  "migrationMapping": {
+    "Agriculture": {
+      "canonicalName": "Agriculture",
+      "sourceVariants": [
+        "Agriculture"
+      ],
+      "subcategories": {
+        "Agricultural Machinery": "Agricultural Machinery",
+        "Animal Feed": "Animal Feed",
+        "Equipment": "Equipment",
+        "Farming Tools": "Farming Tools",
+        "Fertilizers": "Fertilizers",
+        "Greenhouse Supplies": "Greenhouse Supplies",
+        "Irrigation Equipment": "Irrigation Equipment",
+        "Nursery Plants": "Nursery Plants",
+        "Organic Products": "Organic Products",
+        "Other Products": "Other Products",
+        "Others": "Others",
+        "Pesticides": "Pesticides",
+        "Pesticides & Insecticides": "Pesticides & Insecticides",
+        "Seeds": "Seeds"
+      }
+    },
+    "Alcohol": {
+      "canonicalName": "Alcohol",
+      "sourceVariants": [
+        "Alcohol"
+      ],
+      "subcategories": {
+        "Alcohol/Liquor": "Alcohol/Liquor"
+      }
+    },
+    "Alcohol & Tobacco": {
+      "canonicalName": "Alcohol & Tobacco",
+      "sourceVariants": [
+        "Alcohol & Tobacco"
+      ],
+      "subcategories": {
+        "Alcohol/Liquor": "Alcohol/Liquor"
+      }
+    },
+    "Beauty & Personal Care": {
+      "canonicalName": "Beauty & Personal Care",
+      "sourceVariants": [
+        "Beauty & Personal Care"
+      ],
+      "subcategories": {
+        "Fragrance": "Fragrance",
+        "Hair Care": "Hair Care",
+        "Makeup": "Makeup",
+        "Personal Care": "Personal Care",
+        "Skin Care": "Skin Care"
+      }
+    },
+    "Electronics": {
+      "canonicalName": "Electronics",
+      "sourceVariants": [
+        "Electronics"
+      ],
+      "subcategories": {
+        "ACs & Coolers": "ACs & Coolers",
+        "Cameras & Lenses": "Cameras & Lenses",
+        "Computer Accessories": "Computer Accessories",
+        "Computers & laptops": "Computers & Laptops",
+        "Computers & Laptops": "Computers & Laptops",
+        "Gaming Consoles & Accessories": "Gaming Consoles & Accessories",
+        "Home appliances": "Home Appliances",
+        "Home Appliances": "Home Appliances",
+        "Kitchen Appliances": "Kitchen Appliances",
+        "Printers, Monitors & Hard Disks": "Printers, Monitors & Hard Disks",
+        "Refrigerators": "Refrigerators",
+        "Smart Home Devices": "Smart Home Devices",
+        "Smart Watches & Wearables": "Smart Watches & Wearables",
+        "Speakers & Headphones": "Speakers & Headphones",
+        "TVs & Home Entertainment": "TVs & Home Entertainment",
+        "Washing Machines": "Washing Machines"
+      }
+    },
+    "Fashion": {
+      "canonicalName": "Fashion",
+      "sourceVariants": [
+        "Fashion"
+      ],
+      "subcategories": {
+        "Bags": "Bags",
+        "Curtains": "Curtains",
+        "Footwear": "Footwear",
+        "Men": "Men",
+        "Nightwear": "Nightwear",
+        "Others": "Others",
+        "Shirts": "Shirts",
+        "Shoes": "Shoes",
+        "Shorts": "Shorts",
+        "Trouser": "Trouser",
+        "Undergarments": "Undergarments",
+        "Watches": "Watches",
+        "Women": "Women"
+      }
+    },
+    "Food & Beverages": {
+      "canonicalName": "Food & Beverages",
+      "sourceVariants": [
+        "Food & Beverages"
+      ],
+      "subcategories": {
+        "Cakes": "Cakes",
+        "Fruits": "Fruits",
+        "Ice Cream": "Ice Cream",
+        "Milk": "Milk",
+        "Soft Drink": "Soft Drink",
+        "Spices": "Spices",
+        "Vegetables": "Vegetables"
+      }
+    },
+    "Furniture": {
+      "canonicalName": "Furniture",
+      "sourceVariants": [
+        "Furniture"
+      ],
+      "subcategories": {
+        "Beds": "Beds",
+        "Coffee Tables": "Coffee Tables",
+        "Dining Tables": "Dining Tables",
+        "Lights": "Lights",
+        "Office Chairs": "Office Chairs",
+        "Office Tables": "Office Tables",
+        "Sofas": "Sofas",
+        "Storage Cabinets": "Storage Cabinets",
+        "Study Tables": "Study Tables",
+        "Tables & Chairs": "Tables & Chairs",
+        "TV Units": "TV Units",
+        "Wardrobes": "Wardrobes"
+      }
+    },
+    "Hardware": {
+      "canonicalName": "Hardware",
+      "sourceVariants": [
+        "Hardware"
+      ],
+      "subcategories": {
+        "Other": "Other"
+      }
+    },
+    "Hobbies & Entertainment": {
+      "canonicalName": "Hobbies & Entertainment",
+      "sourceVariants": [
+        "Hobbies & Entertainment"
+      ],
+      "subcategories": {
+        "Music Instruments": "Music Instruments"
+      }
+    },
+    "Jobs": {
+      "canonicalName": "Jobs",
+      "sourceVariants": [
+        "Jobs"
+      ],
+      "subcategories": {
+        "Accountant": "Accountant",
+        "Cook / Chef": "Cook / Chef",
+        "Data Entry Jobs": "Data Entry Jobs",
+        "Delivery Jobs": "Delivery Jobs",
+        "Driver Jobs": "Driver Jobs",
+        "Hotel & Restaurant Jobs": "Hotel & Restaurant Jobs",
+        "Housekeeping": "Housekeeping",
+        "Office Assistant": "Office Assistant",
+        "Retail / Store Staff": "Retail / Store Staff",
+        "Sales & Marketing": "Sales & Marketing",
+        "Teacher / Tutor": "Teacher / Tutor",
+        "Telecaller / BPO": "Telecaller / BPO"
+      }
+    },
+    "Kitchenware & Cookware": {
+      "canonicalName": "Kitchenware & Cookware",
+      "sourceVariants": [
+        "Kitchenware & Cookware"
+      ],
+      "subcategories": {
+        "Bakeware": "Bakeware",
+        "Cookware (Pans, Tawas, Pots)": "Cookware (Pans, Tawas, Pots)",
+        "Dinner Sets": "Dinner Sets",
+        "Gas Stoves & Burners": "Gas Stoves & Burners",
+        "Kitchen utensils": "Kitchen Utensils",
+        "Kitchen Utensils": "Kitchen Utensils",
+        "Knives & Cutlery": "Knives & Cutlery",
+        "Pressure Cookers": "Pressure Cookers",
+        "Serving Utensils": "Serving Utensils",
+        "Storage Containers": "Storage Containers",
+        "Traditional Utensils (Brass, Copper)": "Traditional Utensils (Brass, Copper)"
+      }
+    },
+    "Livestock": {
+      "canonicalName": "Livestock",
+      "sourceVariants": [
+        "Livestock"
+      ],
+      "subcategories": {
+        "Beef": "Beef",
+        "Chicken": "Chicken",
+        "Cows": "Cows",
+        "Eggs": "Eggs",
+        "Fish": "Fish",
+        "Goat": "Goat",
+        "Pork Meat": "Pork Meat"
+      }
+    },
+    "Mobiles": {
+      "canonicalName": "Mobiles",
+      "sourceVariants": [
+        "Mobiles"
+      ],
+      "subcategories": {
+        "Accessories": "Accessories",
+        "Mobile Accessories": "Mobile Accessories",
+        "Mobile Phones": "Mobile Phones",
+        "Tablets": "Tablets"
+      }
+    },
+    "Music": {
+      "canonicalName": "Music",
+      "sourceVariants": [
+        "Music"
+      ],
+      "subcategories": {
+        "Accessories": "Accessories",
+        "Amplifiers": "Amplifiers",
+        "DJ Equipment": "DJ Equipment",
+        "Drums & Percussion": "Drums & Percussion",
+        "Guitars": "Guitars",
+        "Keyboards & Pianos": "Keyboards & Pianos",
+        "Microphones": "Microphones",
+        "Musical Instruments": "Musical Instruments",
+        "Sound Systems": "Sound Systems",
+        "Studio Equipment": "Studio Equipment"
+      }
+    },
+    "Real Estate": {
+      "canonicalName": "Real Estate",
+      "sourceVariants": [
+        "Real Estate"
+      ],
+      "subcategories": {
+        "For Rent: Houses & Apartments": "For Rent: Houses & Apartments",
+        "For Rent: Shops & Offices": "For Rent: Shops & Offices",
+        "For Sale: Houses & Apartments": "For Sale: Houses & Apartments",
+        "For Sale: Shops & Offices": "For Sale: Shops & Offices",
+        "Lands & Plots": "Lands & Plots",
+        "PG & Guest Houses": "PG & Guest Houses"
+      }
+    },
+    "Services": {
+      "canonicalName": "Services",
+      "sourceVariants": [
+        "Services"
+      ],
+      "subcategories": {
+        "AC Repair & Services": "AC Repair & Services",
+        "Beauty & Salon Services": "Beauty & Salon Services",
+        "Carpentry Services": "Carpentry Services",
+        "CCTV Installation & Repair": "CCTV Installation & Repair",
+        "Computer & Laptop Repair": "Computer & Laptop Repair",
+        "Driver Services": "Driver Services",
+        "Electrician": "Electrician",
+        "Event & Wedding Services": "Event & Wedding Services",
+        "Fitness Trainer": "Fitness Trainer",
+        "Home Cleaning": "Home Cleaning",
+        "Interior Design & Renovation": "Interior Design & Renovation",
+        "Mobile Repair": "Mobile Repair",
+        "Packers & Movers": "Packers & Movers",
+        "Painter": "Painter",
+        "Pest Control": "Pest Control",
+        "Plumber": "Plumber",
+        "Refrigerator Repair": "Refrigerator Repair",
+        "Travel & Tour Services": "Travel & Tour Services",
+        "Tutoring & Classes": "Tutoring & Classes",
+        "Washing Machine Repair": "Washing Machine Repair"
+      }
+    },
+    "Sports": {
+      "canonicalName": "Sports",
+      "sourceVariants": [
+        "Sports"
+      ],
+      "subcategories": {
+        "Badminton & Tennis": "Badminton & Tennis",
+        "Boxing & Martial Arts": "Boxing & Martial Arts",
+        "Camping & Trekking Gear": "Camping & Trekking Gear",
+        "Cricket Equipment": "Cricket Equipment",
+        "Cycling": "Cycling",
+        "Football Gear": "Football Gear",
+        "Gym & Fitness Equipment": "Gym & Fitness Equipment",
+        "Indoor Games (Chess, Carrom, etc.)": "Indoor Games (Chess, Carrom, etc.)",
+        "Skating & Skateboards": "Skating & Skateboards",
+        "Sportswear & Jerseys": "Sportswear & Jerseys",
+        "Swimming Gear": "Swimming Gear",
+        "Yoga & Meditation Items": "Yoga & Meditation Items"
+      }
+    },
+    "Stationary": {
+      "canonicalName": "Stationary",
+      "sourceVariants": [
+        "Stationary"
+      ],
+      "subcategories": {
+        "Stationary": "Stationary"
+      }
+    },
+    "Vehicles": {
+      "canonicalName": "Vehicles",
+      "sourceVariants": [
+        "Vehicles"
+      ],
+      "subcategories": {
+        "Bicycles": "Bicycles",
+        "Bikes": "Bikes",
+        "Cars": "Cars",
+        "Cars & pick-ups": "Cars & pick-ups",
+        "Commercial Vehicles": "Commercial Vehicles",
+        "Electric Bikes": "Electric Bikes",
+        "Motorcycles": "Motorcycles",
+        "Scooters": "Scooters",
+        "Spare Parts": "Spare Parts",
+        "Vehicle Accessories": "Vehicle Accessories"
+      }
+    }
+  }
+}

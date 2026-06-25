@@ -42,6 +42,7 @@ import ogPreviewRoutes from "./routes/ogPreview.routes.js";
 import planRoutes from "./routes/planRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import paymentReconciliationService from "./Services/payments/paymentReconciliation.service.js";
 
 
@@ -200,6 +201,7 @@ app.use("/api/public/sellers", publicSellerRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/categories", categoryRoutes);
 
 app.use("/api/email", emailRoutes);
 app.use("/api/auth", authRoutes);

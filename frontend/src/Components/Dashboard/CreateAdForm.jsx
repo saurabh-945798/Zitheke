@@ -1,9 +1,29 @@
 ﻿import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { Loader2, XCircle, CheckCircle2, Upload } from "lucide-react";
 import CATEGORY_FIELDS from "./CategoryFields";
 import { Input, Textarea, Select } from "./FormControls";
 import { INDIA_LOCATIONS } from "../../Data/indiaCities";
+import { getPublicCategories } from "../../services/category.service.js";
+
+const normalizeCategoryMap = (categories = []) => {
+  if (!Array.isArray(categories)) return {};
+
+  return categories.reduce((accumulator, category) => {
+    const categoryName = String(category?.name || "").trim();
+    if (!categoryName) return accumulator;
+
+    const subcategoryNames = Array.isArray(category?.subcategories)
+      ? category.subcategories
+          .map((subcategory) => String(subcategory?.name || "").trim())
+          .filter(Boolean)
+      : [];
+
+    accumulator[categoryName] = subcategoryNames;
+    return accumulator;
+  }, {});
+};
 
 const CreateAdForm = ({
   step,
@@ -27,6 +47,10 @@ const CreateAdForm = ({
   setVideoPreview,
 
 }) => {
+  const [apiCategoryMap, setApiCategoryMap] = useState({});
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesLoadFailed, setCategoriesLoadFailed] = useState(false);
+
   const steps = ["Basic Info", "Pricing & Media", "Location & Preview"];
   const mobileAccessoriesFields = [
     {
@@ -264,6 +288,75 @@ const CreateAdForm = ({
   ];
 
   const indianStates = Object.keys(INDIA_LOCATIONS.Malawi || {});
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const categories = await getPublicCategories();
+        if (!mounted) return;
+
+        const normalized = normalizeCategoryMap(categories);
+        if (Object.keys(normalized).length > 0) {
+          setApiCategoryMap(normalized);
+          setCategoriesLoadFailed(false);
+        } else {
+          setApiCategoryMap({});
+          setCategoriesLoadFailed(true);
+        }
+      } catch (error) {
+        if (!mounted) return;
+        setApiCategoryMap({});
+        setCategoriesLoadFailed(true);
+      } finally {
+        if (mounted) {
+          setCategoriesLoading(false);
+        }
+      }
+    };
+
+    fetchCategories();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const fallbackCategoryMap = useMemo(
+    () =>
+      Object.entries(subcategories || {}).reduce((accumulator, [name, options]) => {
+        accumulator[name] = Array.isArray(options) ? options.filter(Boolean) : [];
+        return accumulator;
+      }, {}),
+    [subcategories]
+  );
+
+  const activeCategoryMap = useMemo(() => {
+    if (Object.keys(apiCategoryMap).length > 0) {
+      return apiCategoryMap;
+    }
+    return fallbackCategoryMap;
+  }, [apiCategoryMap, fallbackCategoryMap]);
+
+  const categoryOptions = useMemo(
+    () => Object.keys(activeCategoryMap),
+    [activeCategoryMap]
+  );
+
+  const currentSubcategoryOptions = useMemo(() => {
+    if (!form.category) return [];
+    return Array.isArray(activeCategoryMap[form.category])
+      ? activeCategoryMap[form.category]
+      : [];
+  }, [activeCategoryMap, form.category]);
+
+  const noCategorySourceAvailable =
+    !categoriesLoading &&
+    categoryOptions.length === 0 &&
+    Object.keys(fallbackCategoryMap).length === 0;
+
   return (
     <div className="flex-1 lg:ml-64 min-h-screen bg-[#F9FAFB] px-4 sm:px-6 md:px-10 py-8">
       <motion.div
@@ -365,7 +458,8 @@ const CreateAdForm = ({
                     name="category"
                     value={form.category || ""}
                     onChange={handleChange}
-                    options={Object.keys(subcategories)}
+                    options={categoryOptions}
+                    disabled={categoriesLoading && categoryOptions.length === 0}
                   />
 
                   <Select
@@ -373,10 +467,35 @@ const CreateAdForm = ({
                     name="subcategory"
                     value={form.subcategory || ""}
                     onChange={handleChange}
-                    options={form.category ? subcategories[form.category] : []}
-                    disabled={!form.category}
+                    options={currentSubcategoryOptions}
+                    disabled={!form.category || currentSubcategoryOptions.length === 0}
                   />
                 </div>
+
+                {categoriesLoading ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="h-4 w-4 animate-spin text-[#2E3192]" />
+                    Loading categories...
+                  </div>
+                ) : null}
+
+                {!categoriesLoading && categoriesLoadFailed && categoryOptions.length > 0 ? (
+                  <p className="text-sm text-amber-700">
+                    Live categories are temporarily unavailable. Using saved category options.
+                  </p>
+                ) : null}
+
+                {!categoriesLoading && form.category && currentSubcategoryOptions.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    This category currently has no active subcategories.
+                  </p>
+                ) : null}
+
+                {noCategorySourceAvailable ? (
+                  <p className="text-sm text-red-600">
+                    Categories are unavailable right now. Please try again shortly.
+                  </p>
+                ) : null}
 
                 {Array.isArray(CATEGORY_FIELDS[form.category]) &&
                   !(
