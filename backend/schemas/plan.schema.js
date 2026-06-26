@@ -44,7 +44,7 @@ const priceSchema = z.coerce
   .refine(
     (value) => value === 0 || ALLOWED_PREMIUM_PLAN_AMOUNTS.includes(value),
     {
-      message: "Price must be 0, 3000, 5000, or 15000 MWK",
+      message: `Price must be 0 or one of the allowed premium amounts: ${ALLOWED_PREMIUM_PLAN_AMOUNTS.join(", ")} MWK`,
     }
   );
 

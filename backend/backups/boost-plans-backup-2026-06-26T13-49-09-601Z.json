@@ -1,0 +1,56 @@
+{
+  "createdAt": "2026-06-26T13:49:09.603Z",
+  "mode": "apply",
+  "collection": "plans",
+  "matchedCount": 3,
+  "matchedPlans": [
+    {
+      "_id": "6a0c16749c79a00f3f827651",
+      "name": "BASIC",
+      "slug": "basic",
+      "price": 50,
+      "currency": "MWK",
+      "durationDays": 7,
+      "features": [
+        "Basic premium badge",
+        "Improved listing visibility"
+      ],
+      "isActive": true,
+      "priorityLevel": 1,
+      "createdAt": "2026-05-19T07:51:07.691Z",
+      "updatedAt": "2026-06-23T13:44:05.769Z"
+    },
+    {
+      "_id": "6a0c16749c79a00f3f827652",
+      "name": "PLUS",
+      "slug": "plus",
+      "price": 100,
+      "currency": "MWK",
+      "durationDays": 14,
+      "features": [
+        "Priority listing placement",
+        "Higher marketplace visibility"
+      ],
+      "isActive": true,
+      "priorityLevel": 2,
+      "createdAt": "2026-05-19T07:51:07.720Z",
+      "updatedAt": "2026-06-23T13:44:05.798Z"
+    },
+    {
+      "_id": "6a0c16749c79a00f3f827653",
+      "name": "ADVANCED",
+      "slug": "advanced",
+      "price": 150,
+      "currency": "MWK",
+      "durationDays": 28,
+      "features": [
+        "Top-tier premium badge",
+        "Maximum listing priority"
+      ],
+      "isActive": true,
+      "priorityLevel": 3,
+      "createdAt": "2026-05-19T07:51:07.748Z",
+      "updatedAt": "2026-06-23T13:44:05.826Z"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 export const MEMBERSHIP_PLANS = Object.freeze({
   FREE: "free",
   BASIC: "basic",
+  ESSENTIALS: "essentials",
   PLUS: "plus",
   ADVANCED: "advanced",
 });
@@ -9,7 +10,7 @@ export const MEMBERSHIP_PLAN_VALUES = Object.freeze(
   Object.values(MEMBERSHIP_PLANS)
 );
 
-const PRODUCTION_PREMIUM_PLAN_AMOUNTS = [3000, 5000, 15000];
+const PRODUCTION_PREMIUM_PLAN_AMOUNTS = [3000, 5000, 7000, 10000];
 // TEMP MPGS TEST PRICING - revert after card testing
 const TEMP_MPGS_TEST_PREMIUM_PLAN_AMOUNTS = [50, 100, 150];
 
@@ -33,43 +34,62 @@ export const MEMBERSHIP_PLAN_DEFINITIONS = Object.freeze([
     priorityLevel: 0,
   },
   {
-    name: "BASIC",
+    name: "Simple Start",
     slug: MEMBERSHIP_PLANS.BASIC,
     price: 3000,
     currency: "MWK",
     durationDays: 7,
     features: [
-      "Basic premium badge",
-      "Improved listing visibility",
+      "Basic ad boost",
+      "Standard visibility",
+      "Email support",
     ],
     isActive: true,
     priorityLevel: 1,
   },
   {
-    name: "PLUS",
-    slug: MEMBERSHIP_PLANS.PLUS,
+    name: "Essentials",
+    slug: MEMBERSHIP_PLANS.ESSENTIALS,
     price: 5000,
     currency: "MWK",
     durationDays: 14,
     features: [
-      "Priority listing placement",
-      "Higher marketplace visibility",
+      "Higher ad ranking",
+      "Boost badge",
+      "Priority email support",
     ],
     isActive: true,
     priorityLevel: 2,
   },
   {
-    name: "ADVANCED",
-    slug: MEMBERSHIP_PLANS.ADVANCED,
-    price: 15000,
+    name: "Plus",
+    slug: MEMBERSHIP_PLANS.PLUS,
+    price: 7000,
     currency: "MWK",
-    durationDays: 28,
+    durationDays: 21,
     features: [
-      "Top-tier premium badge",
-      "Maximum listing priority",
+      "Top search placement",
+      "Featured badge",
+      "Up to 5x more views",
+      "Priority buyer exposure",
     ],
     isActive: true,
     priorityLevel: 3,
+  },
+  {
+    name: "Advanced",
+    slug: MEMBERSHIP_PLANS.ADVANCED,
+    price: 10000,
+    currency: "MWK",
+    durationDays: 28,
+    features: [
+      "Maximum visibility",
+      "Premium featured badge",
+      "Top placement across categories",
+      "Dedicated support",
+    ],
+    isActive: true,
+    priorityLevel: 4,
   },
 ]);
 

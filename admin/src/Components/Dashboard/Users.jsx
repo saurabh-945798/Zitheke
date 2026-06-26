@@ -69,6 +69,17 @@ const statusPill = (status) =>
     ? "bg-red-100 text-red-700"
     : "bg-green-100 text-green-700";
 
+const getUserLocationLabel = (user = {}) => {
+  const location = String(user.location || "").trim();
+  const city = String(user.city || "").trim();
+  const state = String(user.state || "").trim();
+
+  if (location) return location;
+
+  const fallback = [city, state].filter(Boolean).join(", ");
+  return fallback || "";
+};
+
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -115,11 +126,12 @@ const Users = () => {
       user.name || "",
       user.email || "",
       user.phone || "",
+      getUserLocationLabel(user),
       user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "",
     ]);
 
     const csv = [
-      ["User Name", "Email", "Phone Number", "Joined Date"],
+      ["User Name", "Email", "Phone Number", "Location", "Joined Date"],
       ...rows,
     ]
       .map((row) => row.map(escapeCsvValue).join(","))
@@ -252,7 +264,7 @@ const Users = () => {
       </div>
 
       <div className="mb-6 rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -268,32 +280,30 @@ const Users = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="inline-flex w-fit items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-                <span className="font-semibold text-[#1A1D64]">{filteredUsers.length}</span>
-                <span>users shown</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                <span>{users.length} total</span>
-              </div>
-
-              <div className="relative w-full max-w-[420px]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search name, email, phone, or location..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3.5 text-sm text-slate-700 outline-none transition focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
-                />
-              </div>
+            <div className="inline-flex w-fit items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+              <span className="font-semibold text-[#1A1D64]">{filteredUsers.length}</span>
+              <span>users shown</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+              <span>{users.length} total</span>
             </div>
           </div>
 
-          <div className="w-full xl:justify-self-end xl:w-auto">
+          <div className="flex w-full flex-col gap-4 xl:items-end xl:justify-self-end">
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search name, email, phone, or location..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3.5 text-sm text-slate-700 outline-none transition focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
+              />
+            </div>
+
             <button
               type="button"
               onClick={handleExportUsers}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#1A1D64] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#232780]"
+              className="inline-flex w-fit items-center justify-center gap-2 self-start rounded-2xl bg-[#1A1D64] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#232780] xl:self-end"
             >
               <Download size={16} />
               Export Excel
@@ -359,16 +369,16 @@ const Users = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-slate-600">
+                    <td className="px-6 py-5 text-xs text-slate-600 md:text-sm">
                       <span className="block max-w-[280px] truncate">{user.email || "—"}</span>
                     </td>
-                    <td className="px-6 py-5 text-sm text-slate-600">
+                    <td className="px-6 py-5 text-xs text-slate-600 md:text-sm">
                       <span className="block max-w-[180px] truncate">{user.phone || "—"}</span>
                     </td>
-                    <td className="px-6 py-5 text-sm text-slate-600">
-                      <span className="block max-w-[180px] truncate">{user.location || "—"}</span>
+                    <td className="px-6 py-5 text-xs text-slate-600 md:text-sm">
+                      <span className="block max-w-[180px] truncate">{getUserLocationLabel(user) || "—"}</span>
                     </td>
-                    <td className="px-6 py-5 text-sm text-slate-500">
+                    <td className="px-6 py-5 text-xs text-slate-500 md:text-sm">
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
                     </td>
 
@@ -469,7 +479,7 @@ const Users = () => {
                     {
                       icon: MapPin,
                       label: "Location",
-                      value: selectedUser.location || "Not provided",
+                      value: getUserLocationLabel(selectedUser) || "Not provided",
                     },
                     {
                       icon: Phone,

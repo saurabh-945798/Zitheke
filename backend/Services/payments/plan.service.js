@@ -20,7 +20,10 @@ const assertObjectId = (value, label) => {
 };
 
 const listPublicPlans = async () => {
-  return await Plan.find({ isActive: true })
+  return await Plan.find({
+    isActive: true,
+    slug: { $ne: MEMBERSHIP_PLANS.FREE },
+  })
     .sort({ priorityLevel: -1, price: 1, durationDays: 1 })
     .lean();
 };
