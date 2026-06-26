@@ -253,45 +253,51 @@ const Users = () => {
 
       <div className="mb-6 rounded-[28px] border border-white/80 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-center">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF1FF] text-[#2E3192] shadow-sm">
-              <LayoutDashboard size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold leading-none text-[#1A1D64]">User Directory</h2>
-                <p className="mt-2 text-sm text-slate-500">
-                  Search accounts and review moderation state quickly.
-                </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF1FF] text-[#2E3192] shadow-sm">
+                  <LayoutDashboard size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold leading-none text-[#1A1D64]">User Directory</h2>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Search accounts and review moderation state quickly.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              <span className="font-semibold text-[#1A1D64]">{filteredUsers.length}</span>
-              <span>users shown</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-              <span>{users.length} total</span>
-            </div>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="inline-flex w-fit items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                <span className="font-semibold text-[#1A1D64]">{filteredUsers.length}</span>
+                <span>users shown</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                <span>{users.length} total</span>
+              </div>
 
+              <div className="relative w-full max-w-[420px]">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search name, email, phone, or location..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3.5 text-sm text-slate-700 outline-none transition focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full xl:justify-self-end xl:w-auto">
             <button
               type="button"
               onClick={handleExportUsers}
-              className="inline-flex items-center gap-2 rounded-2xl bg-[#1A1D64] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#232780]"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#1A1D64] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#232780]"
             >
               <Download size={16} />
               Export Excel
             </button>
-          </div>
-
-          <div className="relative w-full xl:justify-self-end">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search name, email, phone, or location..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 py-3.5 text-sm text-slate-700 outline-none transition focus:border-[#2E3192]/40 focus:ring-4 focus:ring-[#2E3192]/10"
-            />
           </div>
         </div>
       </div>

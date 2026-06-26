@@ -329,6 +329,7 @@ const PricingPage = () => {
                             </div>
                           ))}
                       </div>
+                      
 
                       <div className="mt-6 space-y-3">
                         {isCurrent ? (
